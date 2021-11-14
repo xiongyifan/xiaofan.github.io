@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.8.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.8.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 <meta name="description" content="description">
 <meta property="og:type" content="website">
 <meta property="og:title" content="熊一帆的博客">
@@ -41,6 +41,8 @@
 <title>熊一帆的博客</title>
   
 
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ef8046b2c373633c8823fa076c7216d3"></script>
 
 
 
@@ -75,6 +77,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -86,11 +89,37 @@
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
         <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
         <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
 
 </div>
         
@@ -438,7 +467,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QARealtimeCollector/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -451,7 +480,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95/" class="post-title-link" itemprop="url">Ubuntu配置SSH服务端支持远程登录</a>
+          <a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QARealtimeCollector/" class="post-title-link" itemprop="url">QARealtimeCollector</a>
         </h2>
 
         <div class="post-meta-container">
@@ -476,105 +505,41 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="原文地址"><a href="#原文地址" class="headerlink" title="原文地址"></a>原文地址</h1><p><a href="https://juejin.cn/post/6844904048739500046">https://juejin.cn/post/6844904048739500046</a></p>
-<h1 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h1><p>用另外一台电脑ssh访问Ubuntu系统的电脑</p>
-<h1 id="硬件及软件版本"><a href="#硬件及软件版本" class="headerlink" title="硬件及软件版本"></a>硬件及软件版本</h1><blockquote>
-<p>被访问电脑 电脑：联想笔记本G470 系统：Ubuntu 16.04</p>
-<p>客户端电脑 电脑：MBP 系统：10.15.2</p>
-</blockquote>
-<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><h2 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h2><blockquote>
-<p>SSH 为Secure Shell的缩写，由 IETF 的网络小组（Network Working Group）所制定；SSH 为建立在应用层基础上的安全协议。SSH 是目前较可靠，专为远程登录会话和其他网络服务提供安全性的协议。利用 SSH 协议可以有效防止远程管理过程中的信息泄露问题。SSH最初是UNIX系统上的一个程序，后来又迅速扩展到其他操作平台。SSH在正确使用时可弥补网络中的漏洞。SSH客户端适用于多种平台。几乎所有UNIX平台—包括HP-UX、Linux、AIX、Solaris、DigitalUNIX、Irix，以及其他平台，都可运行SSH。– <a href="https://link.juejin.cn/?target=https://baike.sogou.com/v60150874.htm?fromTitle=SSH" title="https://baike.sogou.com/v60150874.htm?fromTitle=SSH">搜狗百科：SSH</a></p>
-</blockquote>
-<h2 id="目标分析"><a href="#目标分析" class="headerlink" title="目标分析"></a>目标分析</h2><p>现在我们知道SSH其实最早是一个安全协议，这个协议就是为远程登录会话而生。因为这个协议，衍生的的SSH程序是我们要安装的软件。要利用SSH连接两台机器，可想可知一个要作为客户端访问，另外一台要作为服务端提供被访问的服务。我们也知道很多Linux、OSX等类Unix系统都已自带了SSH的客户端，Windows也有不少类似PuTTY这样优秀的软件。<br>So，我们接下来要做的其实是如何安装并开启SSH Server。</p>
-<h1 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h1><h2 id="①-确定Ubuntu是否安装SSH服务"><a href="#①-确定Ubuntu是否安装SSH服务" class="headerlink" title="① 确定Ubuntu是否安装SSH服务"></a>① 确定Ubuntu是否安装SSH服务</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl status ssh</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>比如，这台新系统的机器执行结果如下：  </p>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e90bd1a~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<p>我们注意到两个内容，第一行 加载结果是 未发现，原因没有这个文件或目录，第二行 服务状态是不活跃的，死亡的。从这些词我们能猜到其实这个服务压根就没安装。<br>同理，假如你看到的状态是类似红色的stopped字样，是终止态的，可以用命令 <code>sudo systemctl start ssh</code> 尝试启动，执行结果也可以参考第③步。</p>
-<h2 id="②-安装SSH-Server"><a href="#②-安装SSH-Server" class="headerlink" title="② 安装SSH Server"></a>② 安装SSH Server</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install openssh-server</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>执行过程如下  </p>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e8fdc4e~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e13fe4874~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<h2 id="③-确定Ubuntu-SSH服务状态"><a href="#③-确定Ubuntu-SSH服务状态" class="headerlink" title="③ 确定Ubuntu SSH服务状态"></a>③ 确定Ubuntu SSH服务状态</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl status ssh</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>执行结果如下  </p>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e14767b01~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<p>现在能看到：<br>第一行加载状态，已加载ssh.service文件；<br>第二行是否活动，正在运行；并且留意到一个守护进程sshd；<br>再往下看到监听的端口是22。</p>
-<p>至此，我们的SSH服务端已经安装启动OK。</p>
-<h2 id="④-确定Ubuntu机器的IP"><a href="#④-确定Ubuntu机器的IP" class="headerlink" title="④ 确定Ubuntu机器的IP"></a>④ 确定Ubuntu机器的IP</h2><p>我们在局域网测试，那就是查看现在这台局域网IP，可以点击网络设置查看，亦或命令行 <code>ifcofnig</code> 如下图的一个参考，找到你活跃的网卡。比如这台机器的是 <code>192.168.0.145</code>。  </p>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e15de167e~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<h2 id="⑤-确定是否可访问Ubuntu"><a href="#⑤-确定是否可访问Ubuntu" class="headerlink" title="⑤ 确定是否可访问Ubuntu"></a>⑤ 确定是否可访问Ubuntu</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ping 192.168.0.145</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e16c40022~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<p>如果能ping通，这说明网络是通的，那么可以尝试第⑦步。<br>如果有类似 <code>ssh: connect to host 192.168.0.145 port 22: Connection refused</code> 这样的问题是说明端口不能访问，要检查下防火墙。</p>
-<h2 id="⑥-若不能访问，检查Ubuntu防火墙"><a href="#⑥-若不能访问，检查Ubuntu防火墙" class="headerlink" title="⑥ 若不能访问，检查Ubuntu防火墙"></a>⑥ 若不能访问，检查Ubuntu防火墙</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 检查防火墙</span><br><span class="line">sudo ufw status verbose</span><br><span class="line"></span><br><span class="line"># 开启防火墙</span><br><span class="line">sudo ufw enable</span><br><span class="line"></span><br><span class="line"># 开放端口</span><br><span class="line">sudo ufw allow 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>如下命令，可以设置开放来自某IP访问某端口的权限</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw allow from your_ip to any port 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4472b15d~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<h2 id="⑦-使用账号密码登录Ubuntu"><a href="#⑦-使用账号密码登录Ubuntu" class="headerlink" title="⑦ 使用账号密码登录Ubuntu"></a>⑦ 使用账号密码登录Ubuntu</h2><p>现在，使用另外一台电脑尝试登录 <code>Ubuntu</code></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh baiyutang@192.168.0.145 -p 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>对于第一次登陆的会提示主机不被认可，加密签名的指  </p>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4cb0c3bb~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<p>输入 yes 确认，继续<br>需要验证 <code>Ubuntu</code> 当前用户 <code>baiyutang</code> 的登录密码，输入确认即可登录成功。  </p>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4b31de95~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<h1 id="延伸"><a href="#延伸" class="headerlink" title="延伸"></a>延伸</h1><ul>
-<li>  openssh-server是什么？</li>
-</ul>
-<blockquote>
-<p><a href="https://link.juejin.cn/?target=https://help.ubuntu.com/lts/serverguide/openssh-server.html" title="https://help.ubuntu.com/lts/serverguide/openssh-server.html">Ubuntu Wiki OpenSSH Server</a> <a href="https://link.juejin.cn/?target=https://www.openssh.com/" title="https://www.openssh.com/">About OpenSSH</a></p>
-</blockquote>
-<ul>
-<li>  SSH服务端开放的端口可以更改吗？</li>
-</ul>
-<blockquote>
-<p>可以，在文件 <code>/etc/ssh/sshd_config</code> 里可以配置 SSH Server 开放的端口，修改后记得 <code>sudo systemctl restart sshd</code> 重启下生效。修改位置如下图第 5 行所示：</p>
-</blockquote>
-<blockquote>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e52bf2ea7~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-</blockquote>
-<ul>
-<li>  ufw及基本的管理操作</li>
-</ul>
-<blockquote>
-<p>Ubuntu防火墙设置可以单独抽出来讲，或者可以先看参考资料第四条。</p>
-</blockquote>
-<ul>
-<li>  如何使用公钥免密登录？</li>
-<li>  SSH加密传输的过程原理？</li>
-<li>  加密签名指纹是什么？</li>
-</ul>
-<blockquote>
-<p>这个等下篇专门来做记录，三个问题可以放在一起。</p>
-</blockquote>
-<ul>
-<li>  如何配置跳板机？</li>
-</ul>
-<blockquote>
-<p>这个也后续单独做。</p>
-</blockquote>
-<ul>
-<li>  安全问题及中间人攻击</li>
-</ul>
-<blockquote>
-<p>在参考第一条有讲到这个问题。</p>
-</blockquote>
-<ul>
-<li>  内网穿透是什么？</li>
-</ul>
-<blockquote>
-<p>后续了解及研究，因为有段时间也在寻找和远程控制相关软件，可以作为研究课题。</p>
-</blockquote>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
-<li> <a href="https://link.juejin.cn/?target=https://linux.cn/thread/9427/1/1/" title="https://linux.cn/thread/9427/1/1/">ssh 基本原理和免密码登录</a></li>
-<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-7683-1.html" title="https://linux.cn/article-7683-1.html">五条强化 SSH 安全的建议</a></li>
-<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-1206-1.html" title="https://linux.cn/article-1206-1.html">牢记25个最佳的SSH命令</a></li>
-<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-8087-1.html" title="https://linux.cn/article-8087-1.html">在Ubuntu中用UFW配置防火墙</a></li>
-<li> <a href="https://link.juejin.cn/?target=https://support.apple.com/zh-cn/guide/mac-help/mh34041/mac" title="https://support.apple.com/zh-cn/guide/mac-help/mh34041/mac">在 Mac 上使用防火墙来防止非法连接</a></li>
+          <p><a href="https://github.com/yutiansut/QUANTAXIS_RealtimeCollector">https://github.com/yutiansut/QUANTAXIS_RealtimeCollector</a><br>实时行情采集，并且通过eventmq二次分发</p>
+<h2 id="QARealtimeCollector的作用"><a href="#QARealtimeCollector的作用" class="headerlink" title="QARealtimeCollector的作用"></a>QARealtimeCollector的作用</h2><p>QARealtimeCollector的作用有两个：</p>
+<ol>
+<li>对实时tick数据进行二次采样，包括股票和期货。这个功能由QARC_WEBSERVER提供，开启后可以通过http请求完成订阅和二次采样请求</li>
+<li>股票实时tick行情接入。这个功能由QARC_Stock提供，通过pytdx接入股票tick行情。</li>
 </ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">QARC_WEBSERVER  <span class="comment"># 提供http服务，进行股票和期货的订阅和二次采样</span></span><br><span class="line">QARC_Stock  <span class="comment"># 提供股票的tick行情</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="QARealtimeCollector安装步骤"><a href="#QARealtimeCollector安装步骤" class="headerlink" title="QARealtimeCollector安装步骤"></a>QARealtimeCollector安装步骤</h2><h3 id="增加QARealtimeCollector模块"><a href="#增加QARealtimeCollector模块" class="headerlink" title="增加QARealtimeCollector模块"></a>增加QARealtimeCollector模块</h3><p>在docker-compose.yaml中添加qamarketcollector模块</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">qamarketcollector:</span><br><span class="line">    image: daocloud.io/quantaxis/qarealtimecollector:latest</span><br><span class="line">    container_name: qamarketcollector</span><br><span class="line">    ports:</span><br><span class="line">        - <span class="string">&quot;8011:8011&quot;</span></span><br><span class="line">    depends_on:</span><br><span class="line">        - mgdb</span><br><span class="line">        - qaeventmq</span><br><span class="line">    environment:</span><br><span class="line">        - MONGODB=mgdb</span><br><span class="line">        - EventMQ_IP=qaeventmq</span><br><span class="line">    networks:</span><br><span class="line">        qanetwork_pro:</span><br><span class="line">            ipv4_address: 172.19.3.8</span><br><span class="line">    <span class="built_in">command</span>:</span><br><span class="line">        [<span class="string">&#x27;/root/QUANTAXIS_RealtimeCollector/docker/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:5672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> ,<span class="string">&#x27;/root/QUANTAXIS_RealtimeCollector/docker/start_collector.sh&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>command中指定start_collector.sh脚本会启动QARC_WEBSERVER和QARC_Stock命令</p>
+<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><p>如果是新添加的qamarketcollector，那么可以直接通过下面的命令启动。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>如果之前已经跟其他模块一起启动的话，qamarketcollector模块会正常启动。</p>
+<h2 id="订阅分钟行情"><a href="#订阅分钟行情" class="headerlink" title="订阅分钟行情"></a>订阅分钟行情</h2><p>订阅地址：POST <a href="http://10.211.55.38:8011/?action=new_handler&amp;market_type=future_cn&amp;code=rb2201">http://10.211.55.38:8011?action=new_handler&amp;market_type=future_cn&amp;code=rb2201</a></p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E8%AE%A2%E9%98%85%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85.jpg"></p>
+<p>订阅成功后CTPX里面会增加一个rb2201，Exchange会增加realtime_min_rb2201和bar_1min_rb2201，然后命令行订阅就可以看到数据</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">qaps_sub --exchange realtime_min_rb2201 --model fanout</span><br><span class="line">qaps_sub --exchange bar_1min_rb2201 --model fanout</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85%E5%92%8C1%E5%88%86%E9%92%9Fbar.jpg"></p>
+<p>上面是realtime_min_rb2201的数据，下面是bar_1min_rb2201的数据。</p>
+<h2 id="二次采样x分钟数据"><a href="#二次采样x分钟数据" class="headerlink" title="二次采样x分钟数据"></a>二次采样x分钟数据</h2><p>POST <a href="http://10.211.55.38:8011/?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min">http://10.211.55.38:8011?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min</a></p>
+<p>订阅成功后Exchange会增加一个realtime_5min_rb2201</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qaps_sub --exchange realtime_5min_rb2201 --model fanout</span><br></pre></td></tr></table></figure>
+
+<h2 id="订阅股票tick数据"><a href="#订阅股票tick数据" class="headerlink" title="订阅股票tick数据"></a>订阅股票tick数据</h2><p>POST  <a href="http://10.211.55.38:8011/?action=new_handler&amp;market_type=stock_cn&amp;code=000001">http://10.211.55.38:8011?action=new_handler&amp;market_type=stock_cn&amp;code=000001</a></p>
+<p>订阅成功后通过名为stocktransaction的exchange获取数据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qaps_sub --exchange stocktransaction --model fanout</span><br></pre></td></tr></table></figure>
+
+<h2 id="http请求合集"><a href="#http请求合集" class="headerlink" title="http请求合集"></a>http请求合集</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 订阅股票</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_handler&amp;market_type=stock_cn&amp;code=000001</span><br><span class="line"><span class="comment"># 订阅期货</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_handler&amp;market_type=future_cn&amp;code=rb2201</span><br><span class="line"><span class="comment"># 股票采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_resampler&amp;market_type=stock_cn&amp;code=000001&amp;frequence=5min</span><br><span class="line"><span class="comment"># 期货采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min</span><br><span class="line"><span class="comment"># 现在的订阅</span></span><br><span class="line">POST http://10.211.55.40:8011?action=get_current_handler</span><br><span class="line"><span class="comment"># 现在的采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=get_current_resampler</span><br></pre></td></tr></table></figure>
+
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>realtime_5min_rb2201的数据有，但是tradetime是错的，”tradetime”: “wrong date 22:36:30”，什么都没动，第二天的数据就正常了</p>
+<p>股票数据出不来，原因是因为数据是从pytdx过来的，docker里的pytdx有问题，安装QQ群里的就好了</p>
 
       
     </div>
@@ -778,105 +743,6 @@
 <h2 id="实盘账户数据库说明"><a href="#实盘账户数据库说明" class="headerlink" title="实盘账户数据库说明"></a>实盘账户数据库说明</h2><p><a href="https://doc.shinnytech.com/tqsdk2/latest/reference/tqsdk2.objs.position.html">https://doc.shinnytech.com/tqsdk2/latest/reference/tqsdk2.objs.position.html</a></p>
 <h3 id="持仓说明"><a href="#持仓说明" class="headerlink" title="持仓说明"></a>持仓说明</h3><p>simacc[‘positions’][‘SHFE_rb2201’]</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#x27;user_id&#x27;: &#x27;marco07281&#x27;,  # qatrader命令的--acc指定的用户名</span><br><span class="line"> &#x27;exchange_id&#x27;: &#x27;SHFE&#x27;,  # 交易所id</span><br><span class="line"> &#x27;instrument_id&#x27;: &#x27;rb2201&#x27;,  # 合约名称</span><br><span class="line"> &#x27;volume_long_today&#x27;: <span class="number">1</span>,  # 今日下单的多单</span><br><span class="line"> &#x27;volume_long_his&#x27;: <span class="number">0</span>,  # 历史持有的多单</span><br><span class="line"> &#x27;volume_long&#x27;: <span class="number">1</span>,  # 总多单 = 今日 + 历史</span><br><span class="line"> &#x27;volume_long_frozen_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_long_frozen_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_long_frozen&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_frozen_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_frozen_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_frozen&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_long_yd&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_yd&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;pos_long_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;pos_long_today&#x27;: <span class="number">1</span>,  # 跟volume_long_today一样？</span><br><span class="line"> &#x27;pos_short_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;pos_short_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;open_price_long&#x27;: <span class="number">4249.0</span>,  # 多仓均价？</span><br><span class="line"> &#x27;open_price_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;open_cost_long&#x27;: <span class="number">42490.0</span>,  # 持有的多单总成本？</span><br><span class="line"> &#x27;open_cost_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;position_price_long&#x27;: <span class="number">4249.0</span>,  # 跟open_price_long有什么区别？</span><br><span class="line"> &#x27;position_price_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;position_cost_long&#x27;: <span class="number">42490.0</span>,  # 跟open_cost_long有什么区别？</span><br><span class="line"> &#x27;position_cost_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;last_price&#x27;: <span class="number">4262.0</span>,  # 实时的价格，会跟着行情一直变</span><br><span class="line"> &#x27;float_profit_long&#x27;: <span class="number">130.0</span>,  # 实时的多单浮盈？</span><br><span class="line"> &#x27;float_profit_short&#x27;: <span class="number">0.0</span>,  # 实时的空单浮盈？</span><br><span class="line"> &#x27;float_profit&#x27;: <span class="number">130.0</span>,  # 实时浮盈</span><br><span class="line"> &#x27;position_profit_long&#x27;: <span class="number">130.0</span>,  # 跟float_profit_long有什么区别</span><br><span class="line"> &#x27;position_profit_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;position_profit&#x27;: <span class="number">130.0</span>,  # 跟float_profit有什么区别</span><br><span class="line"> &#x27;margin_long&#x27;: <span class="number">3308.8</span>,  # 多单保证金</span><br><span class="line"> &#x27;margin_short&#x27;: <span class="number">0.0</span>,  # 空单保证金</span><br><span class="line"> &#x27;margin&#x27;: <span class="number">3308.8</span>&#125;  # 总保证金</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QARealtimeCollector/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="熊一帆">
-      <meta itemprop="description" content="description">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="熊一帆的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QARealtimeCollector/" class="post-title-link" itemprop="url">QARealtimeCollector</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2021-11-14 01:52:37 / Modified: 01:54:53" itemprop="dateCreated datePublished" datetime="2021-11-14T01:52:37+08:00">2021-11-14</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><a href="https://github.com/yutiansut/QUANTAXIS_RealtimeCollector">https://github.com/yutiansut/QUANTAXIS_RealtimeCollector</a><br>实时行情采集，并且通过eventmq二次分发</p>
-<h2 id="QARealtimeCollector的作用"><a href="#QARealtimeCollector的作用" class="headerlink" title="QARealtimeCollector的作用"></a>QARealtimeCollector的作用</h2><p>QARealtimeCollector的作用有两个：</p>
-<ol>
-<li>对实时tick数据进行二次采样，包括股票和期货。这个功能由QARC_WEBSERVER提供，开启后可以通过http请求完成订阅和二次采样请求</li>
-<li>股票实时tick行情接入。这个功能由QARC_Stock提供，通过pytdx接入股票tick行情。</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">QARC_WEBSERVER  <span class="comment"># 提供http服务，进行股票和期货的订阅和二次采样</span></span><br><span class="line">QARC_Stock  <span class="comment"># 提供股票的tick行情</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="QARealtimeCollector安装步骤"><a href="#QARealtimeCollector安装步骤" class="headerlink" title="QARealtimeCollector安装步骤"></a>QARealtimeCollector安装步骤</h2><h3 id="增加QARealtimeCollector模块"><a href="#增加QARealtimeCollector模块" class="headerlink" title="增加QARealtimeCollector模块"></a>增加QARealtimeCollector模块</h3><p>在docker-compose.yaml中添加qamarketcollector模块</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">qamarketcollector:</span><br><span class="line">    image: daocloud.io/quantaxis/qarealtimecollector:latest</span><br><span class="line">    container_name: qamarketcollector</span><br><span class="line">    ports:</span><br><span class="line">        - <span class="string">&quot;8011:8011&quot;</span></span><br><span class="line">    depends_on:</span><br><span class="line">        - mgdb</span><br><span class="line">        - qaeventmq</span><br><span class="line">    environment:</span><br><span class="line">        - MONGODB=mgdb</span><br><span class="line">        - EventMQ_IP=qaeventmq</span><br><span class="line">    networks:</span><br><span class="line">        qanetwork_pro:</span><br><span class="line">            ipv4_address: 172.19.3.8</span><br><span class="line">    <span class="built_in">command</span>:</span><br><span class="line">        [<span class="string">&#x27;/root/QUANTAXIS_RealtimeCollector/docker/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:5672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> ,<span class="string">&#x27;/root/QUANTAXIS_RealtimeCollector/docker/start_collector.sh&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-<p>command中指定start_collector.sh脚本会启动QARC_WEBSERVER和QARC_Stock命令</p>
-<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><p>如果是新添加的qamarketcollector，那么可以直接通过下面的命令启动。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
-
-<p>如果之前已经跟其他模块一起启动的话，qamarketcollector模块会正常启动。</p>
-<h2 id="订阅分钟行情"><a href="#订阅分钟行情" class="headerlink" title="订阅分钟行情"></a>订阅分钟行情</h2><p>订阅地址：POST <a href="http://10.211.55.38:8011/?action=new_handler&amp;market_type=future_cn&amp;code=rb2201">http://10.211.55.38:8011?action=new_handler&amp;market_type=future_cn&amp;code=rb2201</a></p>
-<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E8%AE%A2%E9%98%85%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85.jpg"></p>
-<p>订阅成功后CTPX里面会增加一个rb2201，Exchange会增加realtime_min_rb2201和bar_1min_rb2201，然后命令行订阅就可以看到数据</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">qaps_sub --exchange realtime_min_rb2201 --model fanout</span><br><span class="line">qaps_sub --exchange bar_1min_rb2201 --model fanout</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85%E5%92%8C1%E5%88%86%E9%92%9Fbar.jpg"></p>
-<p>上面是realtime_min_rb2201的数据，下面是bar_1min_rb2201的数据。</p>
-<h2 id="二次采样x分钟数据"><a href="#二次采样x分钟数据" class="headerlink" title="二次采样x分钟数据"></a>二次采样x分钟数据</h2><p>POST <a href="http://10.211.55.38:8011/?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min">http://10.211.55.38:8011?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min</a></p>
-<p>订阅成功后Exchange会增加一个realtime_5min_rb2201</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qaps_sub --exchange realtime_5min_rb2201 --model fanout</span><br></pre></td></tr></table></figure>
-
-<h2 id="订阅股票tick数据"><a href="#订阅股票tick数据" class="headerlink" title="订阅股票tick数据"></a>订阅股票tick数据</h2><p>POST  <a href="http://10.211.55.38:8011/?action=new_handler&amp;market_type=stock_cn&amp;code=000001">http://10.211.55.38:8011?action=new_handler&amp;market_type=stock_cn&amp;code=000001</a></p>
-<p>订阅成功后通过名为stocktransaction的exchange获取数据</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qaps_sub --exchange stocktransaction --model fanout</span><br></pre></td></tr></table></figure>
-
-<h2 id="http请求合集"><a href="#http请求合集" class="headerlink" title="http请求合集"></a>http请求合集</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 订阅股票</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_handler&amp;market_type=stock_cn&amp;code=000001</span><br><span class="line"><span class="comment"># 订阅期货</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_handler&amp;market_type=future_cn&amp;code=rb2201</span><br><span class="line"><span class="comment"># 股票采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_resampler&amp;market_type=stock_cn&amp;code=000001&amp;frequence=5min</span><br><span class="line"><span class="comment"># 期货采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min</span><br><span class="line"><span class="comment"># 现在的订阅</span></span><br><span class="line">POST http://10.211.55.40:8011?action=get_current_handler</span><br><span class="line"><span class="comment"># 现在的采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=get_current_resampler</span><br></pre></td></tr></table></figure>
-
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>realtime_5min_rb2201的数据有，但是tradetime是错的，”tradetime”: “wrong date 22:36:30”，什么都没动，第二天的数据就正常了</p>
-<p>股票数据出不来，原因是因为数据是从pytdx过来的，docker里的pytdx有问题，安装QQ群里的就好了</p>
-
       
     </div>
 
@@ -1126,6 +992,169 @@
 
 
 
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="熊一帆">
+      <meta itemprop="description" content="description">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="熊一帆的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95/" class="post-title-link" itemprop="url">Ubuntu配置SSH服务端支持远程登录</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-11-14 01:52:37 / Modified: 01:54:53" itemprop="dateCreated datePublished" datetime="2021-11-14T01:52:37+08:00">2021-11-14</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="原文地址"><a href="#原文地址" class="headerlink" title="原文地址"></a>原文地址</h1><p><a href="https://juejin.cn/post/6844904048739500046">https://juejin.cn/post/6844904048739500046</a></p>
+<h1 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h1><p>用另外一台电脑ssh访问Ubuntu系统的电脑</p>
+<h1 id="硬件及软件版本"><a href="#硬件及软件版本" class="headerlink" title="硬件及软件版本"></a>硬件及软件版本</h1><blockquote>
+<p>被访问电脑 电脑：联想笔记本G470 系统：Ubuntu 16.04</p>
+<p>客户端电脑 电脑：MBP 系统：10.15.2</p>
+</blockquote>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><h2 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h2><blockquote>
+<p>SSH 为Secure Shell的缩写，由 IETF 的网络小组（Network Working Group）所制定；SSH 为建立在应用层基础上的安全协议。SSH 是目前较可靠，专为远程登录会话和其他网络服务提供安全性的协议。利用 SSH 协议可以有效防止远程管理过程中的信息泄露问题。SSH最初是UNIX系统上的一个程序，后来又迅速扩展到其他操作平台。SSH在正确使用时可弥补网络中的漏洞。SSH客户端适用于多种平台。几乎所有UNIX平台—包括HP-UX、Linux、AIX、Solaris、DigitalUNIX、Irix，以及其他平台，都可运行SSH。– <a href="https://link.juejin.cn/?target=https://baike.sogou.com/v60150874.htm?fromTitle=SSH" title="https://baike.sogou.com/v60150874.htm?fromTitle=SSH">搜狗百科：SSH</a></p>
+</blockquote>
+<h2 id="目标分析"><a href="#目标分析" class="headerlink" title="目标分析"></a>目标分析</h2><p>现在我们知道SSH其实最早是一个安全协议，这个协议就是为远程登录会话而生。因为这个协议，衍生的的SSH程序是我们要安装的软件。要利用SSH连接两台机器，可想可知一个要作为客户端访问，另外一台要作为服务端提供被访问的服务。我们也知道很多Linux、OSX等类Unix系统都已自带了SSH的客户端，Windows也有不少类似PuTTY这样优秀的软件。<br>So，我们接下来要做的其实是如何安装并开启SSH Server。</p>
+<h1 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h1><h2 id="①-确定Ubuntu是否安装SSH服务"><a href="#①-确定Ubuntu是否安装SSH服务" class="headerlink" title="① 确定Ubuntu是否安装SSH服务"></a>① 确定Ubuntu是否安装SSH服务</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl status ssh</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>比如，这台新系统的机器执行结果如下：  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e90bd1a~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>我们注意到两个内容，第一行 加载结果是 未发现，原因没有这个文件或目录，第二行 服务状态是不活跃的，死亡的。从这些词我们能猜到其实这个服务压根就没安装。<br>同理，假如你看到的状态是类似红色的stopped字样，是终止态的，可以用命令 <code>sudo systemctl start ssh</code> 尝试启动，执行结果也可以参考第③步。</p>
+<h2 id="②-安装SSH-Server"><a href="#②-安装SSH-Server" class="headerlink" title="② 安装SSH Server"></a>② 安装SSH Server</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install openssh-server</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>执行过程如下  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e8fdc4e~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e13fe4874~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h2 id="③-确定Ubuntu-SSH服务状态"><a href="#③-确定Ubuntu-SSH服务状态" class="headerlink" title="③ 确定Ubuntu SSH服务状态"></a>③ 确定Ubuntu SSH服务状态</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl status ssh</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>执行结果如下  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e14767b01~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>现在能看到：<br>第一行加载状态，已加载ssh.service文件；<br>第二行是否活动，正在运行；并且留意到一个守护进程sshd；<br>再往下看到监听的端口是22。</p>
+<p>至此，我们的SSH服务端已经安装启动OK。</p>
+<h2 id="④-确定Ubuntu机器的IP"><a href="#④-确定Ubuntu机器的IP" class="headerlink" title="④ 确定Ubuntu机器的IP"></a>④ 确定Ubuntu机器的IP</h2><p>我们在局域网测试，那就是查看现在这台局域网IP，可以点击网络设置查看，亦或命令行 <code>ifcofnig</code> 如下图的一个参考，找到你活跃的网卡。比如这台机器的是 <code>192.168.0.145</code>。  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e15de167e~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h2 id="⑤-确定是否可访问Ubuntu"><a href="#⑤-确定是否可访问Ubuntu" class="headerlink" title="⑤ 确定是否可访问Ubuntu"></a>⑤ 确定是否可访问Ubuntu</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ping 192.168.0.145</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e16c40022~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>如果能ping通，这说明网络是通的，那么可以尝试第⑦步。<br>如果有类似 <code>ssh: connect to host 192.168.0.145 port 22: Connection refused</code> 这样的问题是说明端口不能访问，要检查下防火墙。</p>
+<h2 id="⑥-若不能访问，检查Ubuntu防火墙"><a href="#⑥-若不能访问，检查Ubuntu防火墙" class="headerlink" title="⑥ 若不能访问，检查Ubuntu防火墙"></a>⑥ 若不能访问，检查Ubuntu防火墙</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 检查防火墙</span><br><span class="line">sudo ufw status verbose</span><br><span class="line"></span><br><span class="line"># 开启防火墙</span><br><span class="line">sudo ufw enable</span><br><span class="line"></span><br><span class="line"># 开放端口</span><br><span class="line">sudo ufw allow 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>如下命令，可以设置开放来自某IP访问某端口的权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw allow from your_ip to any port 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4472b15d~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h2 id="⑦-使用账号密码登录Ubuntu"><a href="#⑦-使用账号密码登录Ubuntu" class="headerlink" title="⑦ 使用账号密码登录Ubuntu"></a>⑦ 使用账号密码登录Ubuntu</h2><p>现在，使用另外一台电脑尝试登录 <code>Ubuntu</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh baiyutang@192.168.0.145 -p 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>对于第一次登陆的会提示主机不被认可，加密签名的指  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4cb0c3bb~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>输入 yes 确认，继续<br>需要验证 <code>Ubuntu</code> 当前用户 <code>baiyutang</code> 的登录密码，输入确认即可登录成功。  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4b31de95~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h1 id="延伸"><a href="#延伸" class="headerlink" title="延伸"></a>延伸</h1><ul>
+<li>  openssh-server是什么？</li>
+</ul>
+<blockquote>
+<p><a href="https://link.juejin.cn/?target=https://help.ubuntu.com/lts/serverguide/openssh-server.html" title="https://help.ubuntu.com/lts/serverguide/openssh-server.html">Ubuntu Wiki OpenSSH Server</a> <a href="https://link.juejin.cn/?target=https://www.openssh.com/" title="https://www.openssh.com/">About OpenSSH</a></p>
+</blockquote>
+<ul>
+<li>  SSH服务端开放的端口可以更改吗？</li>
+</ul>
+<blockquote>
+<p>可以，在文件 <code>/etc/ssh/sshd_config</code> 里可以配置 SSH Server 开放的端口，修改后记得 <code>sudo systemctl restart sshd</code> 重启下生效。修改位置如下图第 5 行所示：</p>
+</blockquote>
+<blockquote>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e52bf2ea7~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+</blockquote>
+<ul>
+<li>  ufw及基本的管理操作</li>
+</ul>
+<blockquote>
+<p>Ubuntu防火墙设置可以单独抽出来讲，或者可以先看参考资料第四条。</p>
+</blockquote>
+<ul>
+<li>  如何使用公钥免密登录？</li>
+<li>  SSH加密传输的过程原理？</li>
+<li>  加密签名指纹是什么？</li>
+</ul>
+<blockquote>
+<p>这个等下篇专门来做记录，三个问题可以放在一起。</p>
+</blockquote>
+<ul>
+<li>  如何配置跳板机？</li>
+</ul>
+<blockquote>
+<p>这个也后续单独做。</p>
+</blockquote>
+<ul>
+<li>  安全问题及中间人攻击</li>
+</ul>
+<blockquote>
+<p>在参考第一条有讲到这个问题。</p>
+</blockquote>
+<ul>
+<li>  内网穿透是什么？</li>
+</ul>
+<blockquote>
+<p>后续了解及研究，因为有段时间也在寻找和远程控制相关软件，可以作为研究课题。</p>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/thread/9427/1/1/" title="https://linux.cn/thread/9427/1/1/">ssh 基本原理和免密码登录</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-7683-1.html" title="https://linux.cn/article-7683-1.html">五条强化 SSH 安全的建议</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-1206-1.html" title="https://linux.cn/article-1206-1.html">牢记25个最佳的SSH命令</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-8087-1.html" title="https://linux.cn/article-8087-1.html">在Ubuntu中用UFW配置防火墙</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://support.apple.com/zh-cn/guide/mac-help/mh34041/mac" title="https://support.apple.com/zh-cn/guide/mac-help/mh34041/mac">在 Mac 上使用防火墙来防止非法连接</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
   <nav class="pagination">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
@@ -1145,6 +1174,24 @@
   </span>
   <span class="author" itemprop="copyrightHolder">熊一帆</span>
 </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a>
   </div>
 
@@ -1156,12 +1203,15 @@
 <script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
   
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
 
 
 
 
 
   
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 

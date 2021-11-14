@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Docker安装</title>
+    <url>/knowledge/%E7%BC%96%E7%A8%8B/%E5%AE%B9%E5%99%A8/Docker/Docker%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<h2 id="Ubuntu安装脚本"><a href="#Ubuntu安装脚本" class="headerlink" title="Ubuntu安装脚本"></a>Ubuntu安装脚本</h2><p>wget下载脚本安装</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget https://gitee.com/xiongyifan/quantaxis-study/raw/master/bash/install_docker.sh</span><br><span class="line">chmod +x install_docker.sh</span><br><span class="line">./install_docker.sh</span><br></pre></td></tr></table></figure>
+
+<h2 id="Window安装"><a href="#Window安装" class="headerlink" title="Window安装"></a>Window安装</h2><h3 id="系统选择"><a href="#系统选择" class="headerlink" title="系统选择"></a>系统选择</h3><p>Win10专业版或者企业版：这两个版本有hyper-v功能，可以安装docker-ce<br>Win10家庭版或ghost：家庭版没有hyper-v功能，ghost版本可能阉割了hyper-v，所以装不了docker-ce<br>Win7：只能安装docker toolbox，本质是虚拟机，依赖多，而且从github上下载很慢。</p>
+<h3 id="安装过程中的问题"><a href="#安装过程中的问题" class="headerlink" title="安装过程中的问题"></a>安装过程中的问题</h3><p>安装过程中要选择linux container，而不是window container。否则会遇到docker-compose版本过旧的问题。</p>
+]]></content>
+      <categories>
+        <category>Docker</category>
+      </categories>
+      <tags>
+        <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu远程免密码登录设置</title>
+    <url>/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E8%BF%9C%E7%A8%8B%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E8%AE%BE%E7%BD%AE/</url>
+    <content><![CDATA[<h1 id="原文地址"><a href="#原文地址" class="headerlink" title="原文地址"></a>原文地址</h1><p><a href="https://zhuanlan.zhihu.com/p/35878555">https://zhuanlan.zhihu.com/p/35878555</a></p>
+<h1 id="Ubuntu-远程免密码登录设置"><a href="#Ubuntu-远程免密码登录设置" class="headerlink" title="Ubuntu 远程免密码登录设置"></a>Ubuntu 远程免密码登录设置</h1><p>我们正常使用 ssh 远程登录服务器进行操作，需要输入用户名、服务器ip以及密码，当我们需要同时管理多个服务器的时候，每次都需要重复输入这些东西会显得特别麻烦和浪费时间，因此我们可以通过配置密钥来实现Ubuntu免密码登录。</p>
+<p>实现这一目标五部，分别为：  </p>
+<ul>
+<li>本地客户端生成密钥对  </li>
+<li>上传密钥到服务器端  </li>
+<li>服务器端将密钥添加到 authorized_keys  </li>
+<li>本地客户端配置 ssh，添加服务器别名  </li>
+<li>测试</li>
+</ul>
+<p>如果客户端是使用 MacOS 或者 Linux 系统，可以直接在终端使用以下操作即可，如果 Window 系统，建议先安装 Git-Bash，Git-bash 自带 ssh 工具，在 Git-Bash 下，操作也和 Linux 或者 MacOS 系统一样。</p>
+<h2 id="本地客户端生成密钥对"><a href="#本地客户端生成密钥对" class="headerlink" title="本地客户端生成密钥对"></a>本地客户端生成密钥对</h2><p>在生成密钥对之前，我们可以先查看一下我们是否已经生成过密钥对，可以通过以下命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ls -la ~/.ssh</span><br></pre></td></tr></table></figure>
+
+<p>如果输出有 <code>id_rsa</code> 和 <code>id_rsa.pub</code>，那么就证明之前曾经生成过密钥对，其中 <code>id_rsa</code> 是私钥，<code>id_rsa.pub</code> 是公钥，我们可以直接使用。如果没有看到这两个文件，那么请回忆是否自己命名的密钥对，如果没有或者已经忘记是否曾经生成过，那么久可以重新创建一个。方法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 2048</span><br></pre></td></tr></table></figure>
+
+<p>执行命令后，会提示密钥存储位置，以及询问是否需要设置密码，一般我们可以一路按 <code>Enter</code> 确认即可完成密钥生成。</p>
+<p>完成后我们再次查看 <code>~/.ssh</code> 文件夹下是否由我们新创建的密钥即可。</p>
+<h2 id="上传密钥的服务器端"><a href="#上传密钥的服务器端" class="headerlink" title="上传密钥的服务器端"></a>上传密钥的服务器端</h2><p>接下来，我们将我们创建好的<strong>公钥</strong>上传到服务器上，我们将会使用到 <code>scp</code> 命令。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">scp ~/.ssh/id_rsa.pub &lt;YOUR SERVER USERNAME&gt;@&lt;YOUR SERVER IP ADDRESS&gt;:~</span><br></pre></td></tr></table></figure>
+
+<p>这里需要注意的是，我们需要上传的是公钥，其文件名为 <code>id_rsa.pub</code>，私钥是需要我们保密的，这里不要上传错。</p>
+<h2 id="服务器端将密钥添加到-authorized-keys"><a href="#服务器端将密钥添加到-authorized-keys" class="headerlink" title="服务器端将密钥添加到 authorized_keys"></a>服务器端将密钥添加到 authorized_keys</h2><p>接下来，我们需要登录我们的服务器，然后将我们刚上传的公钥添加到 authorized_keys中。在添加之前，我们需要先做一下准备，具体如下：  </p>
+<ul>
+<li>检查是否存在 .ssh 文件  </li>
+<li>如果不存在需要自行创建<br>如果是刚安装的系统，以我的 Ubuntu 16.04.4 为例，默认的 ssh 是没有自动创建 .ssh 文件夹的，这需要我们自己创建。不同版本的系统或者以不同途径安装的 ssh 可能情况会有所不一样，请根据实际情况处理。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 查看是否存来 .ssh 文件夹</span><br><span class="line">ls -la ~</span><br><span class="line"># 如果不存在，创建 .ssh 文件夹</span><br><span class="line">mkdir .ssh</span><br><span class="line"># 将公钥添加到 authorized_keys 文件中</span><br><span class="line">cat id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+<p>以上即完成操作，在 Ubuntu 16.04.4 的系统默认配置中，以上操作完成即可。然而，在一些不同版本的系统中，可能还需要配置以下 ssh 的配置，具体如下：  </p>
+<ul>
+<li>备份 <code>/etc/ssh/sshd_config</code>  </li>
+<li>编辑 <code>/etc/ssh/sshd_config</code> ，将 <code>PubkeyAuthentication no</code> 修改为 <code>PubkeyAuthentication yes</code></li>
+</ul>
+<h2 id="本地客户端配置-ssh，添加服务器别名"><a href="#本地客户端配置-ssh，添加服务器别名" class="headerlink" title="本地客户端配置 ssh，添加服务器别名"></a>本地客户端配置 ssh，添加服务器别名</h2><p>完成上面的配置后，我们可以尝试在本地中尝试使用密钥登录看是否成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh -i ~/.ssh/id_rsa &lt;YOUR SERVER NAME&gt;@&lt;YOUR SERVER IP ADDRESS&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果配置正确就可以正常免密码登录。</p>
+<p>为了解决需要管理多台服务器，不希望记住太多不同的用户名和地址的问题，我们还可以为设置别名登录，具体操作如下：  </p>
+<ul>
+<li>在本地 .ssh/ 文件夹下创建 config  </li>
+<li>向 config 中添加别名信息</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># ~/.ssh/config 配置格式</span><br><span class="line">Host  &lt;YourServerAlias&gt;</span><br><span class="line">  HostName  &lt;YourServerIPAddress&gt;</span><br><span class="line">  Port  &lt;YourServerSSHPort&gt;</span><br><span class="line">  User  &lt;YourServerUserName&gt;</span><br><span class="line">  IdentityFile  ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>完成所有配置后，我们可以测试一下配置是否正确：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh &lt;Host Alias&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果能正常免密码登录，说明配置成功，我们以后便可以通过这样直接输入服务器别名的方式快速登录服务器了。</p>
+]]></content>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>QARealtimeCollector</title>
+    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QARealtimeCollector/</url>
+    <content><![CDATA[<p><a href="https://github.com/yutiansut/QUANTAXIS_RealtimeCollector">https://github.com/yutiansut/QUANTAXIS_RealtimeCollector</a><br>实时行情采集，并且通过eventmq二次分发</p>
+<h2 id="QARealtimeCollector的作用"><a href="#QARealtimeCollector的作用" class="headerlink" title="QARealtimeCollector的作用"></a>QARealtimeCollector的作用</h2><p>QARealtimeCollector的作用有两个：</p>
+<ol>
+<li>对实时tick数据进行二次采样，包括股票和期货。这个功能由QARC_WEBSERVER提供，开启后可以通过http请求完成订阅和二次采样请求</li>
+<li>股票实时tick行情接入。这个功能由QARC_Stock提供，通过pytdx接入股票tick行情。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">QARC_WEBSERVER  <span class="comment"># 提供http服务，进行股票和期货的订阅和二次采样</span></span><br><span class="line">QARC_Stock  <span class="comment"># 提供股票的tick行情</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="QARealtimeCollector安装步骤"><a href="#QARealtimeCollector安装步骤" class="headerlink" title="QARealtimeCollector安装步骤"></a>QARealtimeCollector安装步骤</h2><h3 id="增加QARealtimeCollector模块"><a href="#增加QARealtimeCollector模块" class="headerlink" title="增加QARealtimeCollector模块"></a>增加QARealtimeCollector模块</h3><p>在docker-compose.yaml中添加qamarketcollector模块</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qamarketcollector:</span><br><span class="line">    image: daocloud.io/quantaxis/qarealtimecollector:latest</span><br><span class="line">    container_name: qamarketcollector</span><br><span class="line">    ports:</span><br><span class="line">        - <span class="string">&quot;8011:8011&quot;</span></span><br><span class="line">    depends_on:</span><br><span class="line">        - mgdb</span><br><span class="line">        - qaeventmq</span><br><span class="line">    environment:</span><br><span class="line">        - MONGODB=mgdb</span><br><span class="line">        - EventMQ_IP=qaeventmq</span><br><span class="line">    networks:</span><br><span class="line">        qanetwork_pro:</span><br><span class="line">            ipv4_address: 172.19.3.8</span><br><span class="line">    <span class="built_in">command</span>:</span><br><span class="line">        [<span class="string">&#x27;/root/QUANTAXIS_RealtimeCollector/docker/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:5672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> ,<span class="string">&#x27;/root/QUANTAXIS_RealtimeCollector/docker/start_collector.sh&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>command中指定start_collector.sh脚本会启动QARC_WEBSERVER和QARC_Stock命令</p>
+<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><p>如果是新添加的qamarketcollector，那么可以直接通过下面的命令启动。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>如果之前已经跟其他模块一起启动的话，qamarketcollector模块会正常启动。</p>
+<h2 id="订阅分钟行情"><a href="#订阅分钟行情" class="headerlink" title="订阅分钟行情"></a>订阅分钟行情</h2><p>订阅地址：POST <a href="http://10.211.55.38:8011/?action=new_handler&amp;market_type=future_cn&amp;code=rb2201">http://10.211.55.38:8011?action=new_handler&amp;market_type=future_cn&amp;code=rb2201</a></p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E8%AE%A2%E9%98%85%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85.jpg"></p>
+<p>订阅成功后CTPX里面会增加一个rb2201，Exchange会增加realtime_min_rb2201和bar_1min_rb2201，然后命令行订阅就可以看到数据</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange realtime_min_rb2201 --model fanout</span><br><span class="line">qaps_sub --exchange bar_1min_rb2201 --model fanout</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85%E5%92%8C1%E5%88%86%E9%92%9Fbar.jpg"></p>
+<p>上面是realtime_min_rb2201的数据，下面是bar_1min_rb2201的数据。</p>
+<h2 id="二次采样x分钟数据"><a href="#二次采样x分钟数据" class="headerlink" title="二次采样x分钟数据"></a>二次采样x分钟数据</h2><p>POST <a href="http://10.211.55.38:8011/?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min">http://10.211.55.38:8011?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min</a></p>
+<p>订阅成功后Exchange会增加一个realtime_5min_rb2201</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange realtime_5min_rb2201 --model fanout</span><br></pre></td></tr></table></figure>
+
+<h2 id="订阅股票tick数据"><a href="#订阅股票tick数据" class="headerlink" title="订阅股票tick数据"></a>订阅股票tick数据</h2><p>POST  <a href="http://10.211.55.38:8011/?action=new_handler&amp;market_type=stock_cn&amp;code=000001">http://10.211.55.38:8011?action=new_handler&amp;market_type=stock_cn&amp;code=000001</a></p>
+<p>订阅成功后通过名为stocktransaction的exchange获取数据</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange stocktransaction --model fanout</span><br></pre></td></tr></table></figure>
+
+<h2 id="http请求合集"><a href="#http请求合集" class="headerlink" title="http请求合集"></a>http请求合集</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 订阅股票</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_handler&amp;market_type=stock_cn&amp;code=000001</span><br><span class="line"><span class="comment"># 订阅期货</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_handler&amp;market_type=future_cn&amp;code=rb2201</span><br><span class="line"><span class="comment"># 股票采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_resampler&amp;market_type=stock_cn&amp;code=000001&amp;frequence=5min</span><br><span class="line"><span class="comment"># 期货采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min</span><br><span class="line"><span class="comment"># 现在的订阅</span></span><br><span class="line">POST http://10.211.55.40:8011?action=get_current_handler</span><br><span class="line"><span class="comment"># 现在的采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=get_current_resampler</span><br></pre></td></tr></table></figure>
+
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>realtime_5min_rb2201的数据有，但是tradetime是错的，”tradetime”: “wrong date 22:36:30”，什么都没动，第二天的数据就正常了</p>
+<p>股票数据出不来，原因是因为数据是从pytdx过来的，docker里的pytdx有问题，安装QQ群里的就好了</p>
+]]></content>
+      <tags>
+        <tag>QUANTAXIS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CTPBEE</title>
+    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/CTPBEE/</url>
+    <content><![CDATA[<h2 id="QACTPBeeBroker的作用"><a href="#QACTPBeeBroker的作用" class="headerlink" title="QACTPBeeBroker的作用"></a>QACTPBeeBroker的作用</h2><p>通过QACTPBEE命令接入实时的tick行情，然后通过QAPUBSUB订阅就能获取到行情</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">QACTPBEE --userid 133496 --password QCHL1234</span><br></pre></td></tr></table></figure>
+
+<p>下面的第1和第2步只是为了在docker中执行上面的命令，也可以本地安装QACTPBeeBroker后手动执行上面命令，订阅的步骤是一样的。</p>
+<p>当用docker-compose的qactpbeebroker时，默认会执行QACTPBEE命令，如果又手动执行了QACTPBEE命令就会推送两组数据。<br>如果想手动启动只能本地安装，注释掉docker-compose.yaml中的启动命令是没有用的，因为源码中有默认的账号密码。</p>
+<h2 id="QACTPBeeBroker接入实时行情的步骤"><a href="#QACTPBeeBroker接入实时行情的步骤" class="headerlink" title="QACTPBeeBroker接入实时行情的步骤"></a>QACTPBeeBroker接入实时行情的步骤</h2><h3 id="1-增加qactpbeebroker模块"><a href="#1-增加qactpbeebroker模块" class="headerlink" title="1. 增加qactpbeebroker模块"></a>1. 增加qactpbeebroker模块</h3><p>在docker-compose.yaml中添加qactpbeebroker模块</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qactpbeebroker:</span><br><span class="line">    image: daocloud.io/quantaxis/qactpbeebroker:latest</span><br><span class="line">    container_name: qactpbeebroker</span><br><span class="line">    ports:</span><br><span class="line">        - <span class="string">&quot;5000:5000&quot;</span></span><br><span class="line">    networks:</span><br><span class="line">        qanetwork_pro:</span><br><span class="line">            ipv4_address: 172.19.3.7</span><br><span class="line"></span><br><span class="line">        <span class="comment"># --userid TEXT</span></span><br><span class="line">        <span class="comment"># --password TEXT</span></span><br><span class="line">        <span class="comment"># --brokerid TEXT</span></span><br><span class="line">        <span class="comment"># --mdaddr TEXT</span></span><br><span class="line">        <span class="comment"># --tdaddr TEXT</span></span><br><span class="line">        <span class="comment"># --appid TEXT</span></span><br><span class="line">        <span class="comment"># --authcode TEXT</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">command</span>: [<span class="string">&#x27;/root/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:15672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> , <span class="string">&quot;QACTPBEE&quot;</span>, <span class="string">&quot;--userid&quot;</span>, <span class="string">&quot;133496&quot;</span>, <span class="string">&quot;--password&quot;</span>, <span class="string">&#x27;QCHL1234&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>如果想用自己的账户可以在command中修改userid和password。</p>
+<h3 id="2-启动"><a href="#2-启动" class="headerlink" title="2. 启动"></a>2. 启动</h3><p>如果是新添加的qactpbeebroker，那么可以直接通过下面的命令启动。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>如果之前已经跟其他模块一起启动的话，qactpbeebroker可能会启动失败，原因不明。<br>解决办法，手动重新启动下就好了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker ps  <span class="comment"># 没有qactpbeebroker的话，说明已经停止运行了</span></span><br><span class="line">docker-compose start qactpbeebroker  <span class="comment"># 没有的话，运行命令启动</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-检查"><a href="#3-检查" class="headerlink" title="3. 检查"></a>3. 检查</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker logs --tail 1000 -f qactpbeebroker</span><br></pre></td></tr></table></figure>
+
+<p>如果日志显示连接成功，或者有在打印合约代码，说明接入成功了。</p>
+<p>接入成功后，15672页面会增加名为CTPX的Exchange。但是由于Exchange失效后不会自动在15672页面消失，所以有CTPX不意味着连接成功，看日志更保险。</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee%E5%90%AF%E5%8A%A8%E5%A2%9E%E5%8A%A0exchange.jpg"></p>
+<h2 id="订阅tick行情"><a href="#订阅tick行情" class="headerlink" title="订阅tick行情"></a>订阅tick行情</h2><p>订阅tick行情，大概每秒2条tick行情</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange CTPX --model direct --routing_key rb2201</span><br></pre></td></tr></table></figure>
+
+<p>订阅成功后，命令行显示tick行情</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee_%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85%E8%A1%8C%E6%83%85%E6%98%BE%E7%A4%BA.jpg"></p>
+<p>并且名为CTPX的Exchange增加</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85.jpg"></p>
+<p>CTPBEE的任务是连接实盘tick行情，分钟行情则需要使用QARealtimeCollector二次采样分发。</p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>docker-compose up -d所有容器全部一起启动，qactpbeebroker会死掉，手动再启动就好了，不知道怎么回事</p>
+<p>10:15~10:30 rb2201数据停了，是因为这15分钟不是交易时间</p>
+<h2 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h2><p><a href="https://github.com/ctpbee/ctpbee">https://github.com/ctpbee/ctpbee</a><br><a href="https://github.com/yutiansut/QACTPBeeBroker">https://github.com/yutiansut/QACTPBeeBroker</a></p>
+]]></content>
+      <tags>
+        <tag>QUANTAXIS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>QATrader</title>
+    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QATrader/</url>
+    <content><![CDATA[<h2 id="模拟盘"><a href="#模拟盘" class="headerlink" title="模拟盘"></a>模拟盘</h2><h3 id="启动模拟账户"><a href="#启动模拟账户" class="headerlink" title="启动模拟账户"></a>启动模拟账户</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 进入qatrader容器</span><br><span class="line">docker exec -it qatrader /bin/bash</span><br><span class="line"># 开启模拟盘账户</span><br><span class="line"># 当指定一个新的acc执行这个命令时，会创建一个acc，存在数据库中</span><br><span class="line"># 已经创建过的acc可以在81页面查看，但是必须开启qatrader才能交易</span><br><span class="line">qatrader --acc 101010 --pwd 101010 --broker QUANTAXIS</span><br></pre></td></tr></table></figure>
+
+<p>输出下图日志就说明启动成功</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qatrader%E5%BC%80%E5%90%AF%E8%B4%A6%E6%88%B7.jpg"></p>
+<p>同时RabbitMQ中会增加3个Exchange</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qatrader_%E5%BC%80%E5%90%AF%E8%B4%A6%E6%88%B7%E6%96%B0%E5%A2%9Eexchange.jpg"></p>
+<p>Exchange QAORDER_ROUTER增加账户信息</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qatrader_%E5%BC%80%E5%90%AF%E8%B4%A6%E6%88%B7%E5%90%8EQAORDER_ROUTER%E5%A2%9E%E5%8A%A0%E8%B4%A6%E6%88%B7%E4%BF%A1%E6%81%AF.jpg"></p>
+<h4 id="启动问题"><a href="#启动问题" class="headerlink" title="启动问题"></a>启动问题</h4><p>qatrader报参数个数错误，原因是python版本错误，应该用python3.6或3.7<br><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qatrader%E6%8A%A5%E5%8F%82%E6%95%B0%E4%B8%AA%E6%95%B0%E9%94%99%E8%AF%AF.jpg"></p>
+<p>qatrader报socket is already closed，原因是因为电脑刚刚从睡眠状态唤醒，需要等一会儿或者重启</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qatrader%E6%8A%A5socket_closed.jpg"></p>
+<h3 id="在81页面中查看模拟账户"><a href="#在81页面中查看模拟账户" class="headerlink" title="在81页面中查看模拟账户"></a>在81页面中查看模拟账户</h3><p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_%E6%A8%A1%E6%8B%9F%E8%B4%A6%E6%88%B7%E6%98%BE%E7%A4%BA.jpg"></p>
+<h3 id="向模拟账户下单"><a href="#向模拟账户下单" class="headerlink" title="向模拟账户下单"></a>向模拟账户下单</h3><p>首先下单前要明确一个概念，模拟盘下单就像是在同花顺的模拟账户中操作，所以下单数据都是跟实盘一样的，除了资金是虚拟。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">from QAPUBSUB.producer import publisher_routing</span><br><span class="line">import datetime</span><br><span class="line"></span><br><span class="line"># 向模拟盘下单使用的是publisher_routing，而不是publisher</span><br><span class="line">pub = publisher_routing(exchange=&#x27;QAORDER_ROUTER&#x27;)</span><br><span class="line"></span><br><span class="line"># 卖空</span><br><span class="line">pub.pub(json.dumps(&#123;</span><br><span class="line">    &#x27;topic&#x27;: &#x27;sendorder&#x27;,</span><br><span class="line">    &#x27;account_cookie&#x27;: &#x27;101010&#x27;,  # 账户名</span><br><span class="line">    &#x27;strategy_id&#x27;: &#x27;test&#x27;,</span><br><span class="line">    &#x27;code&#x27;: &#x27;rb2201&#x27;,</span><br><span class="line">    &#x27;price&#x27;: 3816,</span><br><span class="line">    &#x27;order_direction&#x27;: &#x27;SELL&#x27;,</span><br><span class="line">    &#x27;order_offset&#x27;: &#x27;OPEN&#x27;,</span><br><span class="line">    &#x27;volume&#x27;: 1,</span><br><span class="line">    &#x27;order_time&#x27;: str(datetime.datetime.now()),</span><br><span class="line">    &#x27;exchange_id&#x27;: &#x27;SHFE&#x27;,</span><br><span class="line">&#125;), routing_key=&#x27;101010&#x27;)  # 账户名</span><br></pre></td></tr></table></figure>
+
+<p>发单后就可以在模拟账户中查看</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qatrader%E4%B8%8B%E5%8D%95.jpg"></p>
+<h4 id="下单问题"><a href="#下单问题" class="headerlink" title="下单问题"></a>下单问题</h4><ol>
+<li>合约不合法，表示code参数有问题，code参数不能是指数或连续或过期合约，例如螺纹指数合约RBL8，2020年1月的螺纹合约RB2001</li>
+</ol>
+<h3 id="查看持仓和委托等信息"><a href="#查看持仓和委托等信息" class="headerlink" title="查看持仓和委托等信息"></a>查看持仓和委托等信息</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import pymongo</span><br><span class="line">import os</span><br><span class="line"># 连接数据库</span><br><span class="line">db = pymongo.MongoClient(os.getenv(&#x27;MONGODB&#x27;)).QAREALTIME</span><br><span class="line"># 查到账户</span><br><span class="line">simacc = db.account.find_one(&#123;&#x27;account_cookie&#x27;: &#x27;101010&#x27;&#125;)</span><br><span class="line"># 获取委托信息</span><br><span class="line">simacc[&#x27;orders&#x27;]</span><br><span class="line"># 获取成交信息</span><br><span class="line">simacc[&#x27;trades&#x27;]</span><br><span class="line"># 获取持仓</span><br><span class="line">simacc[&#x27;positions&#x27;]</span><br></pre></td></tr></table></figure>
+
+<h3 id="取消委托"><a href="#取消委托" class="headerlink" title="取消委托"></a>取消委托</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pub.pub(json.dumps(&#123;</span><br><span class="line">    &#x27;topic&#x27;: &#x27;cancel_order&#x27;,</span><br><span class="line">    &#x27;account_cookie&#x27;: &#x27;101010&#x27;,  # 账户名</span><br><span class="line">    &#x27;order_id&#x27;: &#x27;QAOTG_jHEJZXWk&#x27;,</span><br><span class="line">&#125;), routing_key=&#x27;101010&#x27;)  # 账户名</span><br></pre></td></tr></table></figure>
+
+<p>问题，event显示撤单成功，但是orders里面还是显示ALIVE，难道是因为在非交易时间发起的撤单？</p>
+<h3 id="多账户下单"><a href="#多账户下单" class="headerlink" title="多账户下单"></a>多账户下单</h3><p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qatrader%E5%A4%9A%E8%B4%A6%E6%88%B7.jpg"></p>
+<p>同一个signal，只需要修改account就可以实现多账户下单，并且可以同时向模拟盘和实盘下单</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">for acc in [&#x27;101010&#x27;, &#x27;202020&#x27;]:</span><br><span class="line">	pub.pub(json.dumps(&#123;</span><br><span class="line">		&#x27;topic&#x27;: &#x27;sendorder&#x27;,</span><br><span class="line">		&#x27;account_cookie&#x27;: acc,  # 账户名</span><br><span class="line">		&#x27;strategy_id&#x27;: &#x27;test&#x27;,</span><br><span class="line">		&#x27;code&#x27;: &#x27;rb2201&#x27;,</span><br><span class="line">		&#x27;price&#x27;: 3816,</span><br><span class="line">		&#x27;order_direction&#x27;: &#x27;SELL&#x27;,</span><br><span class="line">		&#x27;order_offset&#x27;: &#x27;OPEN&#x27;,</span><br><span class="line">		&#x27;volume&#x27;: 1,</span><br><span class="line">		&#x27;order_time&#x27;: str(datetime.datetime.now()),</span><br><span class="line">		&#x27;exchange_id&#x27;: &#x27;SHFE&#x27;,</span><br><span class="line">	&#125;), routing_key=acc)  # 账户名</span><br></pre></td></tr></table></figure>
+
+<h3 id="Http请求下单"><a href="#Http请求下单" class="headerlink" title="Http请求下单"></a>Http请求下单</h3><p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qatrader_Http%E4%B8%8B%E5%8D%95.jpg"></p>
+<p>Http下单跟Python下单一样，实际都是向名为QAORDER_ROUTER的Exchange发送信息。</p>
+<p>首先开启qatraderserver，提供Http服务</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># docker版本的qatrader默认会启动qatraderserver，所以可以不用再手动启动，配置启动qatraderserver的位置在docker-compose.yaml中</span><br><span class="line">qatraderserver # 再次启动，报端口占用</span><br></pre></td></tr></table></figure>
+
+<p>接口查看<a href="https://github.com/yutiansut/QATrader">https://github.com/yutiansut/QATrader</a></p>
+<h2 id="实盘"><a href="#实盘" class="headerlink" title="实盘"></a>实盘</h2><h2 id="下单操作汇总"><a href="#下单操作汇总" class="headerlink" title="下单操作汇总"></a>下单操作汇总</h2><h3 id="卖空"><a href="#卖空" class="headerlink" title="卖空"></a>卖空</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pub.pub(json.dumps(&#123;</span><br><span class="line">    &#x27;topic&#x27;: &#x27;sendorder&#x27;,</span><br><span class="line">    &#x27;account_cookie&#x27;: &#x27;101010&#x27;,  # 账户名</span><br><span class="line">    &#x27;strategy_id&#x27;: &#x27;test&#x27;,</span><br><span class="line">    &#x27;code&#x27;: &#x27;rb2201&#x27;,</span><br><span class="line">    &#x27;price&#x27;: 3816,</span><br><span class="line">    &#x27;order_direction&#x27;: &#x27;SELL&#x27;,</span><br><span class="line">    &#x27;order_offset&#x27;: &#x27;OPEN&#x27;,</span><br><span class="line">    &#x27;volume&#x27;: 1,</span><br><span class="line">    &#x27;order_time&#x27;: str(datetime.datetime.now()),</span><br><span class="line">    &#x27;exchange_id&#x27;: &#x27;SHFE&#x27;,</span><br><span class="line">&#125;), routing_key=&#x27;101010&#x27;)  # 账户名</span><br></pre></td></tr></table></figure>
+
+<h3 id="平今多"><a href="#平今多" class="headerlink" title="平今多"></a>平今多</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pub.pub(json.dumps(&#123;</span><br><span class="line">    &#x27;topic&#x27;: &#x27;sendorder&#x27;,</span><br><span class="line">    &#x27;account_cookie&#x27;: &#x27;101010&#x27;,  # 账户名</span><br><span class="line">    &#x27;strategy_id&#x27;: &#x27;test&#x27;,</span><br><span class="line">    &#x27;code&#x27;: &#x27;rb2201&#x27;,</span><br><span class="line">    &#x27;price&#x27;: 3816,</span><br><span class="line">    &#x27;order_direction&#x27;: &#x27;SELL&#x27;,</span><br><span class="line">    &#x27;order_offset&#x27;: &#x27;CLOSETODAY&#x27;,</span><br><span class="line">    &#x27;volume&#x27;: 1,</span><br><span class="line">    &#x27;order_time&#x27;: str(datetime.datetime.now()),</span><br><span class="line">    &#x27;exchange_id&#x27;: &#x27;SHFE&#x27;,</span><br><span class="line">&#125;), routing_key=&#x27;101010&#x27;)  # 账户名</span><br></pre></td></tr></table></figure>
+
+<h3 id="取消委托-1"><a href="#取消委托-1" class="headerlink" title="取消委托"></a>取消委托</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pub.pub(json.dumps(&#123;</span><br><span class="line">    &#x27;topic&#x27;: &#x27;cancel_order&#x27;,</span><br><span class="line">    &#x27;account_cookie&#x27;: &#x27;101010&#x27;,  # 账户名</span><br><span class="line">    &#x27;order_id&#x27;: &#x27;QAOTG_jHEJZXWk&#x27;,</span><br><span class="line">&#125;), routing_key=&#x27;101010&#x27;)  # 账户名</span><br></pre></td></tr></table></figure>
+
+<h2 id="实盘账户数据库说明"><a href="#实盘账户数据库说明" class="headerlink" title="实盘账户数据库说明"></a>实盘账户数据库说明</h2><p><a href="https://doc.shinnytech.com/tqsdk2/latest/reference/tqsdk2.objs.position.html">https://doc.shinnytech.com/tqsdk2/latest/reference/tqsdk2.objs.position.html</a></p>
+<h3 id="持仓说明"><a href="#持仓说明" class="headerlink" title="持仓说明"></a>持仓说明</h3><p>simacc[‘positions’][‘SHFE_rb2201’]</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;&#x27;user_id&#x27;: &#x27;marco07281&#x27;,  # qatrader命令的--acc指定的用户名</span><br><span class="line"> &#x27;exchange_id&#x27;: &#x27;SHFE&#x27;,  # 交易所id</span><br><span class="line"> &#x27;instrument_id&#x27;: &#x27;rb2201&#x27;,  # 合约名称</span><br><span class="line"> &#x27;volume_long_today&#x27;: <span class="number">1</span>,  # 今日下单的多单</span><br><span class="line"> &#x27;volume_long_his&#x27;: <span class="number">0</span>,  # 历史持有的多单</span><br><span class="line"> &#x27;volume_long&#x27;: <span class="number">1</span>,  # 总多单 = 今日 + 历史</span><br><span class="line"> &#x27;volume_long_frozen_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_long_frozen_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_long_frozen&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_frozen_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_frozen_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_frozen&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_long_yd&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_yd&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;pos_long_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;pos_long_today&#x27;: <span class="number">1</span>,  # 跟volume_long_today一样？</span><br><span class="line"> &#x27;pos_short_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;pos_short_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;open_price_long&#x27;: <span class="number">4249.0</span>,  # 多仓均价？</span><br><span class="line"> &#x27;open_price_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;open_cost_long&#x27;: <span class="number">42490.0</span>,  # 持有的多单总成本？</span><br><span class="line"> &#x27;open_cost_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;position_price_long&#x27;: <span class="number">4249.0</span>,  # 跟open_price_long有什么区别？</span><br><span class="line"> &#x27;position_price_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;position_cost_long&#x27;: <span class="number">42490.0</span>,  # 跟open_cost_long有什么区别？</span><br><span class="line"> &#x27;position_cost_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;last_price&#x27;: <span class="number">4262.0</span>,  # 实时的价格，会跟着行情一直变</span><br><span class="line"> &#x27;float_profit_long&#x27;: <span class="number">130.0</span>,  # 实时的多单浮盈？</span><br><span class="line"> &#x27;float_profit_short&#x27;: <span class="number">0.0</span>,  # 实时的空单浮盈？</span><br><span class="line"> &#x27;float_profit&#x27;: <span class="number">130.0</span>,  # 实时浮盈</span><br><span class="line"> &#x27;position_profit_long&#x27;: <span class="number">130.0</span>,  # 跟float_profit_long有什么区别</span><br><span class="line"> &#x27;position_profit_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;position_profit&#x27;: <span class="number">130.0</span>,  # 跟float_profit有什么区别</span><br><span class="line"> &#x27;margin_long&#x27;: <span class="number">3308.8</span>,  # 多单保证金</span><br><span class="line"> &#x27;margin_short&#x27;: <span class="number">0.0</span>,  # 空单保证金</span><br><span class="line"> &#x27;margin&#x27;: <span class="number">3308.8</span>&#125;  # 总保证金</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>QUANTAXIS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>QUANTAXIS脚本安装</title>
+    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QUANTAXIS%E8%84%9A%E6%9C%AC%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<h2 id="Docker安装"><a href="#Docker安装" class="headerlink" title="Docker安装"></a>Docker安装</h2><p><a href="http://localhost:4000/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QUANTAXIS%E8%84%9A%E6%9C%AC%E5%AE%89%E8%A3%85">Docker安装</a></p>
+<h2 id="QUANTAXIS安装"><a href="#QUANTAXIS安装" class="headerlink" title="QUANTAXIS安装"></a>QUANTAXIS安装</h2><p>通过wget下载脚本安装之前，需要先准备好QQ群中的QA和pytdx，并与脚本放在同一个目录下。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget https://gitee.com/xiongyifan/quantaxis-study/raw/master/bash/install_qa.sh</span><br><span class="line">chmod +x install_qa.sh</span><br><span class="line"><span class="comment"># QA和pytdx跟install_qa.sh放在同一个目录下</span></span><br><span class="line">./install_qa.sh</span><br></pre></td></tr></table></figure>
+
+<h2 id="QUANTAXIS初始化"><a href="#QUANTAXIS初始化" class="headerlink" title="QUANTAXIS初始化"></a>QUANTAXIS初始化</h2><p>以下内容复制自QQ群公告<br>第一次部署docker版QA必须的初始化操作步骤：<br>一、在浏览器输入docker宿主机”ip地址:8888”；<br>二、进入jupyterlab登录界面后输入口令”quantaxis”;<br>三、进入jupyterlab启动页，点击Terminal进入终端；<br>四、在终端界面输入”/bin/bash”,进入bash状态；<br>五、bash状态输入”quantaxis”,进入数据库操作状态；<br>六：依次输入完成数据库初始化<br>“save stock_list”，”save single_index_day 000300”<br>输入exit退出终端，在docker管理界面重启qaweb容器，最后浏览器输入docker宿主机”ip地址:81”，弹出的登录界面把登录地址端口改为docker宿主机”ip地址:8010”,就可以进入QA前端界面</p>
+]]></content>
+      <tags>
+        <tag>QUANTAXIS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>QUANTAXIS从安装到实盘</title>
+    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E4%BB%8E%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/</url>
+    <content><![CDATA[<h2 id="配置ssh免密连接（可选）"><a href="#配置ssh免密连接（可选）" class="headerlink" title="配置ssh免密连接（可选）"></a>配置ssh免密连接（可选）</h2><p><a href="http://localhost:4000/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E4%BB%8E%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98">Ubuntu配置SSH服务端支持远程登录</a><br><a href="http://localhost:4000/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E4%BB%8E%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98">Ubuntu远程免密码登录设置</a></p>
+<h2 id="QUANTAXIS脚本安装"><a href="#QUANTAXIS脚本安装" class="headerlink" title="QUANTAXIS脚本安装"></a>QUANTAXIS脚本安装</h2><p><a href="http://localhost:4000/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E4%BB%8E%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98">QUANTAXIS脚本安装</a></p>
+<h2 id="QUANTAXIS本地数据本地撮合"><a href="#QUANTAXIS本地数据本地撮合" class="headerlink" title="QUANTAXIS本地数据本地撮合"></a>QUANTAXIS本地数据本地撮合</h2><p><a href="http://localhost:4000/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E4%BB%8E%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98">QUANTAXIS本地数据本地撮合</a></p>
+<h2 id="QUANTAXIS实时数据本地撮合"><a href="#QUANTAXIS实时数据本地撮合" class="headerlink" title="QUANTAXIS实时数据本地撮合"></a>QUANTAXIS实时数据本地撮合</h2><p><a href="http://localhost:4000/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E4%BB%8E%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98">QUANTAXIS实时数据本地撮合</a></p>
+<h2 id="QUANTAXIS实时数据模拟撮合"><a href="#QUANTAXIS实时数据模拟撮合" class="headerlink" title="QUANTAXIS实时数据模拟撮合"></a>QUANTAXIS实时数据模拟撮合</h2><p><a href="http://localhost:4000/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E4%BB%8E%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98">QUANTAXIS实时数据模拟撮合</a></p>
+<h2 id="QUANTAXIS实时数据实盘交易"><a href="#QUANTAXIS实时数据实盘交易" class="headerlink" title="QUANTAXIS实时数据实盘交易"></a>QUANTAXIS实时数据实盘交易</h2><p>待完成</p>
+]]></content>
+      <tags>
+        <tag>QUANTAXIS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>QUANTAXIS实时数据本地撮合</title>
+    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%92%AE%E5%90%88/</url>
+    <content><![CDATA[<h2 id="实时tick数据接入"><a href="#实时tick数据接入" class="headerlink" title="实时tick数据接入"></a>实时tick数据接入</h2><p><a href="http://localhost:4000/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%92%AE%E5%90%88">CTPBEE</a></p>
+<p>实时tick数据接入后，就可以进行二次采样</p>
+<h2 id="二次采样数据"><a href="#二次采样数据" class="headerlink" title="二次采样数据"></a>二次采样数据</h2><p><a href="http://localhost:4000/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%92%AE%E5%90%88">QARealtimeCollector</a></p>
+<p>订阅rb2201成功后，下面通过bar_1min_rb2201做策略</p>
+<h2 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h2><p>账户的account_cookie改成了test_realtime_simpledeal，测试实时数据simpledeal撮合。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">acc = port.new_account(<span class="string">&#x27;test_realtime_simpledeal&#x27;</span>, <span class="number">100000</span>, QA.MARKET_TYPE.FUTURE_CN)</span><br></pre></td></tr></table></figure>
+
+<h2 id="策略"><a href="#策略" class="headerlink" title="策略"></a>策略</h2><p>set_index的date，改成了datetime，之前本地数据用的日线的date，现在是1分钟实时数据用的是datetime</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">market_data_df = pd.DataFrame(market_data_list).set_index(<span class="string">&#x27;datetime&#x27;</span>, drop=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+<p>trade_time改成datetime，之前本地数据用的日线的date+’ 00:00:00’，现在1分钟实时数据直接用datetime</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">trade_time = bar[<span class="string">&#x27;datetime&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>数据是实时推送的，不能在所有代码执行完毕后查看结果。所以在策略的最后保存了acc，可随时通过代码或数据库查看交易情况。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">acc.save()</span><br></pre></td></tr></table></figure>
+
+<h2 id="订阅数据"><a href="#订阅数据" class="headerlink" title="订阅数据"></a>订阅数据</h2><p>exchange改成了bar_1min_rb2201，之前的exchange是自己命名的，现在订阅的是实时1分钟的螺纹钢</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">sub = subscriber(exchange=<span class="string">&#x27;bar_1min_rb2201&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="数据获取并推送数据"><a href="#数据获取并推送数据" class="headerlink" title="数据获取并推送数据"></a>数据获取并推送数据</h2><p>这块代码不需要了。数据是CTPX主动推送的，所以只需要在上面订阅好需要数据就行。</p>
+<h2 id="查看和保存结果"><a href="#查看和保存结果" class="headerlink" title="查看和保存结果"></a>查看和保存结果</h2><p>这两块也不需要了，数据是慢慢推过来的，想看阶段结果就用acc查看即可。</p>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> QUANTAXIS <span class="keyword">as</span> QA</span><br><span class="line"><span class="keyword">from</span> QAPUBSUB.consumer <span class="keyword">import</span> subscriber</span><br><span class="line"><span class="keyword">from</span> QAPUBSUB.producer <span class="keyword">import</span> publisher</span><br><span class="line"><span class="keyword">import</span> threading, json</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 账户准备</span></span><br><span class="line">user = QA.QA_User(username=<span class="string">&#x27;admin&#x27;</span>, password=<span class="string">&#x27;admin&#x27;</span>)</span><br><span class="line">port = user.new_portfolio(<span class="string">&#x27;x1&#x27;</span>)</span><br><span class="line">acc = port.new_account(<span class="string">&#x27;test_realtime_simpledeal&#x27;</span>, <span class="number">100000</span>, QA.MARKET_TYPE.FUTURE_CN)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 发单操作方法</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sendorder</span>(<span class="params">code, trade_price, trade_towards, trade_time</span>):</span></span><br><span class="line">    acc.receive_simpledeal(</span><br><span class="line">        code=code,</span><br><span class="line">        trade_price=trade_price,</span><br><span class="line">        trade_amount=trade_amount,</span><br><span class="line">        trade_towards=trade_towards,</span><br><span class="line">        trade_time=trade_time)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 策略</span></span><br><span class="line">market_data_list = []</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_data</span>(<span class="params">a, b, c, data</span>):</span></span><br><span class="line">    <span class="comment"># 数据准备</span></span><br><span class="line">    bar = json.loads(data)</span><br><span class="line">    market_data_list.append(bar)</span><br><span class="line">    market_data_df = pd.DataFrame(market_data_list).set_index(<span class="string">&#x27;datetime&#x27;</span>, drop=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算指标</span></span><br><span class="line">    ind = QA.QA_indicator_MA(market_data_df, <span class="number">2</span>, <span class="number">4</span>)</span><br><span class="line">    <span class="built_in">print</span>(ind)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 策略逻辑</span></span><br><span class="line">    MA2 = ind.iloc[-<span class="number">1</span>][<span class="string">&#x27;MA2&#x27;</span>]</span><br><span class="line">    MA4 = ind.iloc[-<span class="number">1</span>][<span class="string">&#x27;MA4&#x27;</span>]</span><br><span class="line">    code = bar[<span class="string">&#x27;code&#x27;</span>]</span><br><span class="line">    trade_price = bar[<span class="string">&#x27;close&#x27;</span>]</span><br><span class="line">    trade_amount = <span class="number">1</span></span><br><span class="line">    trade_time = bar[<span class="string">&#x27;datetime&#x27;</span>]</span><br><span class="line">    code_hold_available = acc.hold_available.get(code, <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">if</span> MA2 &gt; MA4:</span><br><span class="line">        <span class="keyword">if</span> code_hold_available == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;买多&#x27;</span>)</span><br><span class="line">            sendorder(code, trade_price, QA.ORDER_DIRECTION.BUY_OPEN, trade_time)</span><br><span class="line">        <span class="keyword">elif</span> code_hold_available &gt; <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;持有&#x27;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;平空&#x27;</span>)</span><br><span class="line">            sendorder(code, trade_price, QA.ORDER_DIRECTION.BUY_CLOSE, trade_time)</span><br><span class="line">    <span class="keyword">elif</span> MA4 &gt; MA2:</span><br><span class="line">        <span class="keyword">if</span> code_hold_available == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;卖空&#x27;</span>)</span><br><span class="line">            sendorder(code, trade_price, QA.ORDER_DIRECTION.SELL_OPEN, trade_time)</span><br><span class="line">        <span class="keyword">elif</span> code_hold_available &lt; <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;持有&#x27;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;平多&#x27;</span>)</span><br><span class="line">            sendorder(code, trade_price, QA.ORDER_DIRECTION.SELL_CLOSE, trade_time)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;不操作&#x27;</span>)</span><br><span class="line">        </span><br><span class="line">	<span class="comment"># 保存结果</span></span><br><span class="line">	acc.save()</span><br><span class="line">	</span><br><span class="line"><span class="comment"># 4. 订阅数据</span></span><br><span class="line">sub = subscriber(exchange=<span class="string">&#x27;bar_1min_rb2201&#x27;</span>)</span><br><span class="line">sub.callback=on_data</span><br><span class="line">threading.Thread(target=sub.start).start()</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>QUANTAXIS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>QUANTAXIS实时数据模拟撮合</title>
+    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F%E6%92%AE%E5%90%88/</url>
+    <content><![CDATA[<p>整个流程与<a href="http://localhost:4000/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F%E6%92%AE%E5%90%88">QUANTAXIS实时数据本地撮合</a>有两点不同：</p>
+<ol>
+<li>模拟撮合通过qatrader模块连接模拟盘账户完成订单。</li>
+<li>账户查询操作通过数据库完成，而不是QAAccount</li>
+</ol>
+<h2 id="模拟账户接入"><a href="#模拟账户接入" class="headerlink" title="模拟账户接入"></a>模拟账户接入</h2><p><a href="http://localhost:4000/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F%E6%92%AE%E5%90%88">QATrader</a></p>
+<p>接入成功后，通过pub发单即可。</p>
+<h2 id="账户准备"><a href="#账户准备" class="headerlink" title="账户准备"></a>账户准备</h2><p>账户查询操作通过数据库完成，而不是QAAccount<br>account_cookie是qatader命令指定的–acc<br>qatader执行成功后就可以在数据库查询到账户信息。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 账户准备</span></span><br><span class="line">account_cookie = <span class="string">&#x27;101010&#x27;</span></span><br><span class="line">db = pymongo.MongoClient(os.getenv(<span class="string">&#x27;MONGODB&#x27;</span>)).QAREALTIME</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">find_acc</span>():</span></span><br><span class="line">    <span class="keyword">return</span> db.account.find_one(&#123;<span class="string">&#x27;account_cookie&#x27;</span>: account_cookie&#125;)</span><br><span class="line">simacc = find_acc()</span><br></pre></td></tr></table></figure>
+
+<h2 id="发单操作方法"><a href="#发单操作方法" class="headerlink" title="发单操作方法"></a>发单操作方法</h2><p>模拟账户通过pub到名为QAORDER_ROUTER的Exchange完成发单，而不是调用simple_deal。</p>
+<p>为简化流程sendorder发单价格要高些，不然会出现多次买多等情况。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">pub = publisher_routing(exchange=<span class="string">&#x27;QAORDER_ROUTER&#x27;</span>)</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sendorder</span>(<span class="params">code, price, order_direction, order_offset, volume</span>):</span></span><br><span class="line">    routing_key = account_cookie</span><br><span class="line">    pub.pub(json.dumps(&#123;</span><br><span class="line">        <span class="string">&#x27;topic&#x27;</span>: <span class="string">&#x27;sendorder&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;account_cookie&#x27;</span>: account_cookie,</span><br><span class="line">        <span class="string">&#x27;strategy_id&#x27;</span>: <span class="string">&#x27;test&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;code&#x27;</span>: code,</span><br><span class="line">        <span class="string">&#x27;price&#x27;</span>: price,</span><br><span class="line">        <span class="string">&#x27;order_direction&#x27;</span>: order_direction,</span><br><span class="line">        <span class="string">&#x27;order_offset&#x27;</span>: order_offset,</span><br><span class="line">        <span class="string">&#x27;volume&#x27;</span>: volume,</span><br><span class="line">        <span class="string">&#x27;order_time&#x27;</span>: <span class="built_in">str</span>(datetime.datetime.now()),</span><br><span class="line">        <span class="string">&#x27;exchange_id&#x27;</span>: <span class="string">&#x27;SHFE&#x27;</span>,</span><br><span class="line">    &#125;), routing_key=routing_key)</span><br></pre></td></tr></table></figure>
+
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> QUANTAXIS <span class="keyword">as</span> QA</span><br><span class="line"><span class="keyword">from</span> QAPUBSUB.consumer <span class="keyword">import</span> subscriber</span><br><span class="line"><span class="keyword">from</span> QAPUBSUB.producer <span class="keyword">import</span> publisher, publisher_routing</span><br><span class="line"><span class="keyword">import</span> threading, json, pymongo, os, datetime</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 账户准备</span></span><br><span class="line">account_cookie = <span class="string">&#x27;marco07281&#x27;</span></span><br><span class="line">db = pymongo.MongoClient(os.getenv(<span class="string">&#x27;MONGODB&#x27;</span>)).QAREALTIME</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">find_acc</span>():</span></span><br><span class="line">    <span class="keyword">return</span> db.account.find_one(&#123;<span class="string">&#x27;account_cookie&#x27;</span>: account_cookie&#125;)</span><br><span class="line">simacc = find_acc()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 发单操作方法</span></span><br><span class="line">BUY = <span class="string">&#x27;BUY&#x27;</span></span><br><span class="line">SELL = <span class="string">&#x27;SELL&#x27;</span></span><br><span class="line">OPEN = <span class="string">&#x27;OPEN&#x27;</span></span><br><span class="line">CLOSETODAY = <span class="string">&#x27;CLOSETODAY&#x27;</span></span><br><span class="line">pub = publisher_routing(exchange=<span class="string">&#x27;QAORDER_ROUTER&#x27;</span>)</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sendorder</span>(<span class="params">code, price, order_direction, order_offset, volume</span>):</span></span><br><span class="line">    routing_key = account_cookie</span><br><span class="line">    pub.pub(json.dumps(&#123;</span><br><span class="line">        <span class="string">&#x27;topic&#x27;</span>: <span class="string">&#x27;sendorder&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;account_cookie&#x27;</span>: account_cookie,</span><br><span class="line">        <span class="string">&#x27;strategy_id&#x27;</span>: <span class="string">&#x27;test&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;code&#x27;</span>: code,</span><br><span class="line">        <span class="string">&#x27;price&#x27;</span>: price,</span><br><span class="line">        <span class="string">&#x27;order_direction&#x27;</span>: order_direction,</span><br><span class="line">        <span class="string">&#x27;order_offset&#x27;</span>: order_offset,</span><br><span class="line">        <span class="string">&#x27;volume&#x27;</span>: volume,</span><br><span class="line">        <span class="string">&#x27;order_time&#x27;</span>: <span class="built_in">str</span>(datetime.datetime.now()),</span><br><span class="line">        <span class="string">&#x27;exchange_id&#x27;</span>: <span class="string">&#x27;SHFE&#x27;</span>,</span><br><span class="line">    &#125;), routing_key=routing_key)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 策略</span></span><br><span class="line">market_data_list = []</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_data</span>(<span class="params">a, b, c, data</span>):</span></span><br><span class="line">    <span class="comment"># 数据准备</span></span><br><span class="line">    bar = json.loads(data)</span><br><span class="line">    market_data_list.append(bar)</span><br><span class="line">    market_data_df = pd.DataFrame(market_data_list).set_index(<span class="string">&#x27;datetime&#x27;</span>, drop=<span class="literal">False</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 计算指标</span></span><br><span class="line">    ind = QA.QA_indicator_MA(market_data_df, <span class="number">2</span>, <span class="number">4</span>)</span><br><span class="line">    <span class="built_in">print</span>(ind)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 策略逻辑</span></span><br><span class="line">    MA2 = ind.iloc[-<span class="number">1</span>][<span class="string">&#x27;MA2&#x27;</span>]</span><br><span class="line">    MA4 = ind.iloc[-<span class="number">1</span>][<span class="string">&#x27;MA4&#x27;</span>]</span><br><span class="line">    code = bar[<span class="string">&#x27;code&#x27;</span>].lower()</span><br><span class="line">    trade_price = bar[<span class="string">&#x27;close&#x27;</span>]</span><br><span class="line">    trade_amount = <span class="number">1</span></span><br><span class="line">    trade_time = bar[<span class="string">&#x27;datetime&#x27;</span>]</span><br><span class="line">    simacc = find_acc()</span><br><span class="line">    positions = simacc[<span class="string">&#x27;positions&#x27;</span>]</span><br><span class="line">    code_key = <span class="string">&#x27;SHFE_&#x27;</span> + <span class="string">&#x27;rb2201&#x27;</span></span><br><span class="line">    volume_long = positions[code_key][<span class="string">&#x27;volume_long&#x27;</span>] <span class="keyword">if</span> code_key <span class="keyword">in</span> positions <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line">    volume_short = positions[code_key][<span class="string">&#x27;volume_short&#x27;</span>] <span class="keyword">if</span> code_key <span class="keyword">in</span> positions <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line">    <span class="built_in">print</span>(MA2, MA4, code, trade_price, trade_time, volume_long, volume_short)</span><br><span class="line">    <span class="keyword">if</span> MA2 &gt; MA4:</span><br><span class="line">        <span class="comment"># 先平空，否则会先执行买多，就会不会平空了</span></span><br><span class="line">        <span class="keyword">if</span> volume_short &gt; <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;平空&#x27;</span>)</span><br><span class="line">            sendorder(code, trade_price + <span class="number">5</span>, BUY, CLOSETODAY, trade_amount)</span><br><span class="line">        <span class="keyword">if</span> volume_long == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;买多&#x27;</span>)</span><br><span class="line">            sendorder(code, trade_price + <span class="number">5</span>, BUY, OPEN, trade_amount)</span><br><span class="line">        <span class="keyword">elif</span> volume_long &gt; <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;持有&#x27;</span>)</span><br><span class="line">    <span class="keyword">elif</span> MA4 &gt; MA2:</span><br><span class="line">        <span class="keyword">if</span> volume_long &gt; <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;平多&#x27;</span>)</span><br><span class="line">            sendorder(code, trade_price - <span class="number">5</span>, SELL, CLOSETODAY, trade_amount)</span><br><span class="line">        <span class="keyword">if</span> volume_short == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;卖空&#x27;</span>)</span><br><span class="line">            sendorder(code, trade_price - <span class="number">5</span>, SELL, OPEN, trade_amount)</span><br><span class="line">        <span class="keyword">elif</span> volume_short &gt; <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;持有&#x27;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;不操作&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 订阅数据</span></span><br><span class="line">sub = subscriber(exchange=<span class="string">&#x27;bar_1min_rb2201&#x27;</span>)</span><br><span class="line">sub.callback=on_data</span><br><span class="line">threading.Thread(target=sub.start).start()</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>QUANTAXIS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu配置SSH服务端支持远程登录</title>
+    <url>/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95/</url>
+    <content><![CDATA[<h1 id="原文地址"><a href="#原文地址" class="headerlink" title="原文地址"></a>原文地址</h1><p><a href="https://juejin.cn/post/6844904048739500046">https://juejin.cn/post/6844904048739500046</a></p>
+<h1 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h1><p>用另外一台电脑ssh访问Ubuntu系统的电脑</p>
+<h1 id="硬件及软件版本"><a href="#硬件及软件版本" class="headerlink" title="硬件及软件版本"></a>硬件及软件版本</h1><blockquote>
+<p>被访问电脑 电脑：联想笔记本G470 系统：Ubuntu 16.04</p>
+<p>客户端电脑 电脑：MBP 系统：10.15.2</p>
+</blockquote>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><h2 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h2><blockquote>
+<p>SSH 为Secure Shell的缩写，由 IETF 的网络小组（Network Working Group）所制定；SSH 为建立在应用层基础上的安全协议。SSH 是目前较可靠，专为远程登录会话和其他网络服务提供安全性的协议。利用 SSH 协议可以有效防止远程管理过程中的信息泄露问题。SSH最初是UNIX系统上的一个程序，后来又迅速扩展到其他操作平台。SSH在正确使用时可弥补网络中的漏洞。SSH客户端适用于多种平台。几乎所有UNIX平台—包括HP-UX、Linux、AIX、Solaris、DigitalUNIX、Irix，以及其他平台，都可运行SSH。– <a href="https://link.juejin.cn/?target=https://baike.sogou.com/v60150874.htm?fromTitle=SSH" title="https://baike.sogou.com/v60150874.htm?fromTitle=SSH">搜狗百科：SSH</a></p>
+</blockquote>
+<h2 id="目标分析"><a href="#目标分析" class="headerlink" title="目标分析"></a>目标分析</h2><p>现在我们知道SSH其实最早是一个安全协议，这个协议就是为远程登录会话而生。因为这个协议，衍生的的SSH程序是我们要安装的软件。要利用SSH连接两台机器，可想可知一个要作为客户端访问，另外一台要作为服务端提供被访问的服务。我们也知道很多Linux、OSX等类Unix系统都已自带了SSH的客户端，Windows也有不少类似PuTTY这样优秀的软件。<br>So，我们接下来要做的其实是如何安装并开启SSH Server。</p>
+<h1 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h1><h2 id="①-确定Ubuntu是否安装SSH服务"><a href="#①-确定Ubuntu是否安装SSH服务" class="headerlink" title="① 确定Ubuntu是否安装SSH服务"></a>① 确定Ubuntu是否安装SSH服务</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">systemctl status ssh</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>比如，这台新系统的机器执行结果如下：  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e90bd1a~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>我们注意到两个内容，第一行 加载结果是 未发现，原因没有这个文件或目录，第二行 服务状态是不活跃的，死亡的。从这些词我们能猜到其实这个服务压根就没安装。<br>同理，假如你看到的状态是类似红色的stopped字样，是终止态的，可以用命令 <code>sudo systemctl start ssh</code> 尝试启动，执行结果也可以参考第③步。</p>
+<h2 id="②-安装SSH-Server"><a href="#②-安装SSH-Server" class="headerlink" title="② 安装SSH Server"></a>② 安装SSH Server</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt install openssh-server</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>执行过程如下  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e8fdc4e~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e13fe4874~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h2 id="③-确定Ubuntu-SSH服务状态"><a href="#③-确定Ubuntu-SSH服务状态" class="headerlink" title="③ 确定Ubuntu SSH服务状态"></a>③ 确定Ubuntu SSH服务状态</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">systemctl status ssh</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>执行结果如下  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e14767b01~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>现在能看到：<br>第一行加载状态，已加载ssh.service文件；<br>第二行是否活动，正在运行；并且留意到一个守护进程sshd；<br>再往下看到监听的端口是22。</p>
+<p>至此，我们的SSH服务端已经安装启动OK。</p>
+<h2 id="④-确定Ubuntu机器的IP"><a href="#④-确定Ubuntu机器的IP" class="headerlink" title="④ 确定Ubuntu机器的IP"></a>④ 确定Ubuntu机器的IP</h2><p>我们在局域网测试，那就是查看现在这台局域网IP，可以点击网络设置查看，亦或命令行 <code>ifcofnig</code> 如下图的一个参考，找到你活跃的网卡。比如这台机器的是 <code>192.168.0.145</code>。  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e15de167e~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h2 id="⑤-确定是否可访问Ubuntu"><a href="#⑤-确定是否可访问Ubuntu" class="headerlink" title="⑤ 确定是否可访问Ubuntu"></a>⑤ 确定是否可访问Ubuntu</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ping 192.168.0.145</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e16c40022~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>如果能ping通，这说明网络是通的，那么可以尝试第⑦步。<br>如果有类似 <code>ssh: connect to host 192.168.0.145 port 22: Connection refused</code> 这样的问题是说明端口不能访问，要检查下防火墙。</p>
+<h2 id="⑥-若不能访问，检查Ubuntu防火墙"><a href="#⑥-若不能访问，检查Ubuntu防火墙" class="headerlink" title="⑥ 若不能访问，检查Ubuntu防火墙"></a>⑥ 若不能访问，检查Ubuntu防火墙</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 检查防火墙</span><br><span class="line">sudo ufw status verbose</span><br><span class="line"></span><br><span class="line"># 开启防火墙</span><br><span class="line">sudo ufw enable</span><br><span class="line"></span><br><span class="line"># 开放端口</span><br><span class="line">sudo ufw allow 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>如下命令，可以设置开放来自某IP访问某端口的权限</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo ufw allow from your_ip to any port 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4472b15d~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h2 id="⑦-使用账号密码登录Ubuntu"><a href="#⑦-使用账号密码登录Ubuntu" class="headerlink" title="⑦ 使用账号密码登录Ubuntu"></a>⑦ 使用账号密码登录Ubuntu</h2><p>现在，使用另外一台电脑尝试登录 <code>Ubuntu</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh baiyutang@192.168.0.145 -p 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>对于第一次登陆的会提示主机不被认可，加密签名的指  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4cb0c3bb~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>输入 yes 确认，继续<br>需要验证 <code>Ubuntu</code> 当前用户 <code>baiyutang</code> 的登录密码，输入确认即可登录成功。  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4b31de95~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h1 id="延伸"><a href="#延伸" class="headerlink" title="延伸"></a>延伸</h1><ul>
+<li>  openssh-server是什么？</li>
+</ul>
+<blockquote>
+<p><a href="https://link.juejin.cn/?target=https://help.ubuntu.com/lts/serverguide/openssh-server.html" title="https://help.ubuntu.com/lts/serverguide/openssh-server.html">Ubuntu Wiki OpenSSH Server</a> <a href="https://link.juejin.cn/?target=https://www.openssh.com/" title="https://www.openssh.com/">About OpenSSH</a></p>
+</blockquote>
+<ul>
+<li>  SSH服务端开放的端口可以更改吗？</li>
+</ul>
+<blockquote>
+<p>可以，在文件 <code>/etc/ssh/sshd_config</code> 里可以配置 SSH Server 开放的端口，修改后记得 <code>sudo systemctl restart sshd</code> 重启下生效。修改位置如下图第 5 行所示：</p>
+</blockquote>
+<blockquote>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e52bf2ea7~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+</blockquote>
+<ul>
+<li>  ufw及基本的管理操作</li>
+</ul>
+<blockquote>
+<p>Ubuntu防火墙设置可以单独抽出来讲，或者可以先看参考资料第四条。</p>
+</blockquote>
+<ul>
+<li>  如何使用公钥免密登录？</li>
+<li>  SSH加密传输的过程原理？</li>
+<li>  加密签名指纹是什么？</li>
+</ul>
+<blockquote>
+<p>这个等下篇专门来做记录，三个问题可以放在一起。</p>
+</blockquote>
+<ul>
+<li>  如何配置跳板机？</li>
+</ul>
+<blockquote>
+<p>这个也后续单独做。</p>
+</blockquote>
+<ul>
+<li>  安全问题及中间人攻击</li>
+</ul>
+<blockquote>
+<p>在参考第一条有讲到这个问题。</p>
+</blockquote>
+<ul>
+<li>  内网穿透是什么？</li>
+</ul>
+<blockquote>
+<p>后续了解及研究，因为有段时间也在寻找和远程控制相关软件，可以作为研究课题。</p>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/thread/9427/1/1/" title="https://linux.cn/thread/9427/1/1/">ssh 基本原理和免密码登录</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-7683-1.html" title="https://linux.cn/article-7683-1.html">五条强化 SSH 安全的建议</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-1206-1.html" title="https://linux.cn/article-1206-1.html">牢记25个最佳的SSH命令</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-8087-1.html" title="https://linux.cn/article-8087-1.html">在Ubuntu中用UFW配置防火墙</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://support.apple.com/zh-cn/guide/mac-help/mh34041/mac" title="https://support.apple.com/zh-cn/guide/mac-help/mh34041/mac">在 Mac 上使用防火墙来防止非法连接</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>QUANTAXIS本地数据本地撮合</title>
+    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%92%AE%E5%90%88/</url>
+    <content><![CDATA[<h1 id="QUANTAXIS本地数据本地撮合"><a href="#QUANTAXIS本地数据本地撮合" class="headerlink" title="QUANTAXIS本地数据本地撮合"></a>QUANTAXIS本地数据本地撮合</h1><h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> QUANTAXIS <span class="keyword">as</span> QA</span><br><span class="line"><span class="keyword">from</span> QAPUBSUB.consumer <span class="keyword">import</span> subscriber</span><br><span class="line"><span class="keyword">from</span> QAPUBSUB.producer <span class="keyword">import</span> publisher</span><br><span class="line"><span class="keyword">import</span> threading, json</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 账户准备</span></span><br><span class="line">user = QA.QA_User(username=<span class="string">&#x27;admin&#x27;</span>, password=<span class="string">&#x27;admin&#x27;</span>)</span><br><span class="line">port = user.new_portfolio(<span class="string">&#x27;x1&#x27;</span>)</span><br><span class="line">acc = port.new_account(<span class="string">&#x27;test_local_simpledeal&#x27;</span>, <span class="number">100000</span>, QA.MARKET_TYPE.FUTURE_CN)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 发单操作方法</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sendorder</span>(<span class="params">code, trade_price, trade_towards, trade_time</span>):</span></span><br><span class="line">	acc.receive_simpledeal(</span><br><span class="line">		code=code,</span><br><span class="line">		trade_price=trade_price,</span><br><span class="line">		trade_amount=trade_amount,</span><br><span class="line">		trade_towards=trade_towards,</span><br><span class="line">		trade_time=trade_time)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 策略</span></span><br><span class="line">market_data_list = []</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_data</span>(<span class="params">a, b, c, data</span>):</span></span><br><span class="line">    <span class="comment"># 数据准备</span></span><br><span class="line">    bar = json.loads(data)</span><br><span class="line">    market_data_list.append(bar)</span><br><span class="line">    market_data_df = pd.DataFrame(market_data_list).set_index(<span class="string">&#x27;date&#x27;</span>, drop=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算指标</span></span><br><span class="line">    ind = QA.QA_indicator_MA(market_data_df, <span class="number">2</span>, <span class="number">4</span>)</span><br><span class="line">    <span class="built_in">print</span>(ind)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 策略逻辑</span></span><br><span class="line">    MA2 = ind.iloc[-<span class="number">1</span>][<span class="string">&#x27;MA2&#x27;</span>]</span><br><span class="line">    MA4 = ind.iloc[-<span class="number">1</span>][<span class="string">&#x27;MA4&#x27;</span>]</span><br><span class="line">    code = bar[<span class="string">&#x27;code&#x27;</span>]</span><br><span class="line">    trade_price = bar[<span class="string">&#x27;close&#x27;</span>]</span><br><span class="line">    trade_amount = <span class="number">1</span></span><br><span class="line">    trade_time = bar[<span class="string">&#x27;date&#x27;</span>] + <span class="string">&#x27; 00:00:00&#x27;</span></span><br><span class="line">    code_hold_available = acc.hold_available.get(code, <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">if</span> MA2 &gt; MA4:</span><br><span class="line">        <span class="keyword">if</span> code_hold_available == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;买多&#x27;</span>)</span><br><span class="line">			sendorder(code, trade_price, QA.ORDER_DIRECTION.BUY_OPEN, trade_time)</span><br><span class="line">        <span class="keyword">elif</span> code_hold_available &gt; <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;持有&#x27;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;平空&#x27;</span>)</span><br><span class="line">			sendorder(code, trade_price, QA.ORDER_DIRECTION.BUY_CLOSE, trade_time)</span><br><span class="line">    <span class="keyword">elif</span> MA4 &gt; MA2:</span><br><span class="line">        <span class="keyword">if</span> code_hold_available == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;卖空&#x27;</span>)</span><br><span class="line">			sendorder(code, trade_price, QA.ORDER_DIRECTION.SELL_OPEN, trade_time)</span><br><span class="line">        <span class="keyword">elif</span> code_hold_available &lt; <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;持有&#x27;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;平多&#x27;</span>)</span><br><span class="line">			sendorder(code, trade_price, QA.ORDER_DIRECTION.SELL_CLOSE, trade_time)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;不操作&#x27;</span>)</span><br><span class="line">        </span><br><span class="line"><span class="comment"># 4. 订阅数据</span></span><br><span class="line">sub = subscriber(exchange=<span class="string">&#x27;x1&#x27;</span>)</span><br><span class="line">sub.callback=on_data</span><br><span class="line">threading.Thread(target=sub.start).start()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 数据获取并推送数据</span></span><br><span class="line"><span class="comment"># 获取</span></span><br><span class="line">df = QA.QA_fetch_get_future_day(<span class="string">&#x27;tdx&#x27;</span>, <span class="string">&#x27;RBL8&#x27;</span>, <span class="string">&#x27;2019-08-01&#x27;</span>, <span class="string">&#x27;2019-08-30&#x27;</span>)</span><br><span class="line"><span class="comment"># 推送</span></span><br><span class="line">pub = publisher(exchange=<span class="string">&#x27;x1&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> idx, item <span class="keyword">in</span> df.iterrows():</span><br><span class="line">    pub.pub(item.to_json())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 6. 查看结果</span></span><br><span class="line">risk = QA.QA_Risk(acc)</span><br><span class="line">performance = QA.QA_Performance(acc)</span><br><span class="line"></span><br><span class="line">acc.history_table</span><br><span class="line">risk.plot_assets_curve()</span><br><span class="line">performance.pnl</span><br><span class="line"></span><br><span class="line"><span class="comment"># 7. 保存结果</span></span><br><span class="line">acc.save()</span><br><span class="line">risk.save()</span><br></pre></td></tr></table></figure>
+
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><ol>
+<li>需要存数据，因为qa_risk会调用QA_fetch_stock_day_adv，这个方法会从数据读数据，读不到数据后面的指标不能计算（已解决）</li>
+<li>receive_simpledeal的trade_time，要用%Y-%m-%d %H:%M:%S格式，因为history_min会用到这个格式，格式不对会计算不出history_min，导致后面指标不能计算。（已解决）</li>
+<li>在存了数据，trade_time写对之后，performance.pnl等等都能计算出来了，但是81界面的绩效分析就是出不来，不知道为什么（未解决）</li>
+<li>acc = port.new_account(‘test1’, 100000, QA.MARKET_TYPE.FUTURE_CN, auto_reload=False)，跑第一次的时候会把acc存在数据库，第二次再跑的时候，创建有问题，market_type会变成stock_cn，因为走的另外一个创建逻辑，具体看QAPortfolio的第385行。但是如果auto_reload是true的话就不会有问题，因为会从数据库读取覆盖掉创建时赋值的参数。</li>
+</ol>
+]]></content>
+      <tags>
+        <tag>QUANTAXIS</tag>
+      </tags>
+  </entry>
+</search>
