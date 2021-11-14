@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="原文地址https:&#x2F;&#x2F;juejin.cn&#x2F;post&#x2F;6844904048739500046 目标用另外一台电脑ssh访问Ubuntu系统的电脑 硬件及软件版本 被访问电脑 电脑：联想笔记本G470 系统：Ubuntu 16.04 客户端电脑 电脑：MBP 系统：10.15.2  准备SSH SSH 为Secure Shell的缩写，由 IETF 的网络小组（Network Working Gro">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu配置SSH服务端支持远程登录">
+<meta property="og:url" content="http://example.com/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95/index.html">
+<meta property="og:site_name" content="熊一帆的博客">
+<meta property="og:description" content="原文地址https:&#x2F;&#x2F;juejin.cn&#x2F;post&#x2F;6844904048739500046 目标用另外一台电脑ssh访问Ubuntu系统的电脑 硬件及软件版本 被访问电脑 电脑：联想笔记本G470 系统：Ubuntu 16.04 客户端电脑 电脑：MBP 系统：10.15.2  准备SSH SSH 为Secure Shell的缩写，由 IETF 的网络小组（Network Working Gro">
+<meta property="og:locale">
+<meta property="og:image" content="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e90bd1a~tplv-t2oaga2asx-watermark.awebp">
+<meta property="og:image" content="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e8fdc4e~tplv-t2oaga2asx-watermark.awebp">
+<meta property="og:image" content="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e13fe4874~tplv-t2oaga2asx-watermark.awebp">
+<meta property="og:image" content="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e14767b01~tplv-t2oaga2asx-watermark.awebp">
+<meta property="og:image" content="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e15de167e~tplv-t2oaga2asx-watermark.awebp">
+<meta property="og:image" content="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e16c40022~tplv-t2oaga2asx-watermark.awebp">
+<meta property="og:image" content="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4472b15d~tplv-t2oaga2asx-watermark.awebp">
+<meta property="og:image" content="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4cb0c3bb~tplv-t2oaga2asx-watermark.awebp">
+<meta property="og:image" content="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4b31de95~tplv-t2oaga2asx-watermark.awebp">
+<meta property="og:image" content="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e52bf2ea7~tplv-t2oaga2asx-watermark.awebp">
+<meta property="article:published_time" content="2021-11-13T17:52:37.000Z">
+<meta property="article:modified_time" content="2021-11-13T17:54:53.000Z">
+<meta property="article:author" content="author">
+<meta property="article:tag" content="Ubuntu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e90bd1a~tplv-t2oaga2asx-watermark.awebp">
+
+<link rel="canonical" href="http://example.com/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>Ubuntu配置SSH服务端支持远程登录 | 熊一帆的博客</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ef8046b2c373633c8823fa076c7216d3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">熊一帆的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">subtitle</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://example.com/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="author">
+      <meta itemprop="description" content="description">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="熊一帆的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ubuntu配置SSH服务端支持远程登录
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-11-14 01:52:37 / Modified: 01:54:53" itemprop="dateCreated datePublished" datetime="2021-11-14T01:52:37+08:00">2021-11-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="原文地址"><a href="#原文地址" class="headerlink" title="原文地址"></a>原文地址</h1><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904048739500046">https://juejin.cn/post/6844904048739500046</a></p>
+<h1 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h1><p>用另外一台电脑ssh访问Ubuntu系统的电脑</p>
+<h1 id="硬件及软件版本"><a href="#硬件及软件版本" class="headerlink" title="硬件及软件版本"></a>硬件及软件版本</h1><blockquote>
+<p>被访问电脑 电脑：联想笔记本G470 系统：Ubuntu 16.04</p>
+<p>客户端电脑 电脑：MBP 系统：10.15.2</p>
+</blockquote>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><h2 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h2><blockquote>
+<p>SSH 为Secure Shell的缩写，由 IETF 的网络小组（Network Working Group）所制定；SSH 为建立在应用层基础上的安全协议。SSH 是目前较可靠，专为远程登录会话和其他网络服务提供安全性的协议。利用 SSH 协议可以有效防止远程管理过程中的信息泄露问题。SSH最初是UNIX系统上的一个程序，后来又迅速扩展到其他操作平台。SSH在正确使用时可弥补网络中的漏洞。SSH客户端适用于多种平台。几乎所有UNIX平台—包括HP-UX、Linux、AIX、Solaris、DigitalUNIX、Irix，以及其他平台，都可运行SSH。– <a href="https://link.juejin.cn/?target=https://baike.sogou.com/v60150874.htm?fromTitle=SSH" title="https://baike.sogou.com/v60150874.htm?fromTitle=SSH">搜狗百科：SSH</a></p>
+</blockquote>
+<h2 id="目标分析"><a href="#目标分析" class="headerlink" title="目标分析"></a>目标分析</h2><p>现在我们知道SSH其实最早是一个安全协议，这个协议就是为远程登录会话而生。因为这个协议，衍生的的SSH程序是我们要安装的软件。要利用SSH连接两台机器，可想可知一个要作为客户端访问，另外一台要作为服务端提供被访问的服务。我们也知道很多Linux、OSX等类Unix系统都已自带了SSH的客户端，Windows也有不少类似PuTTY这样优秀的软件。<br>So，我们接下来要做的其实是如何安装并开启SSH Server。</p>
+<h1 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h1><h2 id="①-确定Ubuntu是否安装SSH服务"><a href="#①-确定Ubuntu是否安装SSH服务" class="headerlink" title="① 确定Ubuntu是否安装SSH服务"></a>① 确定Ubuntu是否安装SSH服务</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl status ssh</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>比如，这台新系统的机器执行结果如下：  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e90bd1a~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>我们注意到两个内容，第一行 加载结果是 未发现，原因没有这个文件或目录，第二行 服务状态是不活跃的，死亡的。从这些词我们能猜到其实这个服务压根就没安装。<br>同理，假如你看到的状态是类似红色的stopped字样，是终止态的，可以用命令 <code>sudo systemctl start ssh</code> 尝试启动，执行结果也可以参考第③步。</p>
+<h2 id="②-安装SSH-Server"><a href="#②-安装SSH-Server" class="headerlink" title="② 安装SSH Server"></a>② 安装SSH Server</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install openssh-server</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>执行过程如下  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e8fdc4e~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e13fe4874~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h2 id="③-确定Ubuntu-SSH服务状态"><a href="#③-确定Ubuntu-SSH服务状态" class="headerlink" title="③ 确定Ubuntu SSH服务状态"></a>③ 确定Ubuntu SSH服务状态</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl status ssh</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>执行结果如下  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e14767b01~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>现在能看到：<br>第一行加载状态，已加载ssh.service文件；<br>第二行是否活动，正在运行；并且留意到一个守护进程sshd；<br>再往下看到监听的端口是22。</p>
+<p>至此，我们的SSH服务端已经安装启动OK。</p>
+<h2 id="④-确定Ubuntu机器的IP"><a href="#④-确定Ubuntu机器的IP" class="headerlink" title="④ 确定Ubuntu机器的IP"></a>④ 确定Ubuntu机器的IP</h2><p>我们在局域网测试，那就是查看现在这台局域网IP，可以点击网络设置查看，亦或命令行 <code>ifcofnig</code> 如下图的一个参考，找到你活跃的网卡。比如这台机器的是 <code>192.168.0.145</code>。  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e15de167e~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h2 id="⑤-确定是否可访问Ubuntu"><a href="#⑤-确定是否可访问Ubuntu" class="headerlink" title="⑤ 确定是否可访问Ubuntu"></a>⑤ 确定是否可访问Ubuntu</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ping 192.168.0.145</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e16c40022~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>如果能ping通，这说明网络是通的，那么可以尝试第⑦步。<br>如果有类似 <code>ssh: connect to host 192.168.0.145 port 22: Connection refused</code> 这样的问题是说明端口不能访问，要检查下防火墙。</p>
+<h2 id="⑥-若不能访问，检查Ubuntu防火墙"><a href="#⑥-若不能访问，检查Ubuntu防火墙" class="headerlink" title="⑥ 若不能访问，检查Ubuntu防火墙"></a>⑥ 若不能访问，检查Ubuntu防火墙</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 检查防火墙</span><br><span class="line">sudo ufw status verbose</span><br><span class="line"></span><br><span class="line"># 开启防火墙</span><br><span class="line">sudo ufw enable</span><br><span class="line"></span><br><span class="line"># 开放端口</span><br><span class="line">sudo ufw allow 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>如下命令，可以设置开放来自某IP访问某端口的权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw allow from your_ip to any port 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4472b15d~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h2 id="⑦-使用账号密码登录Ubuntu"><a href="#⑦-使用账号密码登录Ubuntu" class="headerlink" title="⑦ 使用账号密码登录Ubuntu"></a>⑦ 使用账号密码登录Ubuntu</h2><p>现在，使用另外一台电脑尝试登录 <code>Ubuntu</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh baiyutang@192.168.0.145 -p 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>对于第一次登陆的会提示主机不被认可，加密签名的指  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4cb0c3bb~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>输入 yes 确认，继续<br>需要验证 <code>Ubuntu</code> 当前用户 <code>baiyutang</code> 的登录密码，输入确认即可登录成功。  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4b31de95~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h1 id="延伸"><a href="#延伸" class="headerlink" title="延伸"></a>延伸</h1><ul>
+<li>  openssh-server是什么？</li>
+</ul>
+<blockquote>
+<p><a href="https://link.juejin.cn/?target=https://help.ubuntu.com/lts/serverguide/openssh-server.html" title="https://help.ubuntu.com/lts/serverguide/openssh-server.html">Ubuntu Wiki OpenSSH Server</a> <a href="https://link.juejin.cn/?target=https://www.openssh.com/" title="https://www.openssh.com/">About OpenSSH</a></p>
+</blockquote>
+<ul>
+<li>  SSH服务端开放的端口可以更改吗？</li>
+</ul>
+<blockquote>
+<p>可以，在文件 <code>/etc/ssh/sshd_config</code> 里可以配置 SSH Server 开放的端口，修改后记得 <code>sudo systemctl restart sshd</code> 重启下生效。修改位置如下图第 5 行所示：</p>
+</blockquote>
+<blockquote>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e52bf2ea7~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+</blockquote>
+<ul>
+<li>  ufw及基本的管理操作</li>
+</ul>
+<blockquote>
+<p>Ubuntu防火墙设置可以单独抽出来讲，或者可以先看参考资料第四条。</p>
+</blockquote>
+<ul>
+<li>  如何使用公钥免密登录？</li>
+<li>  SSH加密传输的过程原理？</li>
+<li>  加密签名指纹是什么？</li>
+</ul>
+<blockquote>
+<p>这个等下篇专门来做记录，三个问题可以放在一起。</p>
+</blockquote>
+<ul>
+<li>  如何配置跳板机？</li>
+</ul>
+<blockquote>
+<p>这个也后续单独做。</p>
+</blockquote>
+<ul>
+<li>  安全问题及中间人攻击</li>
+</ul>
+<blockquote>
+<p>在参考第一条有讲到这个问题。</p>
+</blockquote>
+<ul>
+<li>  内网穿透是什么？</li>
+</ul>
+<blockquote>
+<p>后续了解及研究，因为有段时间也在寻找和远程控制相关软件，可以作为研究课题。</p>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/thread/9427/1/1/" title="https://linux.cn/thread/9427/1/1/">ssh 基本原理和免密码登录</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-7683-1.html" title="https://linux.cn/article-7683-1.html">五条强化 SSH 安全的建议</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-1206-1.html" title="https://linux.cn/article-1206-1.html">牢记25个最佳的SSH命令</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-8087-1.html" title="https://linux.cn/article-8087-1.html">在Ubuntu中用UFW配置防火墙</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://support.apple.com/zh-cn/guide/mac-help/mh34041/mac" title="https://support.apple.com/zh-cn/guide/mac-help/mh34041/mac">在 Mac 上使用防火墙来防止非法连接</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Ubuntu/" rel="tag"># Ubuntu</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QARealtimeCollector/" rel="prev" title="QARealtimeCollector">
+      <i class="fa fa-chevron-left"></i> QARealtimeCollector
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E8%BF%9C%E7%A8%8B%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E8%AE%BE%E7%BD%AE/" rel="next" title="Ubuntu远程免密码登录设置">
+      Ubuntu远程免密码登录设置 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E6%96%87%E5%9C%B0%E5%9D%80"><span class="nav-number">1.</span> <span class="nav-text">原文地址</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87"><span class="nav-number">2.</span> <span class="nav-text">目标</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A1%AC%E4%BB%B6%E5%8F%8A%E8%BD%AF%E4%BB%B6%E7%89%88%E6%9C%AC"><span class="nav-number">3.</span> <span class="nav-text">硬件及软件版本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%87%86%E5%A4%87"><span class="nav-number">4.</span> <span class="nav-text">准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SSH"><span class="nav-number">4.1.</span> <span class="nav-text">SSH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E5%88%86%E6%9E%90"><span class="nav-number">4.2.</span> <span class="nav-text">目标分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4"><span class="nav-number">5.</span> <span class="nav-text">步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%91%A0-%E7%A1%AE%E5%AE%9AUbuntu%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85SSH%E6%9C%8D%E5%8A%A1"><span class="nav-number">5.1.</span> <span class="nav-text">① 确定Ubuntu是否安装SSH服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%91%A1-%E5%AE%89%E8%A3%85SSH-Server"><span class="nav-number">5.2.</span> <span class="nav-text">② 安装SSH Server</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%91%A2-%E7%A1%AE%E5%AE%9AUbuntu-SSH%E6%9C%8D%E5%8A%A1%E7%8A%B6%E6%80%81"><span class="nav-number">5.3.</span> <span class="nav-text">③ 确定Ubuntu SSH服务状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%91%A3-%E7%A1%AE%E5%AE%9AUbuntu%E6%9C%BA%E5%99%A8%E7%9A%84IP"><span class="nav-number">5.4.</span> <span class="nav-text">④ 确定Ubuntu机器的IP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%91%A4-%E7%A1%AE%E5%AE%9A%E6%98%AF%E5%90%A6%E5%8F%AF%E8%AE%BF%E9%97%AEUbuntu"><span class="nav-number">5.5.</span> <span class="nav-text">⑤ 确定是否可访问Ubuntu</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%91%A5-%E8%8B%A5%E4%B8%8D%E8%83%BD%E8%AE%BF%E9%97%AE%EF%BC%8C%E6%A3%80%E6%9F%A5Ubuntu%E9%98%B2%E7%81%AB%E5%A2%99"><span class="nav-number">5.6.</span> <span class="nav-text">⑥ 若不能访问，检查Ubuntu防火墙</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%91%A6-%E4%BD%BF%E7%94%A8%E8%B4%A6%E5%8F%B7%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95Ubuntu"><span class="nav-number">5.7.</span> <span class="nav-text">⑦ 使用账号密码登录Ubuntu</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8"><span class="nav-number">6.</span> <span class="nav-text">延伸</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">author</p>
+  <div class="site-description" itemprop="description">description</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">author</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

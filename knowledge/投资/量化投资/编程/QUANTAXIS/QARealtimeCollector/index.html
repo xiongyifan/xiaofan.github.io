@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="https:&#x2F;&#x2F;github.com&#x2F;yutiansut&#x2F;QUANTAXIS_RealtimeCollector实时行情采集，并且通过eventmq二次分发 QARealtimeCollector的作用QARealtimeCollector的作用有两个：  对实时tick数据进行二次采样，包括股票和期货。这个功能由QARC_WEBSERVER提供，开启后可以通过http请求完成订阅和二次采样请求">
+<meta property="og:type" content="article">
+<meta property="og:title" content="QARealtimeCollector">
+<meta property="og:url" content="http://example.com/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QARealtimeCollector/index.html">
+<meta property="og:site_name" content="熊一帆的博客">
+<meta property="og:description" content="https:&#x2F;&#x2F;github.com&#x2F;yutiansut&#x2F;QUANTAXIS_RealtimeCollector实时行情采集，并且通过eventmq二次分发 QARealtimeCollector的作用QARealtimeCollector的作用有两个：  对实时tick数据进行二次采样，包括股票和期货。这个功能由QARC_WEBSERVER提供，开启后可以通过http请求完成订阅和二次采样请求">
+<meta property="og:locale">
+<meta property="og:image" content="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E8%AE%A2%E9%98%85%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85.jpg">
+<meta property="og:image" content="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85%E5%92%8C1%E5%88%86%E9%92%9Fbar.jpg">
+<meta property="article:published_time" content="2021-11-13T17:52:37.000Z">
+<meta property="article:modified_time" content="2021-11-13T17:54:53.000Z">
+<meta property="article:author" content="author">
+<meta property="article:tag" content="QUANTAXIS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E8%AE%A2%E9%98%85%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85.jpg">
+
+<link rel="canonical" href="http://example.com/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QARealtimeCollector/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>QARealtimeCollector | 熊一帆的博客</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ef8046b2c373633c8823fa076c7216d3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">熊一帆的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">subtitle</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://example.com/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QARealtimeCollector/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="author">
+      <meta itemprop="description" content="description">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="熊一帆的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          QARealtimeCollector
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-11-14 01:52:37 / Modified: 01:54:53" itemprop="dateCreated datePublished" datetime="2021-11-14T01:52:37+08:00">2021-11-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a target="_blank" rel="noopener" href="https://github.com/yutiansut/QUANTAXIS_RealtimeCollector">https://github.com/yutiansut/QUANTAXIS_RealtimeCollector</a><br>实时行情采集，并且通过eventmq二次分发</p>
+<h2 id="QARealtimeCollector的作用"><a href="#QARealtimeCollector的作用" class="headerlink" title="QARealtimeCollector的作用"></a>QARealtimeCollector的作用</h2><p>QARealtimeCollector的作用有两个：</p>
+<ol>
+<li>对实时tick数据进行二次采样，包括股票和期货。这个功能由QARC_WEBSERVER提供，开启后可以通过http请求完成订阅和二次采样请求</li>
+<li>股票实时tick行情接入。这个功能由QARC_Stock提供，通过pytdx接入股票tick行情。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">QARC_WEBSERVER  <span class="comment"># 提供http服务，进行股票和期货的订阅和二次采样</span></span><br><span class="line">QARC_Stock  <span class="comment"># 提供股票的tick行情</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="QARealtimeCollector安装步骤"><a href="#QARealtimeCollector安装步骤" class="headerlink" title="QARealtimeCollector安装步骤"></a>QARealtimeCollector安装步骤</h2><h3 id="增加QARealtimeCollector模块"><a href="#增加QARealtimeCollector模块" class="headerlink" title="增加QARealtimeCollector模块"></a>增加QARealtimeCollector模块</h3><p>在docker-compose.yaml中添加qamarketcollector模块</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">qamarketcollector:</span><br><span class="line">    image: daocloud.io/quantaxis/qarealtimecollector:latest</span><br><span class="line">    container_name: qamarketcollector</span><br><span class="line">    ports:</span><br><span class="line">        - <span class="string">&quot;8011:8011&quot;</span></span><br><span class="line">    depends_on:</span><br><span class="line">        - mgdb</span><br><span class="line">        - qaeventmq</span><br><span class="line">    environment:</span><br><span class="line">        - MONGODB=mgdb</span><br><span class="line">        - EventMQ_IP=qaeventmq</span><br><span class="line">    networks:</span><br><span class="line">        qanetwork_pro:</span><br><span class="line">            ipv4_address: 172.19.3.8</span><br><span class="line">    <span class="built_in">command</span>:</span><br><span class="line">        [<span class="string">&#x27;/root/QUANTAXIS_RealtimeCollector/docker/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:5672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> ,<span class="string">&#x27;/root/QUANTAXIS_RealtimeCollector/docker/start_collector.sh&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>command中指定start_collector.sh脚本会启动QARC_WEBSERVER和QARC_Stock命令</p>
+<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><p>如果是新添加的qamarketcollector，那么可以直接通过下面的命令启动。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>如果之前已经跟其他模块一起启动的话，qamarketcollector模块会正常启动。</p>
+<h2 id="订阅分钟行情"><a href="#订阅分钟行情" class="headerlink" title="订阅分钟行情"></a>订阅分钟行情</h2><p>订阅地址：POST <a target="_blank" rel="noopener" href="http://10.211.55.38:8011/?action=new_handler&amp;market_type=future_cn&amp;code=rb2201">http://10.211.55.38:8011?action=new_handler&amp;market_type=future_cn&amp;code=rb2201</a></p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E8%AE%A2%E9%98%85%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85.jpg"></p>
+<p>订阅成功后CTPX里面会增加一个rb2201，Exchange会增加realtime_min_rb2201和bar_1min_rb2201，然后命令行订阅就可以看到数据</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">qaps_sub --exchange realtime_min_rb2201 --model fanout</span><br><span class="line">qaps_sub --exchange bar_1min_rb2201 --model fanout</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85%E5%92%8C1%E5%88%86%E9%92%9Fbar.jpg"></p>
+<p>上面是realtime_min_rb2201的数据，下面是bar_1min_rb2201的数据。</p>
+<h2 id="二次采样x分钟数据"><a href="#二次采样x分钟数据" class="headerlink" title="二次采样x分钟数据"></a>二次采样x分钟数据</h2><p>POST <a target="_blank" rel="noopener" href="http://10.211.55.38:8011/?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min">http://10.211.55.38:8011?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min</a></p>
+<p>订阅成功后Exchange会增加一个realtime_5min_rb2201</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qaps_sub --exchange realtime_5min_rb2201 --model fanout</span><br></pre></td></tr></table></figure>
+
+<h2 id="订阅股票tick数据"><a href="#订阅股票tick数据" class="headerlink" title="订阅股票tick数据"></a>订阅股票tick数据</h2><p>POST  <a target="_blank" rel="noopener" href="http://10.211.55.38:8011/?action=new_handler&amp;market_type=stock_cn&amp;code=000001">http://10.211.55.38:8011?action=new_handler&amp;market_type=stock_cn&amp;code=000001</a></p>
+<p>订阅成功后通过名为stocktransaction的exchange获取数据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qaps_sub --exchange stocktransaction --model fanout</span><br></pre></td></tr></table></figure>
+
+<h2 id="http请求合集"><a href="#http请求合集" class="headerlink" title="http请求合集"></a>http请求合集</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 订阅股票</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_handler&amp;market_type=stock_cn&amp;code=000001</span><br><span class="line"><span class="comment"># 订阅期货</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_handler&amp;market_type=future_cn&amp;code=rb2201</span><br><span class="line"><span class="comment"># 股票采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_resampler&amp;market_type=stock_cn&amp;code=000001&amp;frequence=5min</span><br><span class="line"><span class="comment"># 期货采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min</span><br><span class="line"><span class="comment"># 现在的订阅</span></span><br><span class="line">POST http://10.211.55.40:8011?action=get_current_handler</span><br><span class="line"><span class="comment"># 现在的采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=get_current_resampler</span><br></pre></td></tr></table></figure>
+
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>realtime_5min_rb2201的数据有，但是tradetime是错的，”tradetime”: “wrong date 22:36:30”，什么都没动，第二天的数据就正常了</p>
+<p>股票数据出不来，原因是因为数据是从pytdx过来的，docker里的pytdx有问题，安装QQ群里的就好了</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/QUANTAXIS/" rel="tag"># QUANTAXIS</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E4%BB%8E%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/" rel="prev" title="QUANTAXIS从安装到实盘">
+      <i class="fa fa-chevron-left"></i> QUANTAXIS从安装到实盘
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95/" rel="next" title="Ubuntu配置SSH服务端支持远程登录">
+      Ubuntu配置SSH服务端支持远程登录 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#QARealtimeCollector%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">QARealtimeCollector的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QARealtimeCollector%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.</span> <span class="nav-text">QARealtimeCollector安装步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A2%9E%E5%8A%A0QARealtimeCollector%E6%A8%A1%E5%9D%97"><span class="nav-number">2.1.</span> <span class="nav-text">增加QARealtimeCollector模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8"><span class="nav-number">2.2.</span> <span class="nav-text">启动</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A2%E9%98%85%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85"><span class="nav-number">3.</span> <span class="nav-text">订阅分钟行情</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E6%AC%A1%E9%87%87%E6%A0%B7x%E5%88%86%E9%92%9F%E6%95%B0%E6%8D%AE"><span class="nav-number">4.</span> <span class="nav-text">二次采样x分钟数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A2%E9%98%85%E8%82%A1%E7%A5%A8tick%E6%95%B0%E6%8D%AE"><span class="nav-number">5.</span> <span class="nav-text">订阅股票tick数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http%E8%AF%B7%E6%B1%82%E5%90%88%E9%9B%86"><span class="nav-number">6.</span> <span class="nav-text">http请求合集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">7.</span> <span class="nav-text">问题</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">author</p>
+  <div class="site-description" itemprop="description">description</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">author</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

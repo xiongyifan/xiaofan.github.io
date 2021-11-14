@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="原文地址https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;35878555 Ubuntu 远程免密码登录设置我们正常使用 ssh 远程登录服务器进行操作，需要输入用户名、服务器ip以及密码，当我们需要同时管理多个服务器的时候，每次都需要重复输入这些东西会显得特别麻烦和浪费时间，因此我们可以通过配置密钥来实现Ubuntu免密码登录。 实现这一目标五部，分别为：    本地客户端生成密钥对">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu远程免密码登录设置">
+<meta property="og:url" content="http://example.com/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E8%BF%9C%E7%A8%8B%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E8%AE%BE%E7%BD%AE/index.html">
+<meta property="og:site_name" content="熊一帆的博客">
+<meta property="og:description" content="原文地址https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;35878555 Ubuntu 远程免密码登录设置我们正常使用 ssh 远程登录服务器进行操作，需要输入用户名、服务器ip以及密码，当我们需要同时管理多个服务器的时候，每次都需要重复输入这些东西会显得特别麻烦和浪费时间，因此我们可以通过配置密钥来实现Ubuntu免密码登录。 实现这一目标五部，分别为：    本地客户端生成密钥对">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-11-13T17:52:37.000Z">
+<meta property="article:modified_time" content="2021-11-13T17:54:53.000Z">
+<meta property="article:author" content="author">
+<meta property="article:tag" content="Ubuntu">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E8%BF%9C%E7%A8%8B%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E8%AE%BE%E7%BD%AE/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>Ubuntu远程免密码登录设置 | 熊一帆的博客</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ef8046b2c373633c8823fa076c7216d3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">熊一帆的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">subtitle</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://example.com/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E8%BF%9C%E7%A8%8B%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E8%AE%BE%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="author">
+      <meta itemprop="description" content="description">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="熊一帆的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ubuntu远程免密码登录设置
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-11-14 01:52:37 / Modified: 01:54:53" itemprop="dateCreated datePublished" datetime="2021-11-14T01:52:37+08:00">2021-11-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="原文地址"><a href="#原文地址" class="headerlink" title="原文地址"></a>原文地址</h1><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/35878555">https://zhuanlan.zhihu.com/p/35878555</a></p>
+<h1 id="Ubuntu-远程免密码登录设置"><a href="#Ubuntu-远程免密码登录设置" class="headerlink" title="Ubuntu 远程免密码登录设置"></a>Ubuntu 远程免密码登录设置</h1><p>我们正常使用 ssh 远程登录服务器进行操作，需要输入用户名、服务器ip以及密码，当我们需要同时管理多个服务器的时候，每次都需要重复输入这些东西会显得特别麻烦和浪费时间，因此我们可以通过配置密钥来实现Ubuntu免密码登录。</p>
+<p>实现这一目标五部，分别为：  </p>
+<ul>
+<li>本地客户端生成密钥对  </li>
+<li>上传密钥到服务器端  </li>
+<li>服务器端将密钥添加到 authorized_keys  </li>
+<li>本地客户端配置 ssh，添加服务器别名  </li>
+<li>测试</li>
+</ul>
+<p>如果客户端是使用 MacOS 或者 Linux 系统，可以直接在终端使用以下操作即可，如果 Window 系统，建议先安装 Git-Bash，Git-bash 自带 ssh 工具，在 Git-Bash 下，操作也和 Linux 或者 MacOS 系统一样。</p>
+<h2 id="本地客户端生成密钥对"><a href="#本地客户端生成密钥对" class="headerlink" title="本地客户端生成密钥对"></a>本地客户端生成密钥对</h2><p>在生成密钥对之前，我们可以先查看一下我们是否已经生成过密钥对，可以通过以下命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -la ~/.ssh</span><br></pre></td></tr></table></figure>
+
+<p>如果输出有 <code>id_rsa</code> 和 <code>id_rsa.pub</code>，那么就证明之前曾经生成过密钥对，其中 <code>id_rsa</code> 是私钥，<code>id_rsa.pub</code> 是公钥，我们可以直接使用。如果没有看到这两个文件，那么请回忆是否自己命名的密钥对，如果没有或者已经忘记是否曾经生成过，那么久可以重新创建一个。方法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 2048</span><br></pre></td></tr></table></figure>
+
+<p>执行命令后，会提示密钥存储位置，以及询问是否需要设置密码，一般我们可以一路按 <code>Enter</code> 确认即可完成密钥生成。</p>
+<p>完成后我们再次查看 <code>~/.ssh</code> 文件夹下是否由我们新创建的密钥即可。</p>
+<h2 id="上传密钥的服务器端"><a href="#上传密钥的服务器端" class="headerlink" title="上传密钥的服务器端"></a>上传密钥的服务器端</h2><p>接下来，我们将我们创建好的<strong>公钥</strong>上传到服务器上，我们将会使用到 <code>scp</code> 命令。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp ~/.ssh/id_rsa.pub &lt;YOUR SERVER USERNAME&gt;@&lt;YOUR SERVER IP ADDRESS&gt;:~</span><br></pre></td></tr></table></figure>
+
+<p>这里需要注意的是，我们需要上传的是公钥，其文件名为 <code>id_rsa.pub</code>，私钥是需要我们保密的，这里不要上传错。</p>
+<h2 id="服务器端将密钥添加到-authorized-keys"><a href="#服务器端将密钥添加到-authorized-keys" class="headerlink" title="服务器端将密钥添加到 authorized_keys"></a>服务器端将密钥添加到 authorized_keys</h2><p>接下来，我们需要登录我们的服务器，然后将我们刚上传的公钥添加到 authorized_keys中。在添加之前，我们需要先做一下准备，具体如下：  </p>
+<ul>
+<li>检查是否存在 .ssh 文件  </li>
+<li>如果不存在需要自行创建<br>如果是刚安装的系统，以我的 Ubuntu 16.04.4 为例，默认的 ssh 是没有自动创建 .ssh 文件夹的，这需要我们自己创建。不同版本的系统或者以不同途径安装的 ssh 可能情况会有所不一样，请根据实际情况处理。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 查看是否存来 .ssh 文件夹</span><br><span class="line">ls -la ~</span><br><span class="line"># 如果不存在，创建 .ssh 文件夹</span><br><span class="line">mkdir .ssh</span><br><span class="line"># 将公钥添加到 authorized_keys 文件中</span><br><span class="line">cat id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+<p>以上即完成操作，在 Ubuntu 16.04.4 的系统默认配置中，以上操作完成即可。然而，在一些不同版本的系统中，可能还需要配置以下 ssh 的配置，具体如下：  </p>
+<ul>
+<li>备份 <code>/etc/ssh/sshd_config</code>  </li>
+<li>编辑 <code>/etc/ssh/sshd_config</code> ，将 <code>PubkeyAuthentication no</code> 修改为 <code>PubkeyAuthentication yes</code></li>
+</ul>
+<h2 id="本地客户端配置-ssh，添加服务器别名"><a href="#本地客户端配置-ssh，添加服务器别名" class="headerlink" title="本地客户端配置 ssh，添加服务器别名"></a>本地客户端配置 ssh，添加服务器别名</h2><p>完成上面的配置后，我们可以尝试在本地中尝试使用密钥登录看是否成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -i ~/.ssh/id_rsa &lt;YOUR SERVER NAME&gt;@&lt;YOUR SERVER IP ADDRESS&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果配置正确就可以正常免密码登录。</p>
+<p>为了解决需要管理多台服务器，不希望记住太多不同的用户名和地址的问题，我们还可以为设置别名登录，具体操作如下：  </p>
+<ul>
+<li>在本地 .ssh/ 文件夹下创建 config  </li>
+<li>向 config 中添加别名信息</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># ~/.ssh/config 配置格式</span><br><span class="line">Host  &lt;YourServerAlias&gt;</span><br><span class="line">  HostName  &lt;YourServerIPAddress&gt;</span><br><span class="line">  Port  &lt;YourServerSSHPort&gt;</span><br><span class="line">  User  &lt;YourServerUserName&gt;</span><br><span class="line">  IdentityFile  ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>完成所有配置后，我们可以测试一下配置是否正确：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh &lt;Host Alias&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果能正常免密码登录，说明配置成功，我们以后便可以通过这样直接输入服务器别名的方式快速登录服务器了。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Ubuntu/" rel="tag"># Ubuntu</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95/" rel="prev" title="Ubuntu配置SSH服务端支持远程登录">
+      <i class="fa fa-chevron-left"></i> Ubuntu配置SSH服务端支持远程登录
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QUANTAXIS%E8%84%9A%E6%9C%AC%E5%AE%89%E8%A3%85/" rel="next" title="QUANTAXIS脚本安装">
+      QUANTAXIS脚本安装 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E6%96%87%E5%9C%B0%E5%9D%80"><span class="nav-number">1.</span> <span class="nav-text">原文地址</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ubuntu-%E8%BF%9C%E7%A8%8B%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E8%AE%BE%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">Ubuntu 远程免密码登录设置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%94%9F%E6%88%90%E5%AF%86%E9%92%A5%E5%AF%B9"><span class="nav-number">2.1.</span> <span class="nav-text">本地客户端生成密钥对</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0%E5%AF%86%E9%92%A5%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF"><span class="nav-number">2.2.</span> <span class="nav-text">上传密钥的服务器端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%B0%86%E5%AF%86%E9%92%A5%E6%B7%BB%E5%8A%A0%E5%88%B0-authorized-keys"><span class="nav-number">2.3.</span> <span class="nav-text">服务器端将密钥添加到 authorized_keys</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%85%8D%E7%BD%AE-ssh%EF%BC%8C%E6%B7%BB%E5%8A%A0%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%88%AB%E5%90%8D"><span class="nav-number">2.4.</span> <span class="nav-text">本地客户端配置 ssh，添加服务器别名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95"><span class="nav-number">2.5.</span> <span class="nav-text">测试</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">author</p>
+  <div class="site-description" itemprop="description">description</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">author</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
