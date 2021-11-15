@@ -60,6 +60,45 @@
       </tags>
   </entry>
   <entry>
+    <title>CTPBEE</title>
+    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/CTPBEE/</url>
+    <content><![CDATA[<h2 id="QACTPBeeBroker的作用"><a href="#QACTPBeeBroker的作用" class="headerlink" title="QACTPBeeBroker的作用"></a>QACTPBeeBroker的作用</h2><p>通过QACTPBEE命令接入实时的tick行情，然后通过QAPUBSUB订阅就能获取到行情</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">QACTPBEE --userid 133496 --password QCHL1234</span><br></pre></td></tr></table></figure>
+
+<p>下面的第1和第2步只是为了在docker中执行上面的命令，也可以本地安装QACTPBeeBroker后手动执行上面命令，订阅的步骤是一样的。</p>
+<p>当用docker-compose的qactpbeebroker时，默认会执行QACTPBEE命令，如果又手动执行了QACTPBEE命令就会推送两组数据。<br>如果想手动启动只能本地安装，注释掉docker-compose.yaml中的启动命令是没有用的，因为源码中有默认的账号密码。</p>
+<h2 id="QACTPBeeBroker接入实时行情的步骤"><a href="#QACTPBeeBroker接入实时行情的步骤" class="headerlink" title="QACTPBeeBroker接入实时行情的步骤"></a>QACTPBeeBroker接入实时行情的步骤</h2><h3 id="1-增加qactpbeebroker模块"><a href="#1-增加qactpbeebroker模块" class="headerlink" title="1. 增加qactpbeebroker模块"></a>1. 增加qactpbeebroker模块</h3><p>在docker-compose.yaml中添加qactpbeebroker模块</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qactpbeebroker:</span><br><span class="line">    image: daocloud.io/quantaxis/qactpbeebroker:latest</span><br><span class="line">    container_name: qactpbeebroker</span><br><span class="line">    ports:</span><br><span class="line">        - <span class="string">&quot;5000:5000&quot;</span></span><br><span class="line">    networks:</span><br><span class="line">        qanetwork_pro:</span><br><span class="line">            ipv4_address: 172.19.3.7</span><br><span class="line"></span><br><span class="line">        <span class="comment"># --userid TEXT</span></span><br><span class="line">        <span class="comment"># --password TEXT</span></span><br><span class="line">        <span class="comment"># --brokerid TEXT</span></span><br><span class="line">        <span class="comment"># --mdaddr TEXT</span></span><br><span class="line">        <span class="comment"># --tdaddr TEXT</span></span><br><span class="line">        <span class="comment"># --appid TEXT</span></span><br><span class="line">        <span class="comment"># --authcode TEXT</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">command</span>: [<span class="string">&#x27;/root/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:15672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> , <span class="string">&quot;QACTPBEE&quot;</span>, <span class="string">&quot;--userid&quot;</span>, <span class="string">&quot;133496&quot;</span>, <span class="string">&quot;--password&quot;</span>, <span class="string">&#x27;QCHL1234&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>如果想用自己的账户可以在command中修改userid和password。</p>
+<h3 id="2-启动"><a href="#2-启动" class="headerlink" title="2. 启动"></a>2. 启动</h3><p>如果是新添加的qactpbeebroker，那么可以直接通过下面的命令启动。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>如果之前已经跟其他模块一起启动的话，qactpbeebroker可能会启动失败，原因不明。<br>解决办法，手动重新启动下就好了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker ps  <span class="comment"># 没有qactpbeebroker的话，说明已经停止运行了</span></span><br><span class="line">docker-compose start qactpbeebroker  <span class="comment"># 没有的话，运行命令启动</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-检查"><a href="#3-检查" class="headerlink" title="3. 检查"></a>3. 检查</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker logs --tail 1000 -f qactpbeebroker</span><br></pre></td></tr></table></figure>
+
+<p>如果日志显示连接成功，或者有在打印合约代码，说明接入成功了。</p>
+<p>接入成功后，15672页面会增加名为CTPX的Exchange。但是由于Exchange失效后不会自动在15672页面消失，所以有CTPX不意味着连接成功，看日志更保险。</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee%E5%90%AF%E5%8A%A8%E5%A2%9E%E5%8A%A0exchange.jpg"></p>
+<h2 id="订阅tick行情"><a href="#订阅tick行情" class="headerlink" title="订阅tick行情"></a>订阅tick行情</h2><p>订阅tick行情，大概每秒2条tick行情</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange CTPX --model direct --routing_key rb2201</span><br></pre></td></tr></table></figure>
+
+<p>订阅成功后，命令行显示tick行情</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee_%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85%E8%A1%8C%E6%83%85%E6%98%BE%E7%A4%BA.jpg"></p>
+<p>并且名为CTPX的Exchange增加</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85.jpg"></p>
+<p>CTPBEE的任务是连接实盘tick行情，分钟行情则需要使用QARealtimeCollector二次采样分发。</p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>docker-compose up -d所有容器全部一起启动，qactpbeebroker会死掉，手动再启动就好了，不知道怎么回事</p>
+<p>10:15~10:30 rb2201数据停了，是因为这15分钟不是交易时间</p>
+<h2 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h2><p><a href="https://github.com/ctpbee/ctpbee">https://github.com/ctpbee/ctpbee</a><br><a href="https://github.com/yutiansut/QACTPBeeBroker">https://github.com/yutiansut/QACTPBeeBroker</a></p>
+]]></content>
+      <tags>
+        <tag>QUANTAXIS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>QATrader</title>
     <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QATrader/</url>
     <content><![CDATA[<h2 id="模拟盘"><a href="#模拟盘" class="headerlink" title="模拟盘"></a>模拟盘</h2><h3 id="启动模拟账户"><a href="#启动模拟账户" class="headerlink" title="启动模拟账户"></a>启动模拟账户</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 进入qatrader容器</span><br><span class="line">docker exec -it qatrader /bin/bash</span><br><span class="line"># 开启模拟盘账户</span><br><span class="line"># 当指定一个新的acc执行这个命令时，会创建一个acc，存在数据库中</span><br><span class="line"># 已经创建过的acc可以在81页面查看，但是必须开启qatrader才能交易</span><br><span class="line">qatrader --acc 101010 --pwd 101010 --broker QUANTAXIS</span><br></pre></td></tr></table></figure>
@@ -121,64 +160,6 @@
 ]]></content>
       <tags>
         <tag>QUANTAXIS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu远程免密码登录设置</title>
-    <url>/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E8%BF%9C%E7%A8%8B%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E8%AE%BE%E7%BD%AE/</url>
-    <content><![CDATA[<h1 id="原文地址"><a href="#原文地址" class="headerlink" title="原文地址"></a>原文地址</h1><p><a href="https://zhuanlan.zhihu.com/p/35878555">https://zhuanlan.zhihu.com/p/35878555</a></p>
-<h1 id="Ubuntu-远程免密码登录设置"><a href="#Ubuntu-远程免密码登录设置" class="headerlink" title="Ubuntu 远程免密码登录设置"></a>Ubuntu 远程免密码登录设置</h1><p>我们正常使用 ssh 远程登录服务器进行操作，需要输入用户名、服务器ip以及密码，当我们需要同时管理多个服务器的时候，每次都需要重复输入这些东西会显得特别麻烦和浪费时间，因此我们可以通过配置密钥来实现Ubuntu免密码登录。</p>
-<p>实现这一目标五部，分别为：  </p>
-<ul>
-<li>本地客户端生成密钥对  </li>
-<li>上传密钥到服务器端  </li>
-<li>服务器端将密钥添加到 authorized_keys  </li>
-<li>本地客户端配置 ssh，添加服务器别名  </li>
-<li>测试</li>
-</ul>
-<p>如果客户端是使用 MacOS 或者 Linux 系统，可以直接在终端使用以下操作即可，如果 Window 系统，建议先安装 Git-Bash，Git-bash 自带 ssh 工具，在 Git-Bash 下，操作也和 Linux 或者 MacOS 系统一样。</p>
-<h2 id="本地客户端生成密钥对"><a href="#本地客户端生成密钥对" class="headerlink" title="本地客户端生成密钥对"></a>本地客户端生成密钥对</h2><p>在生成密钥对之前，我们可以先查看一下我们是否已经生成过密钥对，可以通过以下命令：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ls -la ~/.ssh</span><br></pre></td></tr></table></figure>
-
-<p>如果输出有 <code>id_rsa</code> 和 <code>id_rsa.pub</code>，那么就证明之前曾经生成过密钥对，其中 <code>id_rsa</code> 是私钥，<code>id_rsa.pub</code> 是公钥，我们可以直接使用。如果没有看到这两个文件，那么请回忆是否自己命名的密钥对，如果没有或者已经忘记是否曾经生成过，那么久可以重新创建一个。方法如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 2048</span><br></pre></td></tr></table></figure>
-
-<p>执行命令后，会提示密钥存储位置，以及询问是否需要设置密码，一般我们可以一路按 <code>Enter</code> 确认即可完成密钥生成。</p>
-<p>完成后我们再次查看 <code>~/.ssh</code> 文件夹下是否由我们新创建的密钥即可。</p>
-<h2 id="上传密钥的服务器端"><a href="#上传密钥的服务器端" class="headerlink" title="上传密钥的服务器端"></a>上传密钥的服务器端</h2><p>接下来，我们将我们创建好的<strong>公钥</strong>上传到服务器上，我们将会使用到 <code>scp</code> 命令。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">scp ~/.ssh/id_rsa.pub &lt;YOUR SERVER USERNAME&gt;@&lt;YOUR SERVER IP ADDRESS&gt;:~</span><br></pre></td></tr></table></figure>
-
-<p>这里需要注意的是，我们需要上传的是公钥，其文件名为 <code>id_rsa.pub</code>，私钥是需要我们保密的，这里不要上传错。</p>
-<h2 id="服务器端将密钥添加到-authorized-keys"><a href="#服务器端将密钥添加到-authorized-keys" class="headerlink" title="服务器端将密钥添加到 authorized_keys"></a>服务器端将密钥添加到 authorized_keys</h2><p>接下来，我们需要登录我们的服务器，然后将我们刚上传的公钥添加到 authorized_keys中。在添加之前，我们需要先做一下准备，具体如下：  </p>
-<ul>
-<li>检查是否存在 .ssh 文件  </li>
-<li>如果不存在需要自行创建<br>如果是刚安装的系统，以我的 Ubuntu 16.04.4 为例，默认的 ssh 是没有自动创建 .ssh 文件夹的，这需要我们自己创建。不同版本的系统或者以不同途径安装的 ssh 可能情况会有所不一样，请根据实际情况处理。</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 查看是否存来 .ssh 文件夹</span><br><span class="line">ls -la ~</span><br><span class="line"># 如果不存在，创建 .ssh 文件夹</span><br><span class="line">mkdir .ssh</span><br><span class="line"># 将公钥添加到 authorized_keys 文件中</span><br><span class="line">cat id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
-
-<p>以上即完成操作，在 Ubuntu 16.04.4 的系统默认配置中，以上操作完成即可。然而，在一些不同版本的系统中，可能还需要配置以下 ssh 的配置，具体如下：  </p>
-<ul>
-<li>备份 <code>/etc/ssh/sshd_config</code>  </li>
-<li>编辑 <code>/etc/ssh/sshd_config</code> ，将 <code>PubkeyAuthentication no</code> 修改为 <code>PubkeyAuthentication yes</code></li>
-</ul>
-<h2 id="本地客户端配置-ssh，添加服务器别名"><a href="#本地客户端配置-ssh，添加服务器别名" class="headerlink" title="本地客户端配置 ssh，添加服务器别名"></a>本地客户端配置 ssh，添加服务器别名</h2><p>完成上面的配置后，我们可以尝试在本地中尝试使用密钥登录看是否成功：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh -i ~/.ssh/id_rsa &lt;YOUR SERVER NAME&gt;@&lt;YOUR SERVER IP ADDRESS&gt;</span><br></pre></td></tr></table></figure>
-
-<p>如果配置正确就可以正常免密码登录。</p>
-<p>为了解决需要管理多台服务器，不希望记住太多不同的用户名和地址的问题，我们还可以为设置别名登录，具体操作如下：  </p>
-<ul>
-<li>在本地 .ssh/ 文件夹下创建 config  </li>
-<li>向 config 中添加别名信息</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># ~/.ssh/config 配置格式</span><br><span class="line">Host  &lt;YourServerAlias&gt;</span><br><span class="line">  HostName  &lt;YourServerIPAddress&gt;</span><br><span class="line">  Port  &lt;YourServerSSHPort&gt;</span><br><span class="line">  User  &lt;YourServerUserName&gt;</span><br><span class="line">  IdentityFile  ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
-
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>完成所有配置后，我们可以测试一下配置是否正确：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh &lt;Host Alias&gt;</span><br></pre></td></tr></table></figure>
-
-<p>如果能正常免密码登录，说明配置成功，我们以后便可以通过这样直接输入服务器别名的方式快速登录服务器了。</p>
-]]></content>
-      <tags>
-        <tag>Ubuntu</tag>
       </tags>
   </entry>
   <entry>
@@ -289,6 +270,64 @@
       </tags>
   </entry>
   <entry>
+    <title>Ubuntu远程免密码登录设置</title>
+    <url>/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E8%BF%9C%E7%A8%8B%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E8%AE%BE%E7%BD%AE/</url>
+    <content><![CDATA[<h1 id="原文地址"><a href="#原文地址" class="headerlink" title="原文地址"></a>原文地址</h1><p><a href="https://zhuanlan.zhihu.com/p/35878555">https://zhuanlan.zhihu.com/p/35878555</a></p>
+<h1 id="Ubuntu-远程免密码登录设置"><a href="#Ubuntu-远程免密码登录设置" class="headerlink" title="Ubuntu 远程免密码登录设置"></a>Ubuntu 远程免密码登录设置</h1><p>我们正常使用 ssh 远程登录服务器进行操作，需要输入用户名、服务器ip以及密码，当我们需要同时管理多个服务器的时候，每次都需要重复输入这些东西会显得特别麻烦和浪费时间，因此我们可以通过配置密钥来实现Ubuntu免密码登录。</p>
+<p>实现这一目标五部，分别为：  </p>
+<ul>
+<li>本地客户端生成密钥对  </li>
+<li>上传密钥到服务器端  </li>
+<li>服务器端将密钥添加到 authorized_keys  </li>
+<li>本地客户端配置 ssh，添加服务器别名  </li>
+<li>测试</li>
+</ul>
+<p>如果客户端是使用 MacOS 或者 Linux 系统，可以直接在终端使用以下操作即可，如果 Window 系统，建议先安装 Git-Bash，Git-bash 自带 ssh 工具，在 Git-Bash 下，操作也和 Linux 或者 MacOS 系统一样。</p>
+<h2 id="本地客户端生成密钥对"><a href="#本地客户端生成密钥对" class="headerlink" title="本地客户端生成密钥对"></a>本地客户端生成密钥对</h2><p>在生成密钥对之前，我们可以先查看一下我们是否已经生成过密钥对，可以通过以下命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ls -la ~/.ssh</span><br></pre></td></tr></table></figure>
+
+<p>如果输出有 <code>id_rsa</code> 和 <code>id_rsa.pub</code>，那么就证明之前曾经生成过密钥对，其中 <code>id_rsa</code> 是私钥，<code>id_rsa.pub</code> 是公钥，我们可以直接使用。如果没有看到这两个文件，那么请回忆是否自己命名的密钥对，如果没有或者已经忘记是否曾经生成过，那么久可以重新创建一个。方法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 2048</span><br></pre></td></tr></table></figure>
+
+<p>执行命令后，会提示密钥存储位置，以及询问是否需要设置密码，一般我们可以一路按 <code>Enter</code> 确认即可完成密钥生成。</p>
+<p>完成后我们再次查看 <code>~/.ssh</code> 文件夹下是否由我们新创建的密钥即可。</p>
+<h2 id="上传密钥的服务器端"><a href="#上传密钥的服务器端" class="headerlink" title="上传密钥的服务器端"></a>上传密钥的服务器端</h2><p>接下来，我们将我们创建好的<strong>公钥</strong>上传到服务器上，我们将会使用到 <code>scp</code> 命令。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">scp ~/.ssh/id_rsa.pub &lt;YOUR SERVER USERNAME&gt;@&lt;YOUR SERVER IP ADDRESS&gt;:~</span><br></pre></td></tr></table></figure>
+
+<p>这里需要注意的是，我们需要上传的是公钥，其文件名为 <code>id_rsa.pub</code>，私钥是需要我们保密的，这里不要上传错。</p>
+<h2 id="服务器端将密钥添加到-authorized-keys"><a href="#服务器端将密钥添加到-authorized-keys" class="headerlink" title="服务器端将密钥添加到 authorized_keys"></a>服务器端将密钥添加到 authorized_keys</h2><p>接下来，我们需要登录我们的服务器，然后将我们刚上传的公钥添加到 authorized_keys中。在添加之前，我们需要先做一下准备，具体如下：  </p>
+<ul>
+<li>检查是否存在 .ssh 文件  </li>
+<li>如果不存在需要自行创建<br>如果是刚安装的系统，以我的 Ubuntu 16.04.4 为例，默认的 ssh 是没有自动创建 .ssh 文件夹的，这需要我们自己创建。不同版本的系统或者以不同途径安装的 ssh 可能情况会有所不一样，请根据实际情况处理。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 查看是否存来 .ssh 文件夹</span><br><span class="line">ls -la ~</span><br><span class="line"># 如果不存在，创建 .ssh 文件夹</span><br><span class="line">mkdir .ssh</span><br><span class="line"># 将公钥添加到 authorized_keys 文件中</span><br><span class="line">cat id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+<p>以上即完成操作，在 Ubuntu 16.04.4 的系统默认配置中，以上操作完成即可。然而，在一些不同版本的系统中，可能还需要配置以下 ssh 的配置，具体如下：  </p>
+<ul>
+<li>备份 <code>/etc/ssh/sshd_config</code>  </li>
+<li>编辑 <code>/etc/ssh/sshd_config</code> ，将 <code>PubkeyAuthentication no</code> 修改为 <code>PubkeyAuthentication yes</code></li>
+</ul>
+<h2 id="本地客户端配置-ssh，添加服务器别名"><a href="#本地客户端配置-ssh，添加服务器别名" class="headerlink" title="本地客户端配置 ssh，添加服务器别名"></a>本地客户端配置 ssh，添加服务器别名</h2><p>完成上面的配置后，我们可以尝试在本地中尝试使用密钥登录看是否成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh -i ~/.ssh/id_rsa &lt;YOUR SERVER NAME&gt;@&lt;YOUR SERVER IP ADDRESS&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果配置正确就可以正常免密码登录。</p>
+<p>为了解决需要管理多台服务器，不希望记住太多不同的用户名和地址的问题，我们还可以为设置别名登录，具体操作如下：  </p>
+<ul>
+<li>在本地 .ssh/ 文件夹下创建 config  </li>
+<li>向 config 中添加别名信息</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># ~/.ssh/config 配置格式</span><br><span class="line">Host  &lt;YourServerAlias&gt;</span><br><span class="line">  HostName  &lt;YourServerIPAddress&gt;</span><br><span class="line">  Port  &lt;YourServerSSHPort&gt;</span><br><span class="line">  User  &lt;YourServerUserName&gt;</span><br><span class="line">  IdentityFile  ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>完成所有配置后，我们可以测试一下配置是否正确：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh &lt;Host Alias&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果能正常免密码登录，说明配置成功，我们以后便可以通过这样直接输入服务器别名的方式快速登录服务器了。</p>
+]]></content>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>QUANTAXIS从安装到实盘</title>
     <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E4%BB%8E%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/</url>
     <content><![CDATA[<h2 id="配置ssh免密连接（可选）"><a href="#配置ssh免密连接（可选）" class="headerlink" title="配置ssh免密连接（可选）"></a>配置ssh免密连接（可选）</h2><p><a href="http://localhost:4000/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E4%BB%8E%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98">Ubuntu配置SSH服务端支持远程登录</a><br><a href="http://localhost:4000/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E4%BB%8E%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98">Ubuntu远程免密码登录设置</a></p>
@@ -332,22 +371,6 @@
       </tags>
   </entry>
   <entry>
-    <title>QUANTAXIS本地数据本地撮合</title>
-    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%92%AE%E5%90%88/</url>
-    <content><![CDATA[<h1 id="QUANTAXIS本地数据本地撮合"><a href="#QUANTAXIS本地数据本地撮合" class="headerlink" title="QUANTAXIS本地数据本地撮合"></a>QUANTAXIS本地数据本地撮合</h1><h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> QUANTAXIS <span class="keyword">as</span> QA</span><br><span class="line"><span class="keyword">from</span> QAPUBSUB.consumer <span class="keyword">import</span> subscriber</span><br><span class="line"><span class="keyword">from</span> QAPUBSUB.producer <span class="keyword">import</span> publisher</span><br><span class="line"><span class="keyword">import</span> threading, json</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 账户准备</span></span><br><span class="line">user = QA.QA_User(username=<span class="string">&#x27;admin&#x27;</span>, password=<span class="string">&#x27;admin&#x27;</span>)</span><br><span class="line">port = user.new_portfolio(<span class="string">&#x27;x1&#x27;</span>)</span><br><span class="line">acc = port.new_account(<span class="string">&#x27;test_local_simpledeal&#x27;</span>, <span class="number">100000</span>, QA.MARKET_TYPE.FUTURE_CN)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 发单操作方法</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sendorder</span>(<span class="params">code, trade_price, trade_towards, trade_time</span>):</span></span><br><span class="line">	acc.receive_simpledeal(</span><br><span class="line">		code=code,</span><br><span class="line">		trade_price=trade_price,</span><br><span class="line">		trade_amount=trade_amount,</span><br><span class="line">		trade_towards=trade_towards,</span><br><span class="line">		trade_time=trade_time)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 策略</span></span><br><span class="line">market_data_list = []</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_data</span>(<span class="params">a, b, c, data</span>):</span></span><br><span class="line">    <span class="comment"># 数据准备</span></span><br><span class="line">    bar = json.loads(data)</span><br><span class="line">    market_data_list.append(bar)</span><br><span class="line">    market_data_df = pd.DataFrame(market_data_list).set_index(<span class="string">&#x27;date&#x27;</span>, drop=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算指标</span></span><br><span class="line">    ind = QA.QA_indicator_MA(market_data_df, <span class="number">2</span>, <span class="number">4</span>)</span><br><span class="line">    <span class="built_in">print</span>(ind)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 策略逻辑</span></span><br><span class="line">    MA2 = ind.iloc[-<span class="number">1</span>][<span class="string">&#x27;MA2&#x27;</span>]</span><br><span class="line">    MA4 = ind.iloc[-<span class="number">1</span>][<span class="string">&#x27;MA4&#x27;</span>]</span><br><span class="line">    code = bar[<span class="string">&#x27;code&#x27;</span>]</span><br><span class="line">    trade_price = bar[<span class="string">&#x27;close&#x27;</span>]</span><br><span class="line">    trade_amount = <span class="number">1</span></span><br><span class="line">    trade_time = bar[<span class="string">&#x27;date&#x27;</span>] + <span class="string">&#x27; 00:00:00&#x27;</span></span><br><span class="line">    code_hold_available = acc.hold_available.get(code, <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">if</span> MA2 &gt; MA4:</span><br><span class="line">        <span class="keyword">if</span> code_hold_available == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;买多&#x27;</span>)</span><br><span class="line">			sendorder(code, trade_price, QA.ORDER_DIRECTION.BUY_OPEN, trade_time)</span><br><span class="line">        <span class="keyword">elif</span> code_hold_available &gt; <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;持有&#x27;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;平空&#x27;</span>)</span><br><span class="line">			sendorder(code, trade_price, QA.ORDER_DIRECTION.BUY_CLOSE, trade_time)</span><br><span class="line">    <span class="keyword">elif</span> MA4 &gt; MA2:</span><br><span class="line">        <span class="keyword">if</span> code_hold_available == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;卖空&#x27;</span>)</span><br><span class="line">			sendorder(code, trade_price, QA.ORDER_DIRECTION.SELL_OPEN, trade_time)</span><br><span class="line">        <span class="keyword">elif</span> code_hold_available &lt; <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;持有&#x27;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;平多&#x27;</span>)</span><br><span class="line">			sendorder(code, trade_price, QA.ORDER_DIRECTION.SELL_CLOSE, trade_time)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;不操作&#x27;</span>)</span><br><span class="line">        </span><br><span class="line"><span class="comment"># 4. 订阅数据</span></span><br><span class="line">sub = subscriber(exchange=<span class="string">&#x27;x1&#x27;</span>)</span><br><span class="line">sub.callback=on_data</span><br><span class="line">threading.Thread(target=sub.start).start()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 数据获取并推送数据</span></span><br><span class="line"><span class="comment"># 获取</span></span><br><span class="line">df = QA.QA_fetch_get_future_day(<span class="string">&#x27;tdx&#x27;</span>, <span class="string">&#x27;RBL8&#x27;</span>, <span class="string">&#x27;2019-08-01&#x27;</span>, <span class="string">&#x27;2019-08-30&#x27;</span>)</span><br><span class="line"><span class="comment"># 推送</span></span><br><span class="line">pub = publisher(exchange=<span class="string">&#x27;x1&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> idx, item <span class="keyword">in</span> df.iterrows():</span><br><span class="line">    pub.pub(item.to_json())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 6. 查看结果</span></span><br><span class="line">risk = QA.QA_Risk(acc)</span><br><span class="line">performance = QA.QA_Performance(acc)</span><br><span class="line"></span><br><span class="line">acc.history_table</span><br><span class="line">risk.plot_assets_curve()</span><br><span class="line">performance.pnl</span><br><span class="line"></span><br><span class="line"><span class="comment"># 7. 保存结果</span></span><br><span class="line">acc.save()</span><br><span class="line">risk.save()</span><br></pre></td></tr></table></figure>
-
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><ol>
-<li>需要存数据，因为qa_risk会调用QA_fetch_stock_day_adv，这个方法会从数据读数据，读不到数据后面的指标不能计算（已解决）</li>
-<li>receive_simpledeal的trade_time，要用%Y-%m-%d %H:%M:%S格式，因为history_min会用到这个格式，格式不对会计算不出history_min，导致后面指标不能计算。（已解决）</li>
-<li>在存了数据，trade_time写对之后，performance.pnl等等都能计算出来了，但是81界面的绩效分析就是出不来，不知道为什么（未解决）</li>
-<li>acc = port.new_account(‘test1’, 100000, QA.MARKET_TYPE.FUTURE_CN, auto_reload=False)，跑第一次的时候会把acc存在数据库，第二次再跑的时候，创建有问题，market_type会变成stock_cn，因为走的另外一个创建逻辑，具体看QAPortfolio的第385行。但是如果auto_reload是true的话就不会有问题，因为会从数据库读取覆盖掉创建时赋值的参数。</li>
-</ol>
-]]></content>
-      <tags>
-        <tag>QUANTAXIS</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>QUANTAXIS实时数据模拟撮合</title>
     <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F%E6%92%AE%E5%90%88/</url>
     <content><![CDATA[<p>整个流程与<a href="http://localhost:4000/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F%E6%92%AE%E5%90%88">QUANTAXIS实时数据本地撮合</a>有两点不同：</p>
@@ -370,39 +393,16 @@
       </tags>
   </entry>
   <entry>
-    <title>CTPBEE</title>
-    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/CTPBEE/</url>
-    <content><![CDATA[<h2 id="QACTPBeeBroker的作用"><a href="#QACTPBeeBroker的作用" class="headerlink" title="QACTPBeeBroker的作用"></a>QACTPBeeBroker的作用</h2><p>通过QACTPBEE命令接入实时的tick行情，然后通过QAPUBSUB订阅就能获取到行情</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">QACTPBEE --userid 133496 --password QCHL1234</span><br></pre></td></tr></table></figure>
+    <title>QUANTAXIS本地数据本地撮合</title>
+    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%92%AE%E5%90%88/</url>
+    <content><![CDATA[<h1 id="QUANTAXIS本地数据本地撮合"><a href="#QUANTAXIS本地数据本地撮合" class="headerlink" title="QUANTAXIS本地数据本地撮合"></a>QUANTAXIS本地数据本地撮合</h1><h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> QUANTAXIS <span class="keyword">as</span> QA</span><br><span class="line"><span class="keyword">from</span> QAPUBSUB.consumer <span class="keyword">import</span> subscriber</span><br><span class="line"><span class="keyword">from</span> QAPUBSUB.producer <span class="keyword">import</span> publisher</span><br><span class="line"><span class="keyword">import</span> threading, json</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 账户准备</span></span><br><span class="line">user = QA.QA_User(username=<span class="string">&#x27;admin&#x27;</span>, password=<span class="string">&#x27;admin&#x27;</span>)</span><br><span class="line">port = user.new_portfolio(<span class="string">&#x27;x1&#x27;</span>)</span><br><span class="line">acc = port.new_account(<span class="string">&#x27;test_local_simpledeal&#x27;</span>, <span class="number">100000</span>, QA.MARKET_TYPE.FUTURE_CN)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 发单操作方法</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sendorder</span>(<span class="params">code, trade_price, trade_towards, trade_time</span>):</span></span><br><span class="line">	acc.receive_simpledeal(</span><br><span class="line">		code=code,</span><br><span class="line">		trade_price=trade_price,</span><br><span class="line">		trade_amount=trade_amount,</span><br><span class="line">		trade_towards=trade_towards,</span><br><span class="line">		trade_time=trade_time)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 策略</span></span><br><span class="line">market_data_list = []</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_data</span>(<span class="params">a, b, c, data</span>):</span></span><br><span class="line">    <span class="comment"># 数据准备</span></span><br><span class="line">    bar = json.loads(data)</span><br><span class="line">    market_data_list.append(bar)</span><br><span class="line">    market_data_df = pd.DataFrame(market_data_list).set_index(<span class="string">&#x27;date&#x27;</span>, drop=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算指标</span></span><br><span class="line">    ind = QA.QA_indicator_MA(market_data_df, <span class="number">2</span>, <span class="number">4</span>)</span><br><span class="line">    <span class="built_in">print</span>(ind)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 策略逻辑</span></span><br><span class="line">    MA2 = ind.iloc[-<span class="number">1</span>][<span class="string">&#x27;MA2&#x27;</span>]</span><br><span class="line">    MA4 = ind.iloc[-<span class="number">1</span>][<span class="string">&#x27;MA4&#x27;</span>]</span><br><span class="line">    code = bar[<span class="string">&#x27;code&#x27;</span>]</span><br><span class="line">    trade_price = bar[<span class="string">&#x27;close&#x27;</span>]</span><br><span class="line">    trade_amount = <span class="number">1</span></span><br><span class="line">    trade_time = bar[<span class="string">&#x27;date&#x27;</span>] + <span class="string">&#x27; 00:00:00&#x27;</span></span><br><span class="line">    code_hold_available = acc.hold_available.get(code, <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">if</span> MA2 &gt; MA4:</span><br><span class="line">        <span class="keyword">if</span> code_hold_available == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;买多&#x27;</span>)</span><br><span class="line">			sendorder(code, trade_price, QA.ORDER_DIRECTION.BUY_OPEN, trade_time)</span><br><span class="line">        <span class="keyword">elif</span> code_hold_available &gt; <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;持有&#x27;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;平空&#x27;</span>)</span><br><span class="line">			sendorder(code, trade_price, QA.ORDER_DIRECTION.BUY_CLOSE, trade_time)</span><br><span class="line">    <span class="keyword">elif</span> MA4 &gt; MA2:</span><br><span class="line">        <span class="keyword">if</span> code_hold_available == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;卖空&#x27;</span>)</span><br><span class="line">			sendorder(code, trade_price, QA.ORDER_DIRECTION.SELL_OPEN, trade_time)</span><br><span class="line">        <span class="keyword">elif</span> code_hold_available &lt; <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;持有&#x27;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;平多&#x27;</span>)</span><br><span class="line">			sendorder(code, trade_price, QA.ORDER_DIRECTION.SELL_CLOSE, trade_time)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;不操作&#x27;</span>)</span><br><span class="line">        </span><br><span class="line"><span class="comment"># 4. 订阅数据</span></span><br><span class="line">sub = subscriber(exchange=<span class="string">&#x27;x1&#x27;</span>)</span><br><span class="line">sub.callback=on_data</span><br><span class="line">threading.Thread(target=sub.start).start()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 数据获取并推送数据</span></span><br><span class="line"><span class="comment"># 获取</span></span><br><span class="line">df = QA.QA_fetch_get_future_day(<span class="string">&#x27;tdx&#x27;</span>, <span class="string">&#x27;RBL8&#x27;</span>, <span class="string">&#x27;2019-08-01&#x27;</span>, <span class="string">&#x27;2019-08-30&#x27;</span>)</span><br><span class="line"><span class="comment"># 推送</span></span><br><span class="line">pub = publisher(exchange=<span class="string">&#x27;x1&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> idx, item <span class="keyword">in</span> df.iterrows():</span><br><span class="line">    pub.pub(item.to_json())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 6. 查看结果</span></span><br><span class="line">risk = QA.QA_Risk(acc)</span><br><span class="line">performance = QA.QA_Performance(acc)</span><br><span class="line"></span><br><span class="line">acc.history_table</span><br><span class="line">risk.plot_assets_curve()</span><br><span class="line">performance.pnl</span><br><span class="line"></span><br><span class="line"><span class="comment"># 7. 保存结果</span></span><br><span class="line">acc.save()</span><br><span class="line">risk.save()</span><br></pre></td></tr></table></figure>
 
-<p>下面的第1和第2步只是为了在docker中执行上面的命令，也可以本地安装QACTPBeeBroker后手动执行上面命令，订阅的步骤是一样的。</p>
-<p>当用docker-compose的qactpbeebroker时，默认会执行QACTPBEE命令，如果又手动执行了QACTPBEE命令就会推送两组数据。<br>如果想手动启动只能本地安装，注释掉docker-compose.yaml中的启动命令是没有用的，因为源码中有默认的账号密码。</p>
-<h2 id="QACTPBeeBroker接入实时行情的步骤"><a href="#QACTPBeeBroker接入实时行情的步骤" class="headerlink" title="QACTPBeeBroker接入实时行情的步骤"></a>QACTPBeeBroker接入实时行情的步骤</h2><h3 id="1-增加qactpbeebroker模块"><a href="#1-增加qactpbeebroker模块" class="headerlink" title="1. 增加qactpbeebroker模块"></a>1. 增加qactpbeebroker模块</h3><p>在docker-compose.yaml中添加qactpbeebroker模块</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qactpbeebroker:</span><br><span class="line">    image: daocloud.io/quantaxis/qactpbeebroker:latest</span><br><span class="line">    container_name: qactpbeebroker</span><br><span class="line">    ports:</span><br><span class="line">        - <span class="string">&quot;5000:5000&quot;</span></span><br><span class="line">    networks:</span><br><span class="line">        qanetwork_pro:</span><br><span class="line">            ipv4_address: 172.19.3.7</span><br><span class="line"></span><br><span class="line">        <span class="comment"># --userid TEXT</span></span><br><span class="line">        <span class="comment"># --password TEXT</span></span><br><span class="line">        <span class="comment"># --brokerid TEXT</span></span><br><span class="line">        <span class="comment"># --mdaddr TEXT</span></span><br><span class="line">        <span class="comment"># --tdaddr TEXT</span></span><br><span class="line">        <span class="comment"># --appid TEXT</span></span><br><span class="line">        <span class="comment"># --authcode TEXT</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">command</span>: [<span class="string">&#x27;/root/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:15672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> , <span class="string">&quot;QACTPBEE&quot;</span>, <span class="string">&quot;--userid&quot;</span>, <span class="string">&quot;133496&quot;</span>, <span class="string">&quot;--password&quot;</span>, <span class="string">&#x27;QCHL1234&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-<p>如果想用自己的账户可以在command中修改userid和password。</p>
-<h3 id="2-启动"><a href="#2-启动" class="headerlink" title="2. 启动"></a>2. 启动</h3><p>如果是新添加的qactpbeebroker，那么可以直接通过下面的命令启动。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
-
-<p>如果之前已经跟其他模块一起启动的话，qactpbeebroker可能会启动失败，原因不明。<br>解决办法，手动重新启动下就好了。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker ps  <span class="comment"># 没有qactpbeebroker的话，说明已经停止运行了</span></span><br><span class="line">docker-compose start qactpbeebroker  <span class="comment"># 没有的话，运行命令启动</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="3-检查"><a href="#3-检查" class="headerlink" title="3. 检查"></a>3. 检查</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker logs --tail 1000 -f qactpbeebroker</span><br></pre></td></tr></table></figure>
-
-<p>如果日志显示连接成功，或者有在打印合约代码，说明接入成功了。</p>
-<p>接入成功后，15672页面会增加名为CTPX的Exchange。但是由于Exchange失效后不会自动在15672页面消失，所以有CTPX不意味着连接成功，看日志更保险。</p>
-<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee%E5%90%AF%E5%8A%A8%E5%A2%9E%E5%8A%A0exchange.jpg"></p>
-<h2 id="订阅tick行情"><a href="#订阅tick行情" class="headerlink" title="订阅tick行情"></a>订阅tick行情</h2><p>订阅tick行情，大概每秒2条tick行情</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange CTPX --model direct --routing_key rb2201</span><br></pre></td></tr></table></figure>
-
-<p>订阅成功后，命令行显示tick行情</p>
-<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee_%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85%E8%A1%8C%E6%83%85%E6%98%BE%E7%A4%BA.jpg"></p>
-<p>并且名为CTPX的Exchange增加</p>
-<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85.jpg"></p>
-<p>CTPBEE的任务是连接实盘tick行情，分钟行情则需要使用QARealtimeCollector二次采样分发。</p>
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>docker-compose up -d所有容器全部一起启动，qactpbeebroker会死掉，手动再启动就好了，不知道怎么回事</p>
-<p>10:15~10:30 rb2201数据停了，是因为这15分钟不是交易时间</p>
-<h2 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h2><p><a href="https://github.com/ctpbee/ctpbee">https://github.com/ctpbee/ctpbee</a><br><a href="https://github.com/yutiansut/QACTPBeeBroker">https://github.com/yutiansut/QACTPBeeBroker</a></p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><ol>
+<li>需要存数据，因为qa_risk会调用QA_fetch_stock_day_adv，这个方法会从数据读数据，读不到数据后面的指标不能计算（已解决）</li>
+<li>receive_simpledeal的trade_time，要用%Y-%m-%d %H:%M:%S格式，因为history_min会用到这个格式，格式不对会计算不出history_min，导致后面指标不能计算。（已解决）</li>
+<li>在存了数据，trade_time写对之后，performance.pnl等等都能计算出来了，但是81界面的绩效分析就是出不来，不知道为什么（未解决）</li>
+<li>acc = port.new_account(‘test1’, 100000, QA.MARKET_TYPE.FUTURE_CN, auto_reload=False)，跑第一次的时候会把acc存在数据库，第二次再跑的时候，创建有问题，market_type会变成stock_cn，因为走的另外一个创建逻辑，具体看QAPortfolio的第385行。但是如果auto_reload是true的话就不会有问题，因为会从数据库读取覆盖掉创建时赋值的参数。</li>
+</ol>
 ]]></content>
       <tags>
         <tag>QUANTAXIS</tag>
