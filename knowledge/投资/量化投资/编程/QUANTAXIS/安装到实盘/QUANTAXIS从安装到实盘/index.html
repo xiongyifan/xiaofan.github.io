@@ -20,12 +20,12 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"xiongyifan.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.8.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="配置ssh免密连接（可选）Ubuntu配置SSH服务端支持远程登录Ubuntu远程免密码登录设置 QUANTAXIS脚本安装QUANTAXIS脚本安装 QUANTAXIS本地数据本地撮合QUANTAXIS本地数据本地撮合 QUANTAXIS实时数据本地撮合QUANTAXIS实时数据本地撮合 QUANTAXIS实时数据模拟撮合QUANTAXIS实时数据模拟撮合 QUANTAXIS实时数据实盘交易待完">
+<meta name="description" content="内容总结自天神的视频，目前更新到STU02 系统环境：Ubuntu 20.04 QUANTAXIS脚本安装QUANTAXIS脚本安装 QUANTAXIS本地数据本地撮合QUANTAXIS本地数据本地撮合 QUANTAXIS实时数据本地撮合QUANTAXIS实时数据本地撮合 QUANTAXIS实时数据模拟撮合QUANTAXIS实时数据模拟撮合 QUANTAXIS实时数据实盘交易待完成">
 <meta property="og:type" content="article">
 <meta property="og:title" content="QUANTAXIS从安装到实盘">
 <meta property="og:url" content="https://xiongyifan.github.io/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E4%BB%8E%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/index.html">
 <meta property="og:site_name" content="熊一帆的博客">
-<meta property="og:description" content="配置ssh免密连接（可选）Ubuntu配置SSH服务端支持远程登录Ubuntu远程免密码登录设置 QUANTAXIS脚本安装QUANTAXIS脚本安装 QUANTAXIS本地数据本地撮合QUANTAXIS本地数据本地撮合 QUANTAXIS实时数据本地撮合QUANTAXIS实时数据本地撮合 QUANTAXIS实时数据模拟撮合QUANTAXIS实时数据模拟撮合 QUANTAXIS实时数据实盘交易待完">
+<meta property="og:description" content="内容总结自天神的视频，目前更新到STU02 系统环境：Ubuntu 20.04 QUANTAXIS脚本安装QUANTAXIS脚本安装 QUANTAXIS本地数据本地撮合QUANTAXIS本地数据本地撮合 QUANTAXIS实时数据本地撮合QUANTAXIS实时数据本地撮合 QUANTAXIS实时数据模拟撮合QUANTAXIS实时数据模拟撮合 QUANTAXIS实时数据实盘交易待完成">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-11-13T17:52:37.000Z">
 <meta property="article:modified_time" content="2021-11-13T17:54:53.000Z">
@@ -147,7 +147,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEssh%E5%85%8D%E5%AF%86%E8%BF%9E%E6%8E%A5%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">配置ssh免密连接（可选）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QUANTAXIS%E8%84%9A%E6%9C%AC%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">QUANTAXIS脚本安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QUANTAXIS%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%92%AE%E5%90%88"><span class="nav-number">3.</span> <span class="nav-text">QUANTAXIS本地数据本地撮合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%92%AE%E5%90%88"><span class="nav-number">4.</span> <span class="nav-text">QUANTAXIS实时数据本地撮合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F%E6%92%AE%E5%90%88"><span class="nav-number">5.</span> <span class="nav-text">QUANTAXIS实时数据模拟撮合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E5%AE%9E%E7%9B%98%E4%BA%A4%E6%98%93"><span class="nav-number">6.</span> <span class="nav-text">QUANTAXIS实时数据实盘交易</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#QUANTAXIS%E8%84%9A%E6%9C%AC%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">QUANTAXIS脚本安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QUANTAXIS%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%92%AE%E5%90%88"><span class="nav-number">2.</span> <span class="nav-text">QUANTAXIS本地数据本地撮合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%92%AE%E5%90%88"><span class="nav-number">3.</span> <span class="nav-text">QUANTAXIS实时数据本地撮合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F%E6%92%AE%E5%90%88"><span class="nav-number">4.</span> <span class="nav-text">QUANTAXIS实时数据模拟撮合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E5%AE%9E%E7%9B%98%E4%BA%A4%E6%98%93"><span class="nav-number">5.</span> <span class="nav-text">QUANTAXIS实时数据实盘交易</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -160,7 +160,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -170,7 +170,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,8 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="配置ssh免密连接（可选）"><a href="#配置ssh免密连接（可选）" class="headerlink" title="配置ssh免密连接（可选）"></a>配置ssh免密连接（可选）</h2><p><a href="/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95">Ubuntu配置SSH服务端支持远程登录</a><br><a href="/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E8%BF%9C%E7%A8%8B%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E8%AE%BE%E7%BD%AE">Ubuntu远程免密码登录设置</a></p>
+        <p>内容总结自<a href="https://space.bilibili.com/21959493">天神的视频</a>，目前更新到STU02</p>
+<p>系统环境：Ubuntu 20.04</p>
 <h2 id="QUANTAXIS脚本安装"><a href="#QUANTAXIS脚本安装" class="headerlink" title="QUANTAXIS脚本安装"></a>QUANTAXIS脚本安装</h2><p><a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QUANTAXIS%E8%84%9A%E6%9C%AC%E5%AE%89%E8%A3%85">QUANTAXIS脚本安装</a></p>
 <h2 id="QUANTAXIS本地数据本地撮合"><a href="#QUANTAXIS本地数据本地撮合" class="headerlink" title="QUANTAXIS本地数据本地撮合"></a>QUANTAXIS本地数据本地撮合</h2><p><a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%92%AE%E5%90%88">QUANTAXIS本地数据本地撮合</a></p>
 <h2 id="QUANTAXIS实时数据本地撮合"><a href="#QUANTAXIS实时数据本地撮合" class="headerlink" title="QUANTAXIS实时数据本地撮合"></a>QUANTAXIS实时数据本地撮合</h2><p><a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%92%AE%E5%90%88">QUANTAXIS实时数据本地撮合</a></p>
