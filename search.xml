@@ -19,6 +19,50 @@
       </tags>
   </entry>
   <entry>
+    <title>QUANTAXIS-QACTPBeeBroker实时行情组件</title>
+    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QUANTAXIS-QACTPBeeBroker%E5%AE%9E%E6%97%B6%E8%A1%8C%E6%83%85%E7%BB%84%E4%BB%B6/</url>
+    <content><![CDATA[<h2 id="QACTPBeeBroker的作用"><a href="#QACTPBeeBroker的作用" class="headerlink" title="QACTPBeeBroker的作用"></a>QACTPBeeBroker的作用</h2><p>通过QACTPBEE命令接入实时的tick行情，然后通过QAPUBSUB订阅就能获取到行情</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">QACTPBEE --userid 133496 --password QCHL1234</span><br></pre></td></tr></table></figure>
+
+<p>下面的第1和第2步只是为了在docker中执行上面的命令，也可以本地安装QACTPBeeBroker后手动执行上面命令，订阅的步骤是一样的。</p>
+<p>当用docker-compose的qactpbeebroker时，默认会执行QACTPBEE命令，如果又手动执行了QACTPBEE命令就会推送两组数据。<br>如果想手动启动只能本地安装，注释掉docker-compose.yaml中的启动命令是没有用的，因为源码中有默认的账号密码。</p>
+<span id="more"></span>
+
+<h2 id="QACTPBeeBroker接入实时行情的步骤"><a href="#QACTPBeeBroker接入实时行情的步骤" class="headerlink" title="QACTPBeeBroker接入实时行情的步骤"></a>QACTPBeeBroker接入实时行情的步骤</h2><h3 id="1-增加qactpbeebroker模块"><a href="#1-增加qactpbeebroker模块" class="headerlink" title="1. 增加qactpbeebroker模块"></a>1. 增加qactpbeebroker模块</h3><p>在docker-compose.yaml中添加qactpbeebroker模块</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qactpbeebroker:</span><br><span class="line">    image: daocloud.io/quantaxis/qactpbeebroker:latest</span><br><span class="line">    container_name: qactpbeebroker</span><br><span class="line">    ports:</span><br><span class="line">        - <span class="string">&quot;5000:5000&quot;</span></span><br><span class="line">    networks:</span><br><span class="line">        qanetwork_pro:</span><br><span class="line">            ipv4_address: 172.19.3.7</span><br><span class="line"></span><br><span class="line">        <span class="comment"># --userid TEXT</span></span><br><span class="line">        <span class="comment"># --password TEXT</span></span><br><span class="line">        <span class="comment"># --brokerid TEXT</span></span><br><span class="line">        <span class="comment"># --mdaddr TEXT</span></span><br><span class="line">        <span class="comment"># --tdaddr TEXT</span></span><br><span class="line">        <span class="comment"># --appid TEXT</span></span><br><span class="line">        <span class="comment"># --authcode TEXT</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">command</span>: [<span class="string">&#x27;/root/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:15672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> , <span class="string">&quot;QACTPBEE&quot;</span>, <span class="string">&quot;--userid&quot;</span>, <span class="string">&quot;133496&quot;</span>, <span class="string">&quot;--password&quot;</span>, <span class="string">&#x27;QCHL1234&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>如果想用自己的账户可以在command中修改userid和password。</p>
+<h3 id="2-启动"><a href="#2-启动" class="headerlink" title="2. 启动"></a>2. 启动</h3><p>如果是新添加的qactpbeebroker，那么可以直接通过下面的命令启动。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>如果之前已经跟其他模块一起启动的话，qactpbeebroker可能会启动失败，原因不明。<br>解决办法，手动重新启动下就好了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker ps  <span class="comment"># 没有qactpbeebroker的话，说明已经停止运行了</span></span><br><span class="line">docker-compose start qactpbeebroker  <span class="comment"># 没有的话，运行命令启动</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-检查"><a href="#3-检查" class="headerlink" title="3. 检查"></a>3. 检查</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker logs --tail 1000 -f qactpbeebroker</span><br></pre></td></tr></table></figure>
+
+<p>如果日志显示连接成功，或者有在打印合约代码，说明接入成功了。</p>
+<p>接入成功后，15672页面会增加名为CTPX的Exchange。但是由于Exchange失效后不会自动在15672页面消失，所以有CTPX不意味着连接成功，看日志更保险。</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee%E5%90%AF%E5%8A%A8%E5%A2%9E%E5%8A%A0exchange.jpg"></p>
+<h2 id="订阅tick行情"><a href="#订阅tick行情" class="headerlink" title="订阅tick行情"></a>订阅tick行情</h2><p>订阅tick行情，大概每秒2条tick行情</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange CTPX --model direct --routing_key rb2201</span><br></pre></td></tr></table></figure>
+
+<p>订阅成功后，命令行显示tick行情</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee_%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85%E8%A1%8C%E6%83%85%E6%98%BE%E7%A4%BA.jpg"></p>
+<p>并且名为CTPX的Exchange增加</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85.jpg"></p>
+<p>CTPBEE的任务是连接实盘tick行情，分钟行情则需要使用QARealtimeCollector二次采样分发。</p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>docker-compose up -d所有容器全部一起启动，qactpbeebroker会死掉，手动再启动就好了，不知道怎么回事</p>
+<p>10:15~10:30 rb2201数据停了，是因为这15分钟不是交易时间</p>
+<h2 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h2><p><a href="https://github.com/ctpbee/ctpbee">https://github.com/ctpbee/ctpbee</a><br><a href="https://github.com/yutiansut/QACTPBeeBroker">https://github.com/yutiansut/QACTPBeeBroker</a></p>
+]]></content>
+      <categories>
+        <category>QUANTAXIS</category>
+      </categories>
+      <tags>
+        <tag>QUANTAXIS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>QUANTAXIS-QAPUBSUB消息订阅组件</title>
     <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QUANTAXIS-QAPUBSUB%E6%B6%88%E6%81%AF%E8%AE%A2%E9%98%85%E7%BB%84%E4%BB%B6/</url>
     <content><![CDATA[<h2 id="QAPUBSUB的作用"><a href="#QAPUBSUB的作用" class="headerlink" title="QAPUBSUB的作用"></a>QAPUBSUB的作用</h2><p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_QAPUBSUB_%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81.jpg"></p>
@@ -69,41 +113,45 @@
       </tags>
   </entry>
   <entry>
-    <title>QUANTAXIS-QACTPBeeBroker实时行情组件</title>
-    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QUANTAXIS-QACTPBeeBroker%E5%AE%9E%E6%97%B6%E8%A1%8C%E6%83%85%E7%BB%84%E4%BB%B6/</url>
-    <content><![CDATA[<h2 id="QACTPBeeBroker的作用"><a href="#QACTPBeeBroker的作用" class="headerlink" title="QACTPBeeBroker的作用"></a>QACTPBeeBroker的作用</h2><p>通过QACTPBEE命令接入实时的tick行情，然后通过QAPUBSUB订阅就能获取到行情</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">QACTPBEE --userid 133496 --password QCHL1234</span><br></pre></td></tr></table></figure>
+    <title>QUANTAXIS-QARealtimeCollector行情订阅和二次采样组件</title>
+    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QUANTAXIS-QARealtimeCollector%E8%A1%8C%E6%83%85%E8%AE%A2%E9%98%85%E5%92%8C%E4%BA%8C%E6%AC%A1%E9%87%87%E6%A0%B7%E7%BB%84%E4%BB%B6/</url>
+    <content><![CDATA[<h2 id="QARealtimeCollector的作用"><a href="#QARealtimeCollector的作用" class="headerlink" title="QARealtimeCollector的作用"></a>QARealtimeCollector的作用</h2><p>QARealtimeCollector的作用有两个：</p>
+<ol>
+<li>对实时tick数据进行二次采样，包括股票和期货。由QARC_WEBSERVER命令提供。</li>
+<li>股票实时tick行情接入。由QARC_Stock提供，通过pytdx接入股票tick行情。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 命令行启动服务</span></span><br><span class="line">QARC_WEBSERVER  <span class="comment"># 提供http服务，进行股票和期货的订阅和二次采样</span></span><br><span class="line">QARC_Stock  <span class="comment"># 提供股票的tick行情</span></span><br></pre></td></tr></table></figure>
 
-<p>下面的第1和第2步只是为了在docker中执行上面的命令，也可以本地安装QACTPBeeBroker后手动执行上面命令，订阅的步骤是一样的。</p>
-<p>当用docker-compose的qactpbeebroker时，默认会执行QACTPBEE命令，如果又手动执行了QACTPBEE命令就会推送两组数据。<br>如果想手动启动只能本地安装，注释掉docker-compose.yaml中的启动命令是没有用的，因为源码中有默认的账号密码。</p>
 <span id="more"></span>
 
-<h2 id="QACTPBeeBroker接入实时行情的步骤"><a href="#QACTPBeeBroker接入实时行情的步骤" class="headerlink" title="QACTPBeeBroker接入实时行情的步骤"></a>QACTPBeeBroker接入实时行情的步骤</h2><h3 id="1-增加qactpbeebroker模块"><a href="#1-增加qactpbeebroker模块" class="headerlink" title="1. 增加qactpbeebroker模块"></a>1. 增加qactpbeebroker模块</h3><p>在docker-compose.yaml中添加qactpbeebroker模块</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qactpbeebroker:</span><br><span class="line">    image: daocloud.io/quantaxis/qactpbeebroker:latest</span><br><span class="line">    container_name: qactpbeebroker</span><br><span class="line">    ports:</span><br><span class="line">        - <span class="string">&quot;5000:5000&quot;</span></span><br><span class="line">    networks:</span><br><span class="line">        qanetwork_pro:</span><br><span class="line">            ipv4_address: 172.19.3.7</span><br><span class="line"></span><br><span class="line">        <span class="comment"># --userid TEXT</span></span><br><span class="line">        <span class="comment"># --password TEXT</span></span><br><span class="line">        <span class="comment"># --brokerid TEXT</span></span><br><span class="line">        <span class="comment"># --mdaddr TEXT</span></span><br><span class="line">        <span class="comment"># --tdaddr TEXT</span></span><br><span class="line">        <span class="comment"># --appid TEXT</span></span><br><span class="line">        <span class="comment"># --authcode TEXT</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">command</span>: [<span class="string">&#x27;/root/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:15672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> , <span class="string">&quot;QACTPBEE&quot;</span>, <span class="string">&quot;--userid&quot;</span>, <span class="string">&quot;133496&quot;</span>, <span class="string">&quot;--password&quot;</span>, <span class="string">&#x27;QCHL1234&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<h2 id="QARealtimeCollector安装步骤"><a href="#QARealtimeCollector安装步骤" class="headerlink" title="QARealtimeCollector安装步骤"></a>QARealtimeCollector安装步骤</h2><h3 id="增加QARealtimeCollector模块"><a href="#增加QARealtimeCollector模块" class="headerlink" title="增加QARealtimeCollector模块"></a>增加QARealtimeCollector模块</h3><p>在docker-compose.yaml中添加qamarketcollector模块</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">qamarketcollector:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">daocloud.io/quantaxis/qarealtimecollector:latest</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">qamarketcollector</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">&quot;8011:8011&quot;</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">mgdb</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">qaeventmq</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">MONGODB=mgdb</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">EventMQ_IP=qaeventmq</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">        <span class="attr">qanetwork_pro:</span></span><br><span class="line">            <span class="attr">ipv4_address:</span> <span class="number">172.19</span><span class="number">.3</span><span class="number">.8</span></span><br><span class="line">    <span class="attr">command:</span></span><br><span class="line">        [<span class="string">&#x27;/root/QUANTAXIS_RealtimeCollector/docker/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:5672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> ,<span class="string">&#x27;/root/QUANTAXIS_RealtimeCollector/docker/start_collector.sh&#x27;</span>]</span><br></pre></td></tr></table></figure>
 
-<p>如果想用自己的账户可以在command中修改userid和password。</p>
-<h3 id="2-启动"><a href="#2-启动" class="headerlink" title="2. 启动"></a>2. 启动</h3><p>如果是新添加的qactpbeebroker，那么可以直接通过下面的命令启动。</p>
+<p>command中指定的start_collector.sh脚本会执行QARC_WEBSERVER和QARC_Stock命令</p>
+<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><p>如果是新添加的qamarketcollector，那么可以直接通过下面的命令启动。</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
 
-<p>如果之前已经跟其他模块一起启动的话，qactpbeebroker可能会启动失败，原因不明。<br>解决办法，手动重新启动下就好了。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker ps  <span class="comment"># 没有qactpbeebroker的话，说明已经停止运行了</span></span><br><span class="line">docker-compose start qactpbeebroker  <span class="comment"># 没有的话，运行命令启动</span></span><br></pre></td></tr></table></figure>
+<p>如果之前已经跟其他模块一起启动的话，qamarketcollector模块会正常启动。</p>
+<h2 id="订阅分钟行情"><a href="#订阅分钟行情" class="headerlink" title="订阅分钟行情"></a>订阅分钟行情</h2><p>订阅地址：POST <a href="http://10.211.55.38:8011/?action=new_handler&amp;market_type=future_cn&amp;code=rb2201">http://10.211.55.38:8011?action=new_handler&amp;market_type=future_cn&amp;code=rb2201</a></p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E8%AE%A2%E9%98%85%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85.jpg"></p>
+<p>订阅成功后CTPX里面会增加一个rb2201，Exchange会增加realtime_min_rb2201和bar_1min_rb2201，然后命令行订阅就可以看到数据</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange realtime_min_rb2201 --model fanout</span><br><span class="line">qaps_sub --exchange bar_1min_rb2201 --model fanout</span><br></pre></td></tr></table></figure>
 
-<h3 id="3-检查"><a href="#3-检查" class="headerlink" title="3. 检查"></a>3. 检查</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker logs --tail 1000 -f qactpbeebroker</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85%E5%92%8C1%E5%88%86%E9%92%9Fbar.jpg"></p>
+<p>上面是realtime_min_rb2201的数据，下面是bar_1min_rb2201的数据。</p>
+<h2 id="二次采样x分钟数据"><a href="#二次采样x分钟数据" class="headerlink" title="二次采样x分钟数据"></a>二次采样x分钟数据</h2><p>POST <a href="http://10.211.55.38:8011/?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min">http://10.211.55.38:8011?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min</a></p>
+<p>订阅成功后Exchange会增加一个realtime_5min_rb2201</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange realtime_5min_rb2201 --model fanout</span><br></pre></td></tr></table></figure>
 
-<p>如果日志显示连接成功，或者有在打印合约代码，说明接入成功了。</p>
-<p>接入成功后，15672页面会增加名为CTPX的Exchange。但是由于Exchange失效后不会自动在15672页面消失，所以有CTPX不意味着连接成功，看日志更保险。</p>
-<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee%E5%90%AF%E5%8A%A8%E5%A2%9E%E5%8A%A0exchange.jpg"></p>
-<h2 id="订阅tick行情"><a href="#订阅tick行情" class="headerlink" title="订阅tick行情"></a>订阅tick行情</h2><p>订阅tick行情，大概每秒2条tick行情</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange CTPX --model direct --routing_key rb2201</span><br></pre></td></tr></table></figure>
+<h2 id="订阅股票tick数据"><a href="#订阅股票tick数据" class="headerlink" title="订阅股票tick数据"></a>订阅股票tick数据</h2><p>POST  <a href="http://10.211.55.38:8011/?action=new_handler&amp;market_type=stock_cn&amp;code=000001">http://10.211.55.38:8011?action=new_handler&amp;market_type=stock_cn&amp;code=000001</a></p>
+<p>订阅成功后通过名为stocktransaction的exchange获取数据</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange stocktransaction --model fanout</span><br></pre></td></tr></table></figure>
 
-<p>订阅成功后，命令行显示tick行情</p>
-<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee_%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85%E8%A1%8C%E6%83%85%E6%98%BE%E7%A4%BA.jpg"></p>
-<p>并且名为CTPX的Exchange增加</p>
-<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85.jpg"></p>
-<p>CTPBEE的任务是连接实盘tick行情，分钟行情则需要使用QARealtimeCollector二次采样分发。</p>
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>docker-compose up -d所有容器全部一起启动，qactpbeebroker会死掉，手动再启动就好了，不知道怎么回事</p>
-<p>10:15~10:30 rb2201数据停了，是因为这15分钟不是交易时间</p>
-<h2 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h2><p><a href="https://github.com/ctpbee/ctpbee">https://github.com/ctpbee/ctpbee</a><br><a href="https://github.com/yutiansut/QACTPBeeBroker">https://github.com/yutiansut/QACTPBeeBroker</a></p>
+<h2 id="http请求合集"><a href="#http请求合集" class="headerlink" title="http请求合集"></a>http请求合集</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 订阅股票</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_handler&amp;market_type=stock_cn&amp;code=000001</span><br><span class="line"><span class="comment"># 订阅期货</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_handler&amp;market_type=future_cn&amp;code=rb2201</span><br><span class="line"><span class="comment"># 股票采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_resampler&amp;market_type=stock_cn&amp;code=000001&amp;frequence=5min</span><br><span class="line"><span class="comment"># 期货采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min</span><br><span class="line"><span class="comment"># 现在的订阅</span></span><br><span class="line">POST http://10.211.55.40:8011?action=get_current_handler</span><br><span class="line"><span class="comment"># 现在的采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=get_current_resampler</span><br></pre></td></tr></table></figure>
+
+<h2 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h2><p><a href="https://github.com/yutiansut/QUANTAXIS_RealtimeCollector">QUANTAXIS_RealtimeCollector</a></p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>realtime_5min_rb2201的数据有，但是tradetime是错的，”tradetime”: “wrong date 22:36:30”，什么都没动，第二天的数据就正常了</p>
+<p>股票数据出不来，原因是因为数据是从pytdx过来的，docker里的pytdx有问题，安装QQ群里的就好了</p>
 ]]></content>
       <categories>
         <category>QUANTAXIS</category>
@@ -161,54 +209,6 @@
 <h2 id="实盘账户数据库说明"><a href="#实盘账户数据库说明" class="headerlink" title="实盘账户数据库说明"></a>实盘账户数据库说明</h2><p><a href="https://doc.shinnytech.com/tqsdk2/latest/reference/tqsdk2.objs.position.html">https://doc.shinnytech.com/tqsdk2/latest/reference/tqsdk2.objs.position.html</a></p>
 <h3 id="持仓说明"><a href="#持仓说明" class="headerlink" title="持仓说明"></a>持仓说明</h3><p>simacc[‘positions’][‘SHFE_rb2201’]</p>
 <figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;&#x27;user_id&#x27;: &#x27;marco07281&#x27;,  # qatrader命令的--acc指定的用户名</span><br><span class="line"> &#x27;exchange_id&#x27;: &#x27;SHFE&#x27;,  # 交易所id</span><br><span class="line"> &#x27;instrument_id&#x27;: &#x27;rb2201&#x27;,  # 合约名称</span><br><span class="line"> &#x27;volume_long_today&#x27;: <span class="number">1</span>,  # 今日下单的多单</span><br><span class="line"> &#x27;volume_long_his&#x27;: <span class="number">0</span>,  # 历史持有的多单</span><br><span class="line"> &#x27;volume_long&#x27;: <span class="number">1</span>,  # 总多单 = 今日 + 历史</span><br><span class="line"> &#x27;volume_long_frozen_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_long_frozen_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_long_frozen&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_frozen_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_frozen_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_frozen&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_long_yd&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_yd&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;pos_long_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;pos_long_today&#x27;: <span class="number">1</span>,  # 跟volume_long_today一样？</span><br><span class="line"> &#x27;pos_short_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;pos_short_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;open_price_long&#x27;: <span class="number">4249.0</span>,  # 多仓均价？</span><br><span class="line"> &#x27;open_price_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;open_cost_long&#x27;: <span class="number">42490.0</span>,  # 持有的多单总成本？</span><br><span class="line"> &#x27;open_cost_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;position_price_long&#x27;: <span class="number">4249.0</span>,  # 跟open_price_long有什么区别？</span><br><span class="line"> &#x27;position_price_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;position_cost_long&#x27;: <span class="number">42490.0</span>,  # 跟open_cost_long有什么区别？</span><br><span class="line"> &#x27;position_cost_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;last_price&#x27;: <span class="number">4262.0</span>,  # 实时的价格，会跟着行情一直变</span><br><span class="line"> &#x27;float_profit_long&#x27;: <span class="number">130.0</span>,  # 实时的多单浮盈？</span><br><span class="line"> &#x27;float_profit_short&#x27;: <span class="number">0.0</span>,  # 实时的空单浮盈？</span><br><span class="line"> &#x27;float_profit&#x27;: <span class="number">130.0</span>,  # 实时浮盈</span><br><span class="line"> &#x27;position_profit_long&#x27;: <span class="number">130.0</span>,  # 跟float_profit_long有什么区别</span><br><span class="line"> &#x27;position_profit_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;position_profit&#x27;: <span class="number">130.0</span>,  # 跟float_profit有什么区别</span><br><span class="line"> &#x27;margin_long&#x27;: <span class="number">3308.8</span>,  # 多单保证金</span><br><span class="line"> &#x27;margin_short&#x27;: <span class="number">0.0</span>,  # 空单保证金</span><br><span class="line"> &#x27;margin&#x27;: <span class="number">3308.8</span>&#125;  # 总保证金</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>QUANTAXIS</category>
-      </categories>
-      <tags>
-        <tag>QUANTAXIS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>QUANTAXIS-QARealtimeCollector行情订阅和二次采样组件</title>
-    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QUANTAXIS-QARealtimeCollector%E8%A1%8C%E6%83%85%E8%AE%A2%E9%98%85%E5%92%8C%E4%BA%8C%E6%AC%A1%E9%87%87%E6%A0%B7%E7%BB%84%E4%BB%B6/</url>
-    <content><![CDATA[<h2 id="QARealtimeCollector的作用"><a href="#QARealtimeCollector的作用" class="headerlink" title="QARealtimeCollector的作用"></a>QARealtimeCollector的作用</h2><p>QARealtimeCollector的作用有两个：</p>
-<ol>
-<li>对实时tick数据进行二次采样，包括股票和期货。由QARC_WEBSERVER命令提供。</li>
-<li>股票实时tick行情接入。由QARC_Stock提供，通过pytdx接入股票tick行情。</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 命令行启动服务</span></span><br><span class="line">QARC_WEBSERVER  <span class="comment"># 提供http服务，进行股票和期货的订阅和二次采样</span></span><br><span class="line">QARC_Stock  <span class="comment"># 提供股票的tick行情</span></span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h2 id="QARealtimeCollector安装步骤"><a href="#QARealtimeCollector安装步骤" class="headerlink" title="QARealtimeCollector安装步骤"></a>QARealtimeCollector安装步骤</h2><h3 id="增加QARealtimeCollector模块"><a href="#增加QARealtimeCollector模块" class="headerlink" title="增加QARealtimeCollector模块"></a>增加QARealtimeCollector模块</h3><p>在docker-compose.yaml中添加qamarketcollector模块</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">qamarketcollector:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">daocloud.io/quantaxis/qarealtimecollector:latest</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">qamarketcollector</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">&quot;8011:8011&quot;</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">mgdb</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">qaeventmq</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">MONGODB=mgdb</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">EventMQ_IP=qaeventmq</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">        <span class="attr">qanetwork_pro:</span></span><br><span class="line">            <span class="attr">ipv4_address:</span> <span class="number">172.19</span><span class="number">.3</span><span class="number">.8</span></span><br><span class="line">    <span class="attr">command:</span></span><br><span class="line">        [<span class="string">&#x27;/root/QUANTAXIS_RealtimeCollector/docker/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:5672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> ,<span class="string">&#x27;/root/QUANTAXIS_RealtimeCollector/docker/start_collector.sh&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-<p>command中指定的start_collector.sh脚本会执行QARC_WEBSERVER和QARC_Stock命令</p>
-<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><p>如果是新添加的qamarketcollector，那么可以直接通过下面的命令启动。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
-
-<p>如果之前已经跟其他模块一起启动的话，qamarketcollector模块会正常启动。</p>
-<h2 id="订阅分钟行情"><a href="#订阅分钟行情" class="headerlink" title="订阅分钟行情"></a>订阅分钟行情</h2><p>订阅地址：POST <a href="http://10.211.55.38:8011/?action=new_handler&amp;market_type=future_cn&amp;code=rb2201">http://10.211.55.38:8011?action=new_handler&amp;market_type=future_cn&amp;code=rb2201</a></p>
-<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E8%AE%A2%E9%98%85%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85.jpg"></p>
-<p>订阅成功后CTPX里面会增加一个rb2201，Exchange会增加realtime_min_rb2201和bar_1min_rb2201，然后命令行订阅就可以看到数据</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange realtime_min_rb2201 --model fanout</span><br><span class="line">qaps_sub --exchange bar_1min_rb2201 --model fanout</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qamarketcollector_%E5%88%86%E9%92%9F%E8%A1%8C%E6%83%85%E5%92%8C1%E5%88%86%E9%92%9Fbar.jpg"></p>
-<p>上面是realtime_min_rb2201的数据，下面是bar_1min_rb2201的数据。</p>
-<h2 id="二次采样x分钟数据"><a href="#二次采样x分钟数据" class="headerlink" title="二次采样x分钟数据"></a>二次采样x分钟数据</h2><p>POST <a href="http://10.211.55.38:8011/?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min">http://10.211.55.38:8011?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min</a></p>
-<p>订阅成功后Exchange会增加一个realtime_5min_rb2201</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange realtime_5min_rb2201 --model fanout</span><br></pre></td></tr></table></figure>
-
-<h2 id="订阅股票tick数据"><a href="#订阅股票tick数据" class="headerlink" title="订阅股票tick数据"></a>订阅股票tick数据</h2><p>POST  <a href="http://10.211.55.38:8011/?action=new_handler&amp;market_type=stock_cn&amp;code=000001">http://10.211.55.38:8011?action=new_handler&amp;market_type=stock_cn&amp;code=000001</a></p>
-<p>订阅成功后通过名为stocktransaction的exchange获取数据</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange stocktransaction --model fanout</span><br></pre></td></tr></table></figure>
-
-<h2 id="http请求合集"><a href="#http请求合集" class="headerlink" title="http请求合集"></a>http请求合集</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 订阅股票</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_handler&amp;market_type=stock_cn&amp;code=000001</span><br><span class="line"><span class="comment"># 订阅期货</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_handler&amp;market_type=future_cn&amp;code=rb2201</span><br><span class="line"><span class="comment"># 股票采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_resampler&amp;market_type=stock_cn&amp;code=000001&amp;frequence=5min</span><br><span class="line"><span class="comment"># 期货采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=new_resampler&amp;market_type=future_cn&amp;code=rb2201&amp;frequence=5min</span><br><span class="line"><span class="comment"># 现在的订阅</span></span><br><span class="line">POST http://10.211.55.40:8011?action=get_current_handler</span><br><span class="line"><span class="comment"># 现在的采样</span></span><br><span class="line">POST http://10.211.55.40:8011?action=get_current_resampler</span><br></pre></td></tr></table></figure>
-
-<h2 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h2><p><a href="https://github.com/yutiansut/QUANTAXIS_RealtimeCollector">QUANTAXIS_RealtimeCollector</a></p>
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>realtime_5min_rb2201的数据有，但是tradetime是错的，”tradetime”: “wrong date 22:36:30”，什么都没动，第二天的数据就正常了</p>
-<p>股票数据出不来，原因是因为数据是从pytdx过来的，docker里的pytdx有问题，安装QQ群里的就好了</p>
-]]></content>
       <categories>
         <category>QUANTAXIS</category>
       </categories>
