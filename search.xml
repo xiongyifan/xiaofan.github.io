@@ -17,113 +17,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu配置SSH服务端支持远程登录</title>
-    <url>/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95/</url>
-    <content><![CDATA[<h1 id="原文地址"><a href="#原文地址" class="headerlink" title="原文地址"></a>原文地址</h1><p><a href="https://juejin.cn/post/6844904048739500046">https://juejin.cn/post/6844904048739500046</a></p>
-<h1 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h1><p>用另外一台电脑ssh访问Ubuntu系统的电脑</p>
-<h1 id="硬件及软件版本"><a href="#硬件及软件版本" class="headerlink" title="硬件及软件版本"></a>硬件及软件版本</h1><blockquote>
-<p>被访问电脑 电脑：联想笔记本G470 系统：Ubuntu 16.04</p>
-<p>客户端电脑 电脑：MBP 系统：10.15.2</p>
-</blockquote>
-<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><h2 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h2><blockquote>
-<p>SSH 为Secure Shell的缩写，由 IETF 的网络小组（Network Working Group）所制定；SSH 为建立在应用层基础上的安全协议。SSH 是目前较可靠，专为远程登录会话和其他网络服务提供安全性的协议。利用 SSH 协议可以有效防止远程管理过程中的信息泄露问题。SSH最初是UNIX系统上的一个程序，后来又迅速扩展到其他操作平台。SSH在正确使用时可弥补网络中的漏洞。SSH客户端适用于多种平台。几乎所有UNIX平台—包括HP-UX、Linux、AIX、Solaris、DigitalUNIX、Irix，以及其他平台，都可运行SSH。– <a href="https://link.juejin.cn/?target=https://baike.sogou.com/v60150874.htm?fromTitle=SSH" title="https://baike.sogou.com/v60150874.htm?fromTitle=SSH">搜狗百科：SSH</a></p>
-</blockquote>
-<h2 id="目标分析"><a href="#目标分析" class="headerlink" title="目标分析"></a>目标分析</h2><p>现在我们知道SSH其实最早是一个安全协议，这个协议就是为远程登录会话而生。因为这个协议，衍生的的SSH程序是我们要安装的软件。要利用SSH连接两台机器，可想可知一个要作为客户端访问，另外一台要作为服务端提供被访问的服务。我们也知道很多Linux、OSX等类Unix系统都已自带了SSH的客户端，Windows也有不少类似PuTTY这样优秀的软件。<br>So，我们接下来要做的其实是如何安装并开启SSH Server。</p>
-<h1 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h1><h2 id="①-确定Ubuntu是否安装SSH服务"><a href="#①-确定Ubuntu是否安装SSH服务" class="headerlink" title="① 确定Ubuntu是否安装SSH服务"></a>① 确定Ubuntu是否安装SSH服务</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">systemctl status ssh</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>比如，这台新系统的机器执行结果如下：  </p>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e90bd1a~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<p>我们注意到两个内容，第一行 加载结果是 未发现，原因没有这个文件或目录，第二行 服务状态是不活跃的，死亡的。从这些词我们能猜到其实这个服务压根就没安装。<br>同理，假如你看到的状态是类似红色的stopped字样，是终止态的，可以用命令 <code>sudo systemctl start ssh</code> 尝试启动，执行结果也可以参考第③步。</p>
-<h2 id="②-安装SSH-Server"><a href="#②-安装SSH-Server" class="headerlink" title="② 安装SSH Server"></a>② 安装SSH Server</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt install openssh-server</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>执行过程如下  </p>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e8fdc4e~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e13fe4874~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<h2 id="③-确定Ubuntu-SSH服务状态"><a href="#③-确定Ubuntu-SSH服务状态" class="headerlink" title="③ 确定Ubuntu SSH服务状态"></a>③ 确定Ubuntu SSH服务状态</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">systemctl status ssh</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>执行结果如下  </p>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e14767b01~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<p>现在能看到：<br>第一行加载状态，已加载ssh.service文件；<br>第二行是否活动，正在运行；并且留意到一个守护进程sshd；<br>再往下看到监听的端口是22。</p>
-<p>至此，我们的SSH服务端已经安装启动OK。</p>
-<h2 id="④-确定Ubuntu机器的IP"><a href="#④-确定Ubuntu机器的IP" class="headerlink" title="④ 确定Ubuntu机器的IP"></a>④ 确定Ubuntu机器的IP</h2><p>我们在局域网测试，那就是查看现在这台局域网IP，可以点击网络设置查看，亦或命令行 <code>ifcofnig</code> 如下图的一个参考，找到你活跃的网卡。比如这台机器的是 <code>192.168.0.145</code>。  </p>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e15de167e~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<h2 id="⑤-确定是否可访问Ubuntu"><a href="#⑤-确定是否可访问Ubuntu" class="headerlink" title="⑤ 确定是否可访问Ubuntu"></a>⑤ 确定是否可访问Ubuntu</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ping 192.168.0.145</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e16c40022~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<p>如果能ping通，这说明网络是通的，那么可以尝试第⑦步。<br>如果有类似 <code>ssh: connect to host 192.168.0.145 port 22: Connection refused</code> 这样的问题是说明端口不能访问，要检查下防火墙。</p>
-<h2 id="⑥-若不能访问，检查Ubuntu防火墙"><a href="#⑥-若不能访问，检查Ubuntu防火墙" class="headerlink" title="⑥ 若不能访问，检查Ubuntu防火墙"></a>⑥ 若不能访问，检查Ubuntu防火墙</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 检查防火墙</span><br><span class="line">sudo ufw status verbose</span><br><span class="line"></span><br><span class="line"># 开启防火墙</span><br><span class="line">sudo ufw enable</span><br><span class="line"></span><br><span class="line"># 开放端口</span><br><span class="line">sudo ufw allow 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>如下命令，可以设置开放来自某IP访问某端口的权限</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo ufw allow from your_ip to any port 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4472b15d~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<h2 id="⑦-使用账号密码登录Ubuntu"><a href="#⑦-使用账号密码登录Ubuntu" class="headerlink" title="⑦ 使用账号密码登录Ubuntu"></a>⑦ 使用账号密码登录Ubuntu</h2><p>现在，使用另外一台电脑尝试登录 <code>Ubuntu</code></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh baiyutang@192.168.0.145 -p 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>对于第一次登陆的会提示主机不被认可，加密签名的指  </p>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4cb0c3bb~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<p>输入 yes 确认，继续<br>需要验证 <code>Ubuntu</code> 当前用户 <code>baiyutang</code> 的登录密码，输入确认即可登录成功。  </p>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4b31de95~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-<h1 id="延伸"><a href="#延伸" class="headerlink" title="延伸"></a>延伸</h1><ul>
-<li>  openssh-server是什么？</li>
-</ul>
-<blockquote>
-<p><a href="https://link.juejin.cn/?target=https://help.ubuntu.com/lts/serverguide/openssh-server.html" title="https://help.ubuntu.com/lts/serverguide/openssh-server.html">Ubuntu Wiki OpenSSH Server</a> <a href="https://link.juejin.cn/?target=https://www.openssh.com/" title="https://www.openssh.com/">About OpenSSH</a></p>
-</blockquote>
-<ul>
-<li>  SSH服务端开放的端口可以更改吗？</li>
-</ul>
-<blockquote>
-<p>可以，在文件 <code>/etc/ssh/sshd_config</code> 里可以配置 SSH Server 开放的端口，修改后记得 <code>sudo systemctl restart sshd</code> 重启下生效。修改位置如下图第 5 行所示：</p>
-</blockquote>
-<blockquote>
-<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e52bf2ea7~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
-</blockquote>
-<ul>
-<li>  ufw及基本的管理操作</li>
-</ul>
-<blockquote>
-<p>Ubuntu防火墙设置可以单独抽出来讲，或者可以先看参考资料第四条。</p>
-</blockquote>
-<ul>
-<li>  如何使用公钥免密登录？</li>
-<li>  SSH加密传输的过程原理？</li>
-<li>  加密签名指纹是什么？</li>
-</ul>
-<blockquote>
-<p>这个等下篇专门来做记录，三个问题可以放在一起。</p>
-</blockquote>
-<ul>
-<li>  如何配置跳板机？</li>
-</ul>
-<blockquote>
-<p>这个也后续单独做。</p>
-</blockquote>
-<ul>
-<li>  安全问题及中间人攻击</li>
-</ul>
-<blockquote>
-<p>在参考第一条有讲到这个问题。</p>
-</blockquote>
-<ul>
-<li>  内网穿透是什么？</li>
-</ul>
-<blockquote>
-<p>后续了解及研究，因为有段时间也在寻找和远程控制相关软件，可以作为研究课题。</p>
-</blockquote>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
-<li> <a href="https://link.juejin.cn/?target=https://linux.cn/thread/9427/1/1/" title="https://linux.cn/thread/9427/1/1/">ssh 基本原理和免密码登录</a></li>
-<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-7683-1.html" title="https://linux.cn/article-7683-1.html">五条强化 SSH 安全的建议</a></li>
-<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-1206-1.html" title="https://linux.cn/article-1206-1.html">牢记25个最佳的SSH命令</a></li>
-<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-8087-1.html" title="https://linux.cn/article-8087-1.html">在Ubuntu中用UFW配置防火墙</a></li>
-<li> <a href="https://link.juejin.cn/?target=https://support.apple.com/zh-cn/guide/mac-help/mh34041/mac" title="https://support.apple.com/zh-cn/guide/mac-help/mh34041/mac">在 Mac 上使用防火墙来防止非法连接</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>CTPBEE</title>
     <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/CTPBEE/</url>
     <content><![CDATA[<h2 id="QACTPBeeBroker的作用"><a href="#QACTPBeeBroker的作用" class="headerlink" title="QACTPBeeBroker的作用"></a>QACTPBeeBroker的作用</h2><p>通过QACTPBEE命令接入实时的tick行情，然后通过QAPUBSUB订阅就能获取到行情</p>
@@ -322,6 +215,113 @@
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh &lt;Host Alias&gt;</span><br></pre></td></tr></table></figure>
 
 <p>如果能正常免密码登录，说明配置成功，我们以后便可以通过这样直接输入服务器别名的方式快速登录服务器了。</p>
+]]></content>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu配置SSH服务端支持远程登录</title>
+    <url>/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95/</url>
+    <content><![CDATA[<h1 id="原文地址"><a href="#原文地址" class="headerlink" title="原文地址"></a>原文地址</h1><p><a href="https://juejin.cn/post/6844904048739500046">https://juejin.cn/post/6844904048739500046</a></p>
+<h1 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h1><p>用另外一台电脑ssh访问Ubuntu系统的电脑</p>
+<h1 id="硬件及软件版本"><a href="#硬件及软件版本" class="headerlink" title="硬件及软件版本"></a>硬件及软件版本</h1><blockquote>
+<p>被访问电脑 电脑：联想笔记本G470 系统：Ubuntu 16.04</p>
+<p>客户端电脑 电脑：MBP 系统：10.15.2</p>
+</blockquote>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><h2 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h2><blockquote>
+<p>SSH 为Secure Shell的缩写，由 IETF 的网络小组（Network Working Group）所制定；SSH 为建立在应用层基础上的安全协议。SSH 是目前较可靠，专为远程登录会话和其他网络服务提供安全性的协议。利用 SSH 协议可以有效防止远程管理过程中的信息泄露问题。SSH最初是UNIX系统上的一个程序，后来又迅速扩展到其他操作平台。SSH在正确使用时可弥补网络中的漏洞。SSH客户端适用于多种平台。几乎所有UNIX平台—包括HP-UX、Linux、AIX、Solaris、DigitalUNIX、Irix，以及其他平台，都可运行SSH。– <a href="https://link.juejin.cn/?target=https://baike.sogou.com/v60150874.htm?fromTitle=SSH" title="https://baike.sogou.com/v60150874.htm?fromTitle=SSH">搜狗百科：SSH</a></p>
+</blockquote>
+<h2 id="目标分析"><a href="#目标分析" class="headerlink" title="目标分析"></a>目标分析</h2><p>现在我们知道SSH其实最早是一个安全协议，这个协议就是为远程登录会话而生。因为这个协议，衍生的的SSH程序是我们要安装的软件。要利用SSH连接两台机器，可想可知一个要作为客户端访问，另外一台要作为服务端提供被访问的服务。我们也知道很多Linux、OSX等类Unix系统都已自带了SSH的客户端，Windows也有不少类似PuTTY这样优秀的软件。<br>So，我们接下来要做的其实是如何安装并开启SSH Server。</p>
+<h1 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h1><h2 id="①-确定Ubuntu是否安装SSH服务"><a href="#①-确定Ubuntu是否安装SSH服务" class="headerlink" title="① 确定Ubuntu是否安装SSH服务"></a>① 确定Ubuntu是否安装SSH服务</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">systemctl status ssh</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>比如，这台新系统的机器执行结果如下：  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e90bd1a~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>我们注意到两个内容，第一行 加载结果是 未发现，原因没有这个文件或目录，第二行 服务状态是不活跃的，死亡的。从这些词我们能猜到其实这个服务压根就没安装。<br>同理，假如你看到的状态是类似红色的stopped字样，是终止态的，可以用命令 <code>sudo systemctl start ssh</code> 尝试启动，执行结果也可以参考第③步。</p>
+<h2 id="②-安装SSH-Server"><a href="#②-安装SSH-Server" class="headerlink" title="② 安装SSH Server"></a>② 安装SSH Server</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt install openssh-server</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>执行过程如下  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e0e8fdc4e~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e13fe4874~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h2 id="③-确定Ubuntu-SSH服务状态"><a href="#③-确定Ubuntu-SSH服务状态" class="headerlink" title="③ 确定Ubuntu SSH服务状态"></a>③ 确定Ubuntu SSH服务状态</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">systemctl status ssh</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>执行结果如下  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e14767b01~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>现在能看到：<br>第一行加载状态，已加载ssh.service文件；<br>第二行是否活动，正在运行；并且留意到一个守护进程sshd；<br>再往下看到监听的端口是22。</p>
+<p>至此，我们的SSH服务端已经安装启动OK。</p>
+<h2 id="④-确定Ubuntu机器的IP"><a href="#④-确定Ubuntu机器的IP" class="headerlink" title="④ 确定Ubuntu机器的IP"></a>④ 确定Ubuntu机器的IP</h2><p>我们在局域网测试，那就是查看现在这台局域网IP，可以点击网络设置查看，亦或命令行 <code>ifcofnig</code> 如下图的一个参考，找到你活跃的网卡。比如这台机器的是 <code>192.168.0.145</code>。  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e15de167e~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h2 id="⑤-确定是否可访问Ubuntu"><a href="#⑤-确定是否可访问Ubuntu" class="headerlink" title="⑤ 确定是否可访问Ubuntu"></a>⑤ 确定是否可访问Ubuntu</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ping 192.168.0.145</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e16c40022~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>如果能ping通，这说明网络是通的，那么可以尝试第⑦步。<br>如果有类似 <code>ssh: connect to host 192.168.0.145 port 22: Connection refused</code> 这样的问题是说明端口不能访问，要检查下防火墙。</p>
+<h2 id="⑥-若不能访问，检查Ubuntu防火墙"><a href="#⑥-若不能访问，检查Ubuntu防火墙" class="headerlink" title="⑥ 若不能访问，检查Ubuntu防火墙"></a>⑥ 若不能访问，检查Ubuntu防火墙</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 检查防火墙</span><br><span class="line">sudo ufw status verbose</span><br><span class="line"></span><br><span class="line"># 开启防火墙</span><br><span class="line">sudo ufw enable</span><br><span class="line"></span><br><span class="line"># 开放端口</span><br><span class="line">sudo ufw allow 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>如下命令，可以设置开放来自某IP访问某端口的权限</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo ufw allow from your_ip to any port 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4472b15d~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h2 id="⑦-使用账号密码登录Ubuntu"><a href="#⑦-使用账号密码登录Ubuntu" class="headerlink" title="⑦ 使用账号密码登录Ubuntu"></a>⑦ 使用账号密码登录Ubuntu</h2><p>现在，使用另外一台电脑尝试登录 <code>Ubuntu</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh baiyutang@192.168.0.145 -p 22</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>对于第一次登陆的会提示主机不被认可，加密签名的指  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4cb0c3bb~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<p>输入 yes 确认，继续<br>需要验证 <code>Ubuntu</code> 当前用户 <code>baiyutang</code> 的登录密码，输入确认即可登录成功。  </p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e4b31de95~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+<h1 id="延伸"><a href="#延伸" class="headerlink" title="延伸"></a>延伸</h1><ul>
+<li>  openssh-server是什么？</li>
+</ul>
+<blockquote>
+<p><a href="https://link.juejin.cn/?target=https://help.ubuntu.com/lts/serverguide/openssh-server.html" title="https://help.ubuntu.com/lts/serverguide/openssh-server.html">Ubuntu Wiki OpenSSH Server</a> <a href="https://link.juejin.cn/?target=https://www.openssh.com/" title="https://www.openssh.com/">About OpenSSH</a></p>
+</blockquote>
+<ul>
+<li>  SSH服务端开放的端口可以更改吗？</li>
+</ul>
+<blockquote>
+<p>可以，在文件 <code>/etc/ssh/sshd_config</code> 里可以配置 SSH Server 开放的端口，修改后记得 <code>sudo systemctl restart sshd</code> 重启下生效。修改位置如下图第 5 行所示：</p>
+</blockquote>
+<blockquote>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/1/16/16fac55e52bf2ea7~tplv-t2oaga2asx-watermark.awebp" alt="image.png"></p>
+</blockquote>
+<ul>
+<li>  ufw及基本的管理操作</li>
+</ul>
+<blockquote>
+<p>Ubuntu防火墙设置可以单独抽出来讲，或者可以先看参考资料第四条。</p>
+</blockquote>
+<ul>
+<li>  如何使用公钥免密登录？</li>
+<li>  SSH加密传输的过程原理？</li>
+<li>  加密签名指纹是什么？</li>
+</ul>
+<blockquote>
+<p>这个等下篇专门来做记录，三个问题可以放在一起。</p>
+</blockquote>
+<ul>
+<li>  如何配置跳板机？</li>
+</ul>
+<blockquote>
+<p>这个也后续单独做。</p>
+</blockquote>
+<ul>
+<li>  安全问题及中间人攻击</li>
+</ul>
+<blockquote>
+<p>在参考第一条有讲到这个问题。</p>
+</blockquote>
+<ul>
+<li>  内网穿透是什么？</li>
+</ul>
+<blockquote>
+<p>后续了解及研究，因为有段时间也在寻找和远程控制相关软件，可以作为研究课题。</p>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/thread/9427/1/1/" title="https://linux.cn/thread/9427/1/1/">ssh 基本原理和免密码登录</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-7683-1.html" title="https://linux.cn/article-7683-1.html">五条强化 SSH 安全的建议</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-1206-1.html" title="https://linux.cn/article-1206-1.html">牢记25个最佳的SSH命令</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://linux.cn/article-8087-1.html" title="https://linux.cn/article-8087-1.html">在Ubuntu中用UFW配置防火墙</a></li>
+<li> <a href="https://link.juejin.cn/?target=https://support.apple.com/zh-cn/guide/mac-help/mh34041/mac" title="https://support.apple.com/zh-cn/guide/mac-help/mh34041/mac">在 Mac 上使用防火墙来防止非法连接</a></li>
+</ol>
 ]]></content>
       <tags>
         <tag>Ubuntu</tag>
