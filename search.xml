@@ -161,6 +161,25 @@
       </tags>
   </entry>
   <entry>
+    <title>QUANTAXIS脚本安装</title>
+    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QUANTAXIS%E8%84%9A%E6%9C%AC%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<h2 id="Docker安装"><a href="#Docker安装" class="headerlink" title="Docker安装"></a>Docker安装</h2><p><a href="/knowledge/%E7%BC%96%E7%A8%8B/%E5%AE%B9%E5%99%A8/Docker/Docker%E5%AE%89%E8%A3%85">Docker安装</a></p>
+<h2 id="QUANTAXIS安装"><a href="#QUANTAXIS安装" class="headerlink" title="QUANTAXIS安装"></a>QUANTAXIS安装</h2><p>脚本根据天神的<a href="https://github.com/QUANTAXIS/QUANTAXIS/tree/master/docker/qa-service-pro" title="qa-service-pro">qa-service-pro</a>修改，但只保留了7个基本的容器，qa，qaweb，mgdb，qaeventmq，qactpbeebroker，qamarketcollector，qatrader，后面需要时再增加。</p>
+<p>通过wget下载脚本安装之前，需要先准备好<strong>群文件</strong>中的<strong>QA</strong>和<strong>pytdx</strong>，并与脚本放在<strong>同一个目录下</strong>。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir QA  <span class="comment"># 创建目录存放docker-compose.yaml</span></span><br><span class="line"><span class="built_in">cd</span> QA</span><br><span class="line"><span class="comment"># 下载群文件中的QUANTAXIS和pytdx，放在QA目录下</span></span><br><span class="line"><span class="comment"># 执行安装脚本</span></span><br><span class="line">curl -sSL https://gitee.com/xiongyifan/quantaxis-study/raw/master/bash/install_qa.sh | sh</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h2 id="QUANTAXIS初始化"><a href="#QUANTAXIS初始化" class="headerlink" title="QUANTAXIS初始化"></a>QUANTAXIS初始化</h2><p>以下内容复制自QQ群公告<br>第一次部署docker版QA必须的初始化操作步骤：<br>一、在浏览器输入docker宿主机”ip地址:8888”；<br>二、进入jupyterlab登录界面后输入口令”quantaxis”;<br>三、进入jupyterlab启动页，点击Terminal进入终端；<br>四、在终端界面输入”/bin/bash”,进入bash状态；<br>五、bash状态输入”quantaxis”,进入数据库操作状态；<br>六：依次输入完成数据库初始化<br>“save stock_list”，”save single_index_day 000300”<br>输入exit退出终端，在docker管理界面重启qaweb容器，最后浏览器输入docker宿主机”ip地址:81”，弹出的登录界面把登录地址端口改为docker宿主机”ip地址:8010”,就可以进入QA前端界面</p>
+]]></content>
+      <categories>
+        <category>QUANTAXIS</category>
+      </categories>
+      <tags>
+        <tag>QUANTAXIS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>QATrader</title>
     <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QATrader/</url>
     <content><![CDATA[<h2 id="模拟盘"><a href="#模拟盘" class="headerlink" title="模拟盘"></a>模拟盘</h2><h3 id="启动模拟账户"><a href="#启动模拟账户" class="headerlink" title="启动模拟账户"></a>启动模拟账户</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 进入qatrader容器</span><br><span class="line">docker exec -it qatrader /bin/bash</span><br><span class="line"># 开启模拟盘账户</span><br><span class="line"># 当指定一个新的acc执行这个命令时，会创建一个acc，存在数据库中</span><br><span class="line"># 已经创建过的acc可以在81页面查看，但是必须开启qatrader才能交易</span><br><span class="line">qatrader --acc 101010 --pwd 101010 --broker QUANTAXIS</span><br></pre></td></tr></table></figure>
@@ -209,25 +228,6 @@
 <h2 id="实盘账户数据库说明"><a href="#实盘账户数据库说明" class="headerlink" title="实盘账户数据库说明"></a>实盘账户数据库说明</h2><p><a href="https://doc.shinnytech.com/tqsdk2/latest/reference/tqsdk2.objs.position.html">https://doc.shinnytech.com/tqsdk2/latest/reference/tqsdk2.objs.position.html</a></p>
 <h3 id="持仓说明"><a href="#持仓说明" class="headerlink" title="持仓说明"></a>持仓说明</h3><p>simacc[‘positions’][‘SHFE_rb2201’]</p>
 <figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;&#x27;user_id&#x27;: &#x27;marco07281&#x27;,  # qatrader命令的--acc指定的用户名</span><br><span class="line"> &#x27;exchange_id&#x27;: &#x27;SHFE&#x27;,  # 交易所id</span><br><span class="line"> &#x27;instrument_id&#x27;: &#x27;rb2201&#x27;,  # 合约名称</span><br><span class="line"> &#x27;volume_long_today&#x27;: <span class="number">1</span>,  # 今日下单的多单</span><br><span class="line"> &#x27;volume_long_his&#x27;: <span class="number">0</span>,  # 历史持有的多单</span><br><span class="line"> &#x27;volume_long&#x27;: <span class="number">1</span>,  # 总多单 = 今日 + 历史</span><br><span class="line"> &#x27;volume_long_frozen_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_long_frozen_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_long_frozen&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_frozen_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_frozen_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_frozen&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_long_yd&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;volume_short_yd&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;pos_long_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;pos_long_today&#x27;: <span class="number">1</span>,  # 跟volume_long_today一样？</span><br><span class="line"> &#x27;pos_short_his&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;pos_short_today&#x27;: <span class="number">0</span>,</span><br><span class="line"> &#x27;open_price_long&#x27;: <span class="number">4249.0</span>,  # 多仓均价？</span><br><span class="line"> &#x27;open_price_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;open_cost_long&#x27;: <span class="number">42490.0</span>,  # 持有的多单总成本？</span><br><span class="line"> &#x27;open_cost_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;position_price_long&#x27;: <span class="number">4249.0</span>,  # 跟open_price_long有什么区别？</span><br><span class="line"> &#x27;position_price_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;position_cost_long&#x27;: <span class="number">42490.0</span>,  # 跟open_cost_long有什么区别？</span><br><span class="line"> &#x27;position_cost_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;last_price&#x27;: <span class="number">4262.0</span>,  # 实时的价格，会跟着行情一直变</span><br><span class="line"> &#x27;float_profit_long&#x27;: <span class="number">130.0</span>,  # 实时的多单浮盈？</span><br><span class="line"> &#x27;float_profit_short&#x27;: <span class="number">0.0</span>,  # 实时的空单浮盈？</span><br><span class="line"> &#x27;float_profit&#x27;: <span class="number">130.0</span>,  # 实时浮盈</span><br><span class="line"> &#x27;position_profit_long&#x27;: <span class="number">130.0</span>,  # 跟float_profit_long有什么区别</span><br><span class="line"> &#x27;position_profit_short&#x27;: <span class="number">0.0</span>,</span><br><span class="line"> &#x27;position_profit&#x27;: <span class="number">130.0</span>,  # 跟float_profit有什么区别</span><br><span class="line"> &#x27;margin_long&#x27;: <span class="number">3308.8</span>,  # 多单保证金</span><br><span class="line"> &#x27;margin_short&#x27;: <span class="number">0.0</span>,  # 空单保证金</span><br><span class="line"> &#x27;margin&#x27;: <span class="number">3308.8</span>&#125;  # 总保证金</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>QUANTAXIS</category>
-      </categories>
-      <tags>
-        <tag>QUANTAXIS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>QUANTAXIS脚本安装</title>
-    <url>/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QUANTAXIS%E8%84%9A%E6%9C%AC%E5%AE%89%E8%A3%85/</url>
-    <content><![CDATA[<h2 id="Docker安装"><a href="#Docker安装" class="headerlink" title="Docker安装"></a>Docker安装</h2><p><a href="/knowledge/%E7%BC%96%E7%A8%8B/%E5%AE%B9%E5%99%A8/Docker/Docker%E5%AE%89%E8%A3%85">Docker安装</a></p>
-<h2 id="QUANTAXIS安装"><a href="#QUANTAXIS安装" class="headerlink" title="QUANTAXIS安装"></a>QUANTAXIS安装</h2><p>脚本根据天神的<a href="https://github.com/QUANTAXIS/QUANTAXIS/tree/master/docker/qa-service-pro" title="qa-service-pro">qa-service-pro</a>修改，但只保留了7个基本的容器，qa，qaweb，mgdb，qaeventmq，qactpbeebroker，qamarketcollector，qatrader，后面需要时再增加。</p>
-<p>通过wget下载脚本安装之前，需要先准备好<strong>群文件</strong>中的<strong>QA</strong>和<strong>pytdx</strong>，并与脚本放在<strong>同一个目录下</strong>。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir QA  <span class="comment"># 创建目录存放docker-compose.yaml</span></span><br><span class="line"><span class="built_in">cd</span> QA</span><br><span class="line"><span class="comment"># 下载群文件中的QUANTAXIS和pytdx，放在QA目录下</span></span><br><span class="line"><span class="comment"># 执行安装脚本</span></span><br><span class="line">curl -sSL https://gitee.com/xiongyifan/quantaxis-study/raw/master/bash/install_qa.sh | sh</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h2 id="QUANTAXIS初始化"><a href="#QUANTAXIS初始化" class="headerlink" title="QUANTAXIS初始化"></a>QUANTAXIS初始化</h2><p>以下内容复制自QQ群公告<br>第一次部署docker版QA必须的初始化操作步骤：<br>一、在浏览器输入docker宿主机”ip地址:8888”；<br>二、进入jupyterlab登录界面后输入口令”quantaxis”;<br>三、进入jupyterlab启动页，点击Terminal进入终端；<br>四、在终端界面输入”/bin/bash”,进入bash状态；<br>五、bash状态输入”quantaxis”,进入数据库操作状态；<br>六：依次输入完成数据库初始化<br>“save stock_list”，”save single_index_day 000300”<br>输入exit退出终端，在docker管理界面重启qaweb容器，最后浏览器输入docker宿主机”ip地址:81”，弹出的登录界面把登录地址端口改为docker宿主机”ip地址:8010”,就可以进入QA前端界面</p>
-]]></content>
       <categories>
         <category>QUANTAXIS</category>
       </categories>
