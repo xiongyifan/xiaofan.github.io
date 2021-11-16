@@ -20,12 +20,12 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"xiongyifan.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.8.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="整个流程与QUANTAXIS实时数据本地撮合有两点不同：  模拟撮合通过qatrader模块连接模拟盘账户完成订单。 账户查询操作通过数据库完成，而不是QAAccount  模拟账户接入QATrader 接入成功后，通过pub发单即可。">
+<meta name="description" content="整个流程与QUANTAXIS实时数据本地撮合有两点不同：  模拟撮合通过qatrader模块连接模拟盘账户完成订单。 账户查询操作通过数据库完成，而不是QAAccount  模拟账户接入QUANTAXIS-QATrader模拟和实盘交易组件 接入成功后，通过pub发单即可。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="QUANTAXIS实时数据模拟撮合">
 <meta property="og:url" content="https://xiongyifan.github.io/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F%E6%92%AE%E5%90%88/index.html">
 <meta property="og:site_name" content="熊一帆的博客">
-<meta property="og:description" content="整个流程与QUANTAXIS实时数据本地撮合有两点不同：  模拟撮合通过qatrader模块连接模拟盘账户完成订单。 账户查询操作通过数据库完成，而不是QAAccount  模拟账户接入QATrader 接入成功后，通过pub发单即可。">
+<meta property="og:description" content="整个流程与QUANTAXIS实时数据本地撮合有两点不同：  模拟撮合通过qatrader模块连接模拟盘账户完成订单。 账户查询操作通过数据库完成，而不是QAAccount  模拟账户接入QUANTAXIS-QATrader模拟和实盘交易组件 接入成功后，通过pub发单即可。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-11-13T17:52:37.000Z">
 <meta property="article:modified_time" content="2021-11-13T17:54:53.000Z">
@@ -270,7 +270,7 @@
 <li>模拟撮合通过qatrader模块连接模拟盘账户完成订单。</li>
 <li>账户查询操作通过数据库完成，而不是QAAccount</li>
 </ol>
-<h2 id="模拟账户接入"><a href="#模拟账户接入" class="headerlink" title="模拟账户接入"></a>模拟账户接入</h2><p><a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QATrader">QATrader</a></p>
+<h2 id="模拟账户接入"><a href="#模拟账户接入" class="headerlink" title="模拟账户接入"></a>模拟账户接入</h2><p><a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QUANTAXIS-QATrader%E6%A8%A1%E6%8B%9F%E5%92%8C%E5%AE%9E%E7%9B%98%E4%BA%A4%E6%98%93%E7%BB%84%E4%BB%B6">QUANTAXIS-QATrader模拟和实盘交易组件</a></p>
 <p>接入成功后，通过pub发单即可。</p>
 <span id="more"></span>
 
@@ -302,8 +302,8 @@
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E4%BB%8E%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/" rel="next" title="QUANTAXIS从安装到实盘">
-                  QUANTAXIS从安装到实盘 <i class="fa fa-chevron-right"></i>
+                <a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%92%AE%E5%90%88/" rel="next" title="QUANTAXIS实时数据本地撮合">
+                  QUANTAXIS实时数据本地撮合 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
