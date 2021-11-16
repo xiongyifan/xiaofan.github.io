@@ -266,6 +266,8 @@
     <div class="post-body" itemprop="articleBody">
         <h2 id="模拟盘"><a href="#模拟盘" class="headerlink" title="模拟盘"></a>模拟盘</h2><h3 id="启动模拟账户"><a href="#启动模拟账户" class="headerlink" title="启动模拟账户"></a>启动模拟账户</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 进入qatrader容器</span><br><span class="line">docker exec -it qatrader /bin/bash</span><br><span class="line"># 开启模拟盘账户</span><br><span class="line"># 当指定一个新的acc执行这个命令时，会创建一个acc，存在数据库中</span><br><span class="line"># 已经创建过的acc可以在81页面查看，但是必须开启qatrader才能交易</span><br><span class="line">qatrader --acc 101010 --pwd 101010 --broker QUANTAXIS</span><br></pre></td></tr></table></figure>
 
+<span id="more"></span>
+
 <p>输出下图日志就说明启动成功</p>
 <p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_qatrader%E5%BC%80%E5%90%AF%E8%B4%A6%E6%88%B7.jpg"></p>
 <p>同时RabbitMQ中会增加3个Exchange</p>
@@ -323,13 +325,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/knowledge/%E7%BC%96%E7%A8%8B/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/LInux/Ubuntu/Ubuntu%E9%85%8D%E7%BD%AESSH%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95/" rel="prev" title="Ubuntu配置SSH服务端支持远程登录">
-                  <i class="fa fa-chevron-left"></i> Ubuntu配置SSH服务端支持远程登录
+                <a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%92%AE%E5%90%88/" rel="prev" title="QUANTAXIS实时数据本地撮合">
+                  <i class="fa fa-chevron-left"></i> QUANTAXIS实时数据本地撮合
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/QUANTAXIS%E4%BB%8E%E5%AE%89%E8%A3%85%E5%88%B0%E5%AE%9E%E7%9B%98/" rel="next" title="QUANTAXIS从安装到实盘">
-                  QUANTAXIS从安装到实盘 <i class="fa fa-chevron-right"></i>
+                <a href="/knowledge/%E6%8A%95%E8%B5%84/%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/%E7%BC%96%E7%A8%8B/QUANTAXIS/QUANTAXIS%E8%84%9A%E6%9C%AC%E5%AE%89%E8%A3%85/" rel="next" title="QUANTAXIS脚本安装">
+                  QUANTAXIS脚本安装 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
