@@ -19,6 +19,50 @@
       </tags>
   </entry>
   <entry>
+    <title>QUANTAXIS-QACTPBeeBroker实时行情组件</title>
+    <url>/knowledge/50efbeb4d7a55858/</url>
+    <content><![CDATA[<h2 id="QACTPBeeBroker的作用"><a href="#QACTPBeeBroker的作用" class="headerlink" title="QACTPBeeBroker的作用"></a>QACTPBeeBroker的作用</h2><p>通过QACTPBEE命令接入实时的tick行情，然后通过QAPUBSUB订阅就能获取到行情</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">QACTPBEE --userid 133496 --password QCHL1234</span><br></pre></td></tr></table></figure>
+
+<p>下面的第1和第2步只是为了在docker中执行上面的命令，也可以本地安装QACTPBeeBroker后手动执行上面命令，订阅的步骤是一样的。</p>
+<p>当用docker-compose的qactpbeebroker时，默认会执行QACTPBEE命令，如果又手动执行了QACTPBEE命令就会推送两组数据。<br>如果想手动启动只能本地安装，注释掉docker-compose.yaml中的启动命令是没有用的，因为源码中有默认的账号密码。</p>
+<span id="more"></span>
+
+<h2 id="QACTPBeeBroker接入实时行情的步骤"><a href="#QACTPBeeBroker接入实时行情的步骤" class="headerlink" title="QACTPBeeBroker接入实时行情的步骤"></a>QACTPBeeBroker接入实时行情的步骤</h2><h3 id="1-增加qactpbeebroker模块"><a href="#1-增加qactpbeebroker模块" class="headerlink" title="1. 增加qactpbeebroker模块"></a>1. 增加qactpbeebroker模块</h3><p>在docker-compose.yaml中添加qactpbeebroker模块</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qactpbeebroker:</span><br><span class="line">    image: daocloud.io/quantaxis/qactpbeebroker:latest</span><br><span class="line">    container_name: qactpbeebroker</span><br><span class="line">    ports:</span><br><span class="line">        - <span class="string">&quot;5000:5000&quot;</span></span><br><span class="line">    networks:</span><br><span class="line">        qanetwork_pro:</span><br><span class="line">            ipv4_address: 172.19.3.7</span><br><span class="line"></span><br><span class="line">        <span class="comment"># --userid TEXT</span></span><br><span class="line">        <span class="comment"># --password TEXT</span></span><br><span class="line">        <span class="comment"># --brokerid TEXT</span></span><br><span class="line">        <span class="comment"># --mdaddr TEXT</span></span><br><span class="line">        <span class="comment"># --tdaddr TEXT</span></span><br><span class="line">        <span class="comment"># --appid TEXT</span></span><br><span class="line">        <span class="comment"># --authcode TEXT</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">command</span>: [<span class="string">&#x27;/root/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:15672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> , <span class="string">&quot;QACTPBEE&quot;</span>, <span class="string">&quot;--userid&quot;</span>, <span class="string">&quot;133496&quot;</span>, <span class="string">&quot;--password&quot;</span>, <span class="string">&#x27;QCHL1234&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>如果想用自己的账户可以在command中修改userid和password。</p>
+<h3 id="2-启动"><a href="#2-启动" class="headerlink" title="2. 启动"></a>2. 启动</h3><p>如果是新添加的qactpbeebroker，那么可以直接通过下面的命令启动。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>如果之前已经跟其他模块一起启动的话，qactpbeebroker可能会启动失败，原因不明。<br>解决办法，手动重新启动下就好了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker ps  <span class="comment"># 没有qactpbeebroker的话，说明已经停止运行了</span></span><br><span class="line">docker-compose start qactpbeebroker  <span class="comment"># 没有的话，运行命令启动</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-检查"><a href="#3-检查" class="headerlink" title="3. 检查"></a>3. 检查</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker logs --tail 1000 -f qactpbeebroker</span><br></pre></td></tr></table></figure>
+
+<p>如果日志显示连接成功，或者有在打印合约代码，说明接入成功了。</p>
+<p>接入成功后，15672页面会增加名为CTPX的Exchange。但是由于Exchange失效后不会自动在15672页面消失，所以有CTPX不意味着连接成功，看日志更保险。</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee%E5%90%AF%E5%8A%A8%E5%A2%9E%E5%8A%A0exchange.jpg"></p>
+<h2 id="订阅tick行情"><a href="#订阅tick行情" class="headerlink" title="订阅tick行情"></a>订阅tick行情</h2><p>订阅tick行情，大概每秒2条tick行情</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange CTPX --model direct --routing_key rb2201</span><br></pre></td></tr></table></figure>
+
+<p>订阅成功后，命令行显示tick行情</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee_%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85%E8%A1%8C%E6%83%85%E6%98%BE%E7%A4%BA.jpg"></p>
+<p>并且名为CTPX的Exchange增加</p>
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85.jpg"></p>
+<p>CTPBEE的任务是连接实盘tick行情，分钟行情则需要使用QARealtimeCollector二次采样分发。</p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>docker-compose up -d所有容器全部一起启动，qactpbeebroker会死掉，手动再启动就好了，不知道怎么回事</p>
+<p>10:15~10:30 rb2201数据停了，是因为这15分钟不是交易时间</p>
+<h2 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h2><p><a href="https://github.com/ctpbee/ctpbee">https://github.com/ctpbee/ctpbee</a><br><a href="https://github.com/yutiansut/QACTPBeeBroker">https://github.com/yutiansut/QACTPBeeBroker</a></p>
+]]></content>
+      <categories>
+        <category>QUANTAXIS</category>
+      </categories>
+      <tags>
+        <tag>QUANTAXIS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>QUANTAXIS-QARealtimeCollector行情订阅和二次采样组件</title>
     <url>/knowledge/e5b8132e67d4490d/</url>
     <content><![CDATA[<h2 id="QARealtimeCollector的作用"><a href="#QARealtimeCollector的作用" class="headerlink" title="QARealtimeCollector的作用"></a>QARealtimeCollector的作用</h2><p>QARealtimeCollector的作用有两个：</p>
@@ -67,6 +111,56 @@
       </tags>
   </entry>
   <entry>
+    <title>QUANTAXIS-QAPUBSUB消息订阅组件</title>
+    <url>/knowledge/9415a00b301cc96e/</url>
+    <content><![CDATA[<h2 id="QAPUBSUB的作用"><a href="#QAPUBSUB的作用" class="headerlink" title="QAPUBSUB的作用"></a>QAPUBSUB的作用</h2><p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_QAPUBSUB_%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81.jpg"></p>
+<p>原始模式: 通过for循环遍历数据<br>订阅模式: 通过eventmq发布订阅数据</p>
+<span id="more"></span>
+
+<h2 id="原始模式"><a href="#原始模式" class="headerlink" title="原始模式"></a>原始模式</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> QUANTAXIS <span class="keyword">as</span> QA</span><br><span class="line">df = QA.QA_fetch_get_future_day(<span class="string">&#x27;tdx&#x27;</span>, <span class="string">&#x27;RBL8&#x27;</span>, <span class="string">&#x27;2019-09-01&#x27;</span>, <span class="string">&#x27;2019-09-30&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> idx, data <span class="keyword">in</span> df.iterrows():</span><br><span class="line">	<span class="built_in">print</span>(<span class="string">&#x27;on_data: &#x27;</span>, data)</span><br><span class="line">	<span class="comment"># 策略代码。。。</span></span><br></pre></td></tr></table></figure>
+
+<p>优点：</p>
+<ol>
+<li>逻辑清晰</li>
+<li>单个策略执行速度快</li>
+</ol>
+<p>缺点在多个策略同时运行时暴露：</p>
+<ol>
+<li>API访问次数限制</li>
+<li>同时访问数据库压力大</li>
+</ol>
+<h2 id="订阅模式"><a href="#订阅模式" class="headerlink" title="订阅模式"></a>订阅模式</h2><p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_QAPUBSUB_%E5%B7%A5%E4%BD%9C%E7%A4%BA%E6%84%8F%E5%9B%BE.jpg"></p>
+<p>以中间的eventmq为媒介，生产者发布数据，消费者订阅接收数据。生产者发布一次，多个消费者接收数据，执行各自的逻辑。消费者加工数据后可以发布数据，供其他消费者使用，例如：图中消费者tick2Bar把tick数据变成bar数据后发布，策略订阅了bar数据，bar数据一来策略就运行起来了。</p>
+<p>优点在多个策略同时运行时尤为明显：</p>
+<ol>
+<li>多策略，数据持久化，发单等等写起来都很方便，只要订阅就好</li>
+</ol>
+<p>缺点在多个策略同时运行时暴露：</p>
+<ol>
+<li>逻辑上需要理解下</li>
+<li>单策略执行速度不如for循环，毕竟有eventmq的开销</li>
+</ol>
+<p>总的来说优点远大于缺点，用过的都说好。</p>
+<h3 id="命令行订阅发布"><a href="#命令行订阅发布" class="headerlink" title="命令行订阅发布"></a>命令行订阅发布</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 进入qaweb容器，也可进入其他容器，大部分容器都安装了qapubsub，mgdb和eventmq除外</span><br><span class="line">docker exec -it qaweb bash</span><br><span class="line"># 订阅</span><br><span class="line">qaps_sub --exchange x1 --model fanout --host qaeventmq</span><br><span class="line"># 发布，新开一个命令行执行</span><br><span class="line">qaps_pub --exchange x1 --model fanout --content 111 --host qaeventmq</span><br><span class="line"># 发布后，订阅的命令行就会收到数据</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_QAPUBSUB%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85%E5%8F%91%E5%B8%83.jpg"></p>
+<h3 id="Python代码"><a href="#Python代码" class="headerlink" title="Python代码"></a>Python代码</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">from QAPUBSUB.consumer import subscriber, subscriber_routing</span><br><span class="line"></span><br><span class="line"># 订阅名为x1的exchange</span><br><span class="line">sub = subscriber(exchange=&#x27;x1&#x27;)</span><br><span class="line"></span><br><span class="line"># 修改回调函数</span><br><span class="line">def on_data(a, b, c, data):</span><br><span class="line">	print(&#x27;on_data: &#x27;, data)</span><br><span class="line">	# 策略代码。。。</span><br><span class="line">sub.callback = on_data</span><br><span class="line"></span><br><span class="line"># 开启订阅</span><br><span class="line"># 1. 线程阻塞，需要订阅和发布在两个线程中执行</span><br><span class="line"># sub.start()  </span><br><span class="line"></span><br><span class="line"># 2. 线程不阻塞</span><br><span class="line">import threading</span><br><span class="line">threading.Thread(target=sub.start).start()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">from QAPUBSUB.producer import publisher, publisher_routing</span><br><span class="line">pub = publisher(exchange=&#x27;x1&#x27;)</span><br><span class="line">pub.pub(&#x27;111&#x27;)  # pub后上面的订阅就会收到</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import QUANTAXIS as QA</span><br><span class="line">df = QA.QA_fetch_get_future_day(&#x27;tdx&#x27;, &#x27;RBL8&#x27;, &#x27;2019-09-01&#x27;, &#x27;2019-09-30&#x27;)</span><br><span class="line">for idx, item in df.iterrows():</span><br><span class="line">    pub.pub(item.to_json())</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="GitHub"><a href="#GitHub" class="headerlink" title="GitHub"></a>GitHub</h2><p><a href="https://github.com/yutiansut/QAPUBSUB">https://github.com/yutiansut/QAPUBSUB</a></p>
+]]></content>
+      <categories>
+        <category>QUANTAXIS</category>
+      </categories>
+      <tags>
+        <tag>QUANTAXIS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>QUANTAXIS脚本安装</title>
     <url>/knowledge/ebdfa7c933851e11/</url>
     <content><![CDATA[<h2 id="Docker安装"><a href="#Docker安装" class="headerlink" title="Docker安装"></a>Docker安装</h2><p><a href="/knowledge/e4809e342a40dd55">Docker安装</a></p>
@@ -77,50 +171,6 @@
 <span id="more"></span>
 
 <h2 id="QUANTAXIS初始化"><a href="#QUANTAXIS初始化" class="headerlink" title="QUANTAXIS初始化"></a>QUANTAXIS初始化</h2><p>以下内容复制自QQ群公告<br>第一次部署docker版QA必须的初始化操作步骤：<br>一、在浏览器输入docker宿主机”ip地址:8888”；<br>二、进入jupyterlab登录界面后输入口令”quantaxis”;<br>三、进入jupyterlab启动页，点击Terminal进入终端；<br>四、在终端界面输入”/bin/bash”,进入bash状态；<br>五、bash状态输入”quantaxis”,进入数据库操作状态；<br>六：依次输入完成数据库初始化<br>“save stock_list”，”save single_index_day 000300”<br>输入exit退出终端，在docker管理界面重启qaweb容器，最后浏览器输入docker宿主机”ip地址:81”，弹出的登录界面把登录地址端口改为docker宿主机”ip地址:8010”,就可以进入QA前端界面</p>
-]]></content>
-      <categories>
-        <category>QUANTAXIS</category>
-      </categories>
-      <tags>
-        <tag>QUANTAXIS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>QUANTAXIS-QACTPBeeBroker实时行情组件</title>
-    <url>/knowledge/50efbeb4d7a55858/</url>
-    <content><![CDATA[<h2 id="QACTPBeeBroker的作用"><a href="#QACTPBeeBroker的作用" class="headerlink" title="QACTPBeeBroker的作用"></a>QACTPBeeBroker的作用</h2><p>通过QACTPBEE命令接入实时的tick行情，然后通过QAPUBSUB订阅就能获取到行情</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">QACTPBEE --userid 133496 --password QCHL1234</span><br></pre></td></tr></table></figure>
-
-<p>下面的第1和第2步只是为了在docker中执行上面的命令，也可以本地安装QACTPBeeBroker后手动执行上面命令，订阅的步骤是一样的。</p>
-<p>当用docker-compose的qactpbeebroker时，默认会执行QACTPBEE命令，如果又手动执行了QACTPBEE命令就会推送两组数据。<br>如果想手动启动只能本地安装，注释掉docker-compose.yaml中的启动命令是没有用的，因为源码中有默认的账号密码。</p>
-<span id="more"></span>
-
-<h2 id="QACTPBeeBroker接入实时行情的步骤"><a href="#QACTPBeeBroker接入实时行情的步骤" class="headerlink" title="QACTPBeeBroker接入实时行情的步骤"></a>QACTPBeeBroker接入实时行情的步骤</h2><h3 id="1-增加qactpbeebroker模块"><a href="#1-增加qactpbeebroker模块" class="headerlink" title="1. 增加qactpbeebroker模块"></a>1. 增加qactpbeebroker模块</h3><p>在docker-compose.yaml中添加qactpbeebroker模块</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qactpbeebroker:</span><br><span class="line">    image: daocloud.io/quantaxis/qactpbeebroker:latest</span><br><span class="line">    container_name: qactpbeebroker</span><br><span class="line">    ports:</span><br><span class="line">        - <span class="string">&quot;5000:5000&quot;</span></span><br><span class="line">    networks:</span><br><span class="line">        qanetwork_pro:</span><br><span class="line">            ipv4_address: 172.19.3.7</span><br><span class="line"></span><br><span class="line">        <span class="comment"># --userid TEXT</span></span><br><span class="line">        <span class="comment"># --password TEXT</span></span><br><span class="line">        <span class="comment"># --brokerid TEXT</span></span><br><span class="line">        <span class="comment"># --mdaddr TEXT</span></span><br><span class="line">        <span class="comment"># --tdaddr TEXT</span></span><br><span class="line">        <span class="comment"># --appid TEXT</span></span><br><span class="line">        <span class="comment"># --authcode TEXT</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">command</span>: [<span class="string">&#x27;/root/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:15672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> , <span class="string">&quot;QACTPBEE&quot;</span>, <span class="string">&quot;--userid&quot;</span>, <span class="string">&quot;133496&quot;</span>, <span class="string">&quot;--password&quot;</span>, <span class="string">&#x27;QCHL1234&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-<p>如果想用自己的账户可以在command中修改userid和password。</p>
-<h3 id="2-启动"><a href="#2-启动" class="headerlink" title="2. 启动"></a>2. 启动</h3><p>如果是新添加的qactpbeebroker，那么可以直接通过下面的命令启动。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
-
-<p>如果之前已经跟其他模块一起启动的话，qactpbeebroker可能会启动失败，原因不明。<br>解决办法，手动重新启动下就好了。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker ps  <span class="comment"># 没有qactpbeebroker的话，说明已经停止运行了</span></span><br><span class="line">docker-compose start qactpbeebroker  <span class="comment"># 没有的话，运行命令启动</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="3-检查"><a href="#3-检查" class="headerlink" title="3. 检查"></a>3. 检查</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker logs --tail 1000 -f qactpbeebroker</span><br></pre></td></tr></table></figure>
-
-<p>如果日志显示连接成功，或者有在打印合约代码，说明接入成功了。</p>
-<p>接入成功后，15672页面会增加名为CTPX的Exchange。但是由于Exchange失效后不会自动在15672页面消失，所以有CTPX不意味着连接成功，看日志更保险。</p>
-<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee%E5%90%AF%E5%8A%A8%E5%A2%9E%E5%8A%A0exchange.jpg"></p>
-<h2 id="订阅tick行情"><a href="#订阅tick行情" class="headerlink" title="订阅tick行情"></a>订阅tick行情</h2><p>订阅tick行情，大概每秒2条tick行情</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange CTPX --model direct --routing_key rb2201</span><br></pre></td></tr></table></figure>
-
-<p>订阅成功后，命令行显示tick行情</p>
-<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee_%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85%E8%A1%8C%E6%83%85%E6%98%BE%E7%A4%BA.jpg"></p>
-<p>并且名为CTPX的Exchange增加</p>
-<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_ctpbee%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85.jpg"></p>
-<p>CTPBEE的任务是连接实盘tick行情，分钟行情则需要使用QARealtimeCollector二次采样分发。</p>
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>docker-compose up -d所有容器全部一起启动，qactpbeebroker会死掉，手动再启动就好了，不知道怎么回事</p>
-<p>10:15~10:30 rb2201数据停了，是因为这15分钟不是交易时间</p>
-<h2 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h2><p><a href="https://github.com/ctpbee/ctpbee">https://github.com/ctpbee/ctpbee</a><br><a href="https://github.com/yutiansut/QACTPBeeBroker">https://github.com/yutiansut/QACTPBeeBroker</a></p>
 ]]></content>
       <categories>
         <category>QUANTAXIS</category>
@@ -186,47 +236,15 @@
       </tags>
   </entry>
   <entry>
-    <title>QUANTAXIS-QAPUBSUB消息订阅组件</title>
-    <url>/knowledge/9415a00b301cc96e/</url>
-    <content><![CDATA[<h2 id="QAPUBSUB的作用"><a href="#QAPUBSUB的作用" class="headerlink" title="QAPUBSUB的作用"></a>QAPUBSUB的作用</h2><p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_QAPUBSUB_%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81.jpg"></p>
-<p>原始模式: 通过for循环遍历数据<br>订阅模式: 通过eventmq发布订阅数据</p>
-<span id="more"></span>
-
-<h2 id="原始模式"><a href="#原始模式" class="headerlink" title="原始模式"></a>原始模式</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> QUANTAXIS <span class="keyword">as</span> QA</span><br><span class="line">df = QA.QA_fetch_get_future_day(<span class="string">&#x27;tdx&#x27;</span>, <span class="string">&#x27;RBL8&#x27;</span>, <span class="string">&#x27;2019-09-01&#x27;</span>, <span class="string">&#x27;2019-09-30&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> idx, data <span class="keyword">in</span> df.iterrows():</span><br><span class="line">	<span class="built_in">print</span>(<span class="string">&#x27;on_data: &#x27;</span>, data)</span><br><span class="line">	<span class="comment"># 策略代码。。。</span></span><br></pre></td></tr></table></figure>
-
-<p>优点：</p>
-<ol>
-<li>逻辑清晰</li>
-<li>单个策略执行速度快</li>
-</ol>
-<p>缺点在多个策略同时运行时暴露：</p>
-<ol>
-<li>API访问次数限制</li>
-<li>同时访问数据库压力大</li>
-</ol>
-<h2 id="订阅模式"><a href="#订阅模式" class="headerlink" title="订阅模式"></a>订阅模式</h2><p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_QAPUBSUB_%E5%B7%A5%E4%BD%9C%E7%A4%BA%E6%84%8F%E5%9B%BE.jpg"></p>
-<p>以中间的eventmq为媒介，生产者发布数据，消费者订阅接收数据。生产者发布一次，多个消费者接收数据，执行各自的逻辑。消费者加工数据后可以发布数据，供其他消费者使用，例如：图中消费者tick2Bar把tick数据变成bar数据后发布，策略订阅了bar数据，bar数据一来策略就运行起来了。</p>
-<p>优点在多个策略同时运行时尤为明显：</p>
-<ol>
-<li>多策略，数据持久化，发单等等写起来都很方便，只要订阅就好</li>
-</ol>
-<p>缺点在多个策略同时运行时暴露：</p>
-<ol>
-<li>逻辑上需要理解下</li>
-<li>单策略执行速度不如for循环，毕竟有eventmq的开销</li>
-</ol>
-<p>总的来说优点远大于缺点，用过的都说好。</p>
-<h3 id="命令行订阅发布"><a href="#命令行订阅发布" class="headerlink" title="命令行订阅发布"></a>命令行订阅发布</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 进入qaweb容器，也可进入其他容器，大部分容器都安装了qapubsub，mgdb和eventmq除外</span><br><span class="line">docker exec -it qaweb bash</span><br><span class="line"># 订阅</span><br><span class="line">qaps_sub --exchange x1 --model fanout --host qaeventmq</span><br><span class="line"># 发布，新开一个命令行执行</span><br><span class="line">qaps_pub --exchange x1 --model fanout --content 111 --host qaeventmq</span><br><span class="line"># 发布后，订阅的命令行就会收到数据</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://gitee.com/xiongyifan/imgRes/raw/master/img/QUANTAXIS_QAPUBSUB%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85%E5%8F%91%E5%B8%83.jpg"></p>
-<h3 id="Python代码"><a href="#Python代码" class="headerlink" title="Python代码"></a>Python代码</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">from QAPUBSUB.consumer import subscriber, subscriber_routing</span><br><span class="line"></span><br><span class="line"># 订阅名为x1的exchange</span><br><span class="line">sub = subscriber(exchange=&#x27;x1&#x27;)</span><br><span class="line"></span><br><span class="line"># 修改回调函数</span><br><span class="line">def on_data(a, b, c, data):</span><br><span class="line">	print(&#x27;on_data: &#x27;, data)</span><br><span class="line">	# 策略代码。。。</span><br><span class="line">sub.callback = on_data</span><br><span class="line"></span><br><span class="line"># 开启订阅</span><br><span class="line"># 1. 线程阻塞，需要订阅和发布在两个线程中执行</span><br><span class="line"># sub.start()  </span><br><span class="line"></span><br><span class="line"># 2. 线程不阻塞</span><br><span class="line">import threading</span><br><span class="line">threading.Thread(target=sub.start).start()</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">from QAPUBSUB.producer import publisher, publisher_routing</span><br><span class="line">pub = publisher(exchange=&#x27;x1&#x27;)</span><br><span class="line">pub.pub(&#x27;111&#x27;)  # pub后上面的订阅就会收到</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import QUANTAXIS as QA</span><br><span class="line">df = QA.QA_fetch_get_future_day(&#x27;tdx&#x27;, &#x27;RBL8&#x27;, &#x27;2019-09-01&#x27;, &#x27;2019-09-30&#x27;)</span><br><span class="line">for idx, item in df.iterrows():</span><br><span class="line">    pub.pub(item.to_json())</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="GitHub"><a href="#GitHub" class="headerlink" title="GitHub"></a>GitHub</h2><p><a href="https://github.com/yutiansut/QAPUBSUB">https://github.com/yutiansut/QAPUBSUB</a></p>
+    <title>QUANTAXIS从安装到实盘</title>
+    <url>/knowledge/c5bed9ec3b959bfd/</url>
+    <content><![CDATA[<p>内容整理自<a href="https://space.bilibili.com/21959493">天神的视频</a>，目前更新到STU02</p>
+<p>系统环境：Ubuntu 20.04</p>
+<h2 id="QUANTAXIS脚本安装"><a href="#QUANTAXIS脚本安装" class="headerlink" title="QUANTAXIS脚本安装"></a>QUANTAXIS脚本安装</h2><p><a href="/knowledge/ebdfa7c933851e11">QUANTAXIS脚本安装</a></p>
+<h2 id="QUANTAXIS本地数据本地撮合"><a href="#QUANTAXIS本地数据本地撮合" class="headerlink" title="QUANTAXIS本地数据本地撮合"></a>QUANTAXIS本地数据本地撮合</h2><p><a href="/knowledge/d1be47f9274e8671">QUANTAXIS本地数据本地撮合</a></p>
+<h2 id="QUANTAXIS实时数据本地撮合"><a href="#QUANTAXIS实时数据本地撮合" class="headerlink" title="QUANTAXIS实时数据本地撮合"></a>QUANTAXIS实时数据本地撮合</h2><p><a href="/knowledge/1b4999756a5fe616">QUANTAXIS实时数据本地撮合</a></p>
+<h2 id="QUANTAXIS实时数据模拟撮合"><a href="#QUANTAXIS实时数据模拟撮合" class="headerlink" title="QUANTAXIS实时数据模拟撮合"></a>QUANTAXIS实时数据模拟撮合</h2><p><a href="/knowledge/6e8f7a03cfbd89f6">QUANTAXIS实时数据模拟撮合</a></p>
+<h2 id="QUANTAXIS实时数据实盘交易"><a href="#QUANTAXIS实时数据实盘交易" class="headerlink" title="QUANTAXIS实时数据实盘交易"></a>QUANTAXIS实时数据实盘交易</h2><p>待完成</p>
 ]]></content>
       <categories>
         <category>QUANTAXIS</category>
@@ -341,24 +359,6 @@
 <li>在存了数据，trade_time写对之后，performance.pnl等等都能计算出来了，但是81界面的绩效分析就是出不来，不知道为什么（未解决）</li>
 <li>acc = port.new_account(‘test1’, 100000, QA.MARKET_TYPE.FUTURE_CN, auto_reload=False)，跑第一次的时候会把acc存在数据库，第二次再跑的时候，创建的acc，market_type会变成stock_cn，因为走的else代码块，创建走的if，具体看QAPortfolio的第385行。但是如果auto_reload是true的话就不会有问题，因为会从数据库读取覆盖掉创建时赋值的参数，缺点是交易数据的累计的，跑不同的数据，交易记录会混在一起。（未解决）</li>
 </ol>
-]]></content>
-      <categories>
-        <category>QUANTAXIS</category>
-      </categories>
-      <tags>
-        <tag>QUANTAXIS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>QUANTAXIS从安装到实盘</title>
-    <url>/knowledge/c5bed9ec3b959bfd/</url>
-    <content><![CDATA[<p>内容整理自<a href="https://space.bilibili.com/21959493">天神的视频</a>，目前更新到STU02</p>
-<p>系统环境：Ubuntu 20.04</p>
-<h2 id="QUANTAXIS脚本安装"><a href="#QUANTAXIS脚本安装" class="headerlink" title="QUANTAXIS脚本安装"></a>QUANTAXIS脚本安装</h2><p><a href="/knowledge/ebdfa7c933851e11">QUANTAXIS脚本安装</a></p>
-<h2 id="QUANTAXIS本地数据本地撮合"><a href="#QUANTAXIS本地数据本地撮合" class="headerlink" title="QUANTAXIS本地数据本地撮合"></a>QUANTAXIS本地数据本地撮合</h2><p><a href="/knowledge/d1be47f9274e8671">QUANTAXIS本地数据本地撮合</a></p>
-<h2 id="QUANTAXIS实时数据本地撮合"><a href="#QUANTAXIS实时数据本地撮合" class="headerlink" title="QUANTAXIS实时数据本地撮合"></a>QUANTAXIS实时数据本地撮合</h2><p><a href="/knowledge/1b4999756a5fe616">QUANTAXIS实时数据本地撮合</a></p>
-<h2 id="QUANTAXIS实时数据模拟撮合"><a href="#QUANTAXIS实时数据模拟撮合" class="headerlink" title="QUANTAXIS实时数据模拟撮合"></a>QUANTAXIS实时数据模拟撮合</h2><p><a href="/knowledge/6e8f7a03cfbd89f6">QUANTAXIS实时数据模拟撮合</a></p>
-<h2 id="QUANTAXIS实时数据实盘交易"><a href="#QUANTAXIS实时数据实盘交易" class="headerlink" title="QUANTAXIS实时数据实盘交易"></a>QUANTAXIS实时数据实盘交易</h2><p>待完成</p>
 ]]></content>
       <categories>
         <category>QUANTAXIS</category>
