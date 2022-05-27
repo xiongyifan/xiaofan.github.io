@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xiongyifan.gitee.io/knowledge/bd67a62b0c68ceca/</loc>
+    
+    <lastmod>2022-05-27</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xiongyifan.gitee.io/knowledge/ebdfa7c933851e11/</loc>
     
     <lastmod>2022-02-21</lastmod>
@@ -116,36 +123,43 @@
 
   <url>
     <loc>https://xiongyifan.gitee.io/</loc>
-    <lastmod>2022-02-21</lastmod>
+    <lastmod>2022-05-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   
   <url>
+    <loc>https://xiongyifan.gitee.io/tags/Python/</loc>
+    <lastmod>2022-05-27</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://xiongyifan.gitee.io/tags/Docker/</loc>
-    <lastmod>2022-02-21</lastmod>
+    <lastmod>2022-05-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://xiongyifan.gitee.io/tags/Windows/</loc>
-    <lastmod>2022-02-21</lastmod>
+    <lastmod>2022-05-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://xiongyifan.gitee.io/tags/QUANTAXIS/</loc>
-    <lastmod>2022-02-21</lastmod>
+    <lastmod>2022-05-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://xiongyifan.gitee.io/tags/VNPY/</loc>
-    <lastmod>2022-02-21</lastmod>
+    <lastmod>2022-05-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
@@ -153,29 +167,36 @@
 
   
   <url>
+    <loc>https://xiongyifan.gitee.io/categories/Python/</loc>
+    <lastmod>2022-05-27</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://xiongyifan.gitee.io/categories/Docker/</loc>
-    <lastmod>2022-02-21</lastmod>
+    <lastmod>2022-05-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://xiongyifan.gitee.io/categories/Windows/</loc>
-    <lastmod>2022-02-21</lastmod>
+    <lastmod>2022-05-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://xiongyifan.gitee.io/categories/QUANTAXIS/</loc>
-    <lastmod>2022-02-21</lastmod>
+    <lastmod>2022-05-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://xiongyifan.gitee.io/categories/VNPY/</loc>
-    <lastmod>2022-02-21</lastmod>
+    <lastmod>2022-05-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
