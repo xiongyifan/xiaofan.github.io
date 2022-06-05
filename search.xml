@@ -132,6 +132,45 @@
       </tags>
   </entry>
   <entry>
+    <title>QUANTAXIS-QACTPBeeBroker实时行情组件</title>
+    <url>/knowledge/50efbeb4d7a55858/</url>
+    <content><![CDATA[<h2 id="QACTPBeeBroker的作用"><a href="#QACTPBeeBroker的作用" class="headerlink" title="QACTPBeeBroker的作用"></a>QACTPBeeBroker的作用</h2><p>QACTPBeeBroker的作用是获取期货实时的tick行情。行情会被PUB到名为CTPX的Exchange中。</p>
+<h2 id="QACTPBeeBroker接入实时行情的步骤"><a href="#QACTPBeeBroker接入实时行情的步骤" class="headerlink" title="QACTPBeeBroker接入实时行情的步骤"></a>QACTPBeeBroker接入实时行情的步骤</h2><h3 id="1-增加qactpbeebroker模块"><a href="#1-增加qactpbeebroker模块" class="headerlink" title="1. 增加qactpbeebroker模块"></a>1. 增加qactpbeebroker模块</h3><p>在docker-compose.yaml中添加qactpbeebroker模块</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">  qactpbeebroker:</span><br><span class="line">      image: daocloud.io/quantaxis/qactpbeebroker:latest</span><br><span class="line">      container_name: qactpbeebroker</span><br><span class="line">      ports:</span><br><span class="line">          - <span class="string">&quot;5000:5000&quot;</span></span><br><span class="line">      networks:</span><br><span class="line">          qanetwork_pro:</span><br><span class="line">              ipv4_address: 172.19.3.7</span><br><span class="line"></span><br><span class="line">          <span class="comment"># --userid TEXT</span></span><br><span class="line">          <span class="comment"># --password TEXT</span></span><br><span class="line">          <span class="comment"># --brokerid TEXT</span></span><br><span class="line">          <span class="comment"># --mdaddr TEXT</span></span><br><span class="line">          <span class="comment"># --tdaddr TEXT</span></span><br><span class="line">          <span class="comment"># --appid TEXT</span></span><br><span class="line">          <span class="comment"># --authcode TEXT</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 默认从simnow获取行情，账号是天神给定的simnow账号，可替换成自己的账号</span></span><br><span class="line"><span class="comment"># 即使注释掉command，QACTPBEE还是会连接天神给定的simnow账号，原因不明。</span></span><br><span class="line">      <span class="built_in">command</span>: [<span class="string">&#x27;/root/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:15672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> , <span class="string">&quot;QACTPBEE&quot;</span>, <span class="string">&quot;--userid&quot;</span>, <span class="string">&quot;133496&quot;</span>, <span class="string">&quot;--password&quot;</span>, <span class="string">&#x27;QCHL1234&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h3 id="2-启动"><a href="#2-启动" class="headerlink" title="2. 启动"></a>2. 启动</h3><p>如果是新添加的qactpbeebroker，那么可以直接通过下面的命令启动。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>如果之前已经跟其他模块一起启动的话，qactpbeebroker可能会启动失败，原因不明。<br>解决办法，手动重新启动下就好了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker ps  <span class="comment"># 没有qactpbeebroker的话，说明已经停止运行了</span></span><br><span class="line">docker-compose start qactpbeebroker  <span class="comment"># 运行命令启动</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-检查"><a href="#3-检查" class="headerlink" title="3. 检查"></a>3. 检查</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker logs --tail 10000 -f qactpbeebroker</span><br></pre></td></tr></table></figure>
+
+<p>如果日志显示连接成功，或者有在打印合约代码，说明接入成功了。</p>
+<p>接入成功后，15672页面会增加名为CTPX的Exchange。但是由于Exchange失效后不会自动在15672页面消失，所以有CTPX不意味着连接成功，看日志更保险。</p>
+<p><img src="https://img-res.oss-cn-beijing.aliyuncs.com/img/QUANTAXIS_ctpbee%E5%90%AF%E5%8A%A8%E5%A2%9E%E5%8A%A0exchange.jpg"></p>
+<h2 id="订阅tick行情"><a href="#订阅tick行情" class="headerlink" title="订阅tick行情"></a>订阅tick行情</h2><p>订阅tick行情，大概每秒2条tick行情。如果是simnow行情，经常会中断，或延迟。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange CTPX --model direct --routing_key rb2201</span><br></pre></td></tr></table></figure>
+
+<p>订阅成功后，命令行显示tick行情</p>
+<p><img src="https://img-res.oss-cn-beijing.aliyuncs.com/img/QUANTAXIS_ctpbee_%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85%E8%A1%8C%E6%83%85%E6%98%BE%E7%A4%BA.jpg"></p>
+<p>并且名为CTPX的Exchange增加</p>
+<p><img src="https://img-res.oss-cn-beijing.aliyuncs.com/img/QUANTAXIS_ctpbee%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85.jpg"></p>
+<p>CTPBEE的任务是连接实盘tick行情，分钟行情则需要使用QARealtimeCollector二次采样分发。</p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>docker-compose up -d所有容器全部一起启动，qactpbeebroker会死掉，手动再启动就好了，不知道怎么回事</p>
+<p>10:15~10:30 rb2201数据停了，是因为这15分钟不是交易时间</p>
+<h2 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h2><p><a href="https://github.com/ctpbee/ctpbee">https://github.com/ctpbee/ctpbee</a><br><a href="https://github.com/yutiansut/QACTPBeeBroker">https://github.com/yutiansut/QACTPBeeBroker</a></p>
+]]></content>
+      <categories>
+        <category>QUANTAXIS</category>
+      </categories>
+      <tags>
+        <tag>QUANTAXIS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>QUANTAXIS-QAPUBSUB消息订阅组件</title>
     <url>/knowledge/9415a00b301cc96e/</url>
     <content><![CDATA[<h2 id="QAPUBSUB的作用"><a href="#QAPUBSUB的作用" class="headerlink" title="QAPUBSUB的作用"></a>QAPUBSUB的作用</h2><p>QAPUBSUB是一种数据分发的方式，SUB订阅数据，PUB推送数据，EventMQ作为中间媒介。下面对比原始的For循环，和QAPUBSUB订阅模式的区别。</p>
@@ -325,45 +364,6 @@
 <h2 id="QUANTAXIS实时数据本地撮合"><a href="#QUANTAXIS实时数据本地撮合" class="headerlink" title="QUANTAXIS实时数据本地撮合"></a>QUANTAXIS实时数据本地撮合</h2><p><a href="/knowledge/1b4999756a5fe616">QUANTAXIS实时数据本地撮合</a></p>
 <h2 id="QUANTAXIS实时数据模拟撮合"><a href="#QUANTAXIS实时数据模拟撮合" class="headerlink" title="QUANTAXIS实时数据模拟撮合"></a>QUANTAXIS实时数据模拟撮合</h2><p><a href="/knowledge/6e8f7a03cfbd89f6">QUANTAXIS实时数据模拟撮合</a></p>
 <h2 id="QUANTAXIS实时数据实盘交易"><a href="#QUANTAXIS实时数据实盘交易" class="headerlink" title="QUANTAXIS实时数据实盘交易"></a>QUANTAXIS实时数据实盘交易</h2><p>待完成</p>
-]]></content>
-      <categories>
-        <category>QUANTAXIS</category>
-      </categories>
-      <tags>
-        <tag>QUANTAXIS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>QUANTAXIS-QACTPBeeBroker实时行情组件</title>
-    <url>/knowledge/50efbeb4d7a55858/</url>
-    <content><![CDATA[<h2 id="QACTPBeeBroker的作用"><a href="#QACTPBeeBroker的作用" class="headerlink" title="QACTPBeeBroker的作用"></a>QACTPBeeBroker的作用</h2><p>QACTPBeeBroker的作用是获取期货实时的tick行情。行情会被PUB到名为CTPX的Exchange中。</p>
-<h2 id="QACTPBeeBroker接入实时行情的步骤"><a href="#QACTPBeeBroker接入实时行情的步骤" class="headerlink" title="QACTPBeeBroker接入实时行情的步骤"></a>QACTPBeeBroker接入实时行情的步骤</h2><h3 id="1-增加qactpbeebroker模块"><a href="#1-增加qactpbeebroker模块" class="headerlink" title="1. 增加qactpbeebroker模块"></a>1. 增加qactpbeebroker模块</h3><p>在docker-compose.yaml中添加qactpbeebroker模块</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">  qactpbeebroker:</span><br><span class="line">      image: daocloud.io/quantaxis/qactpbeebroker:latest</span><br><span class="line">      container_name: qactpbeebroker</span><br><span class="line">      ports:</span><br><span class="line">          - <span class="string">&quot;5000:5000&quot;</span></span><br><span class="line">      networks:</span><br><span class="line">          qanetwork_pro:</span><br><span class="line">              ipv4_address: 172.19.3.7</span><br><span class="line"></span><br><span class="line">          <span class="comment"># --userid TEXT</span></span><br><span class="line">          <span class="comment"># --password TEXT</span></span><br><span class="line">          <span class="comment"># --brokerid TEXT</span></span><br><span class="line">          <span class="comment"># --mdaddr TEXT</span></span><br><span class="line">          <span class="comment"># --tdaddr TEXT</span></span><br><span class="line">          <span class="comment"># --appid TEXT</span></span><br><span class="line">          <span class="comment"># --authcode TEXT</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 默认从simnow获取行情，账号是天神给定的simnow账号，可替换成自己的账号</span></span><br><span class="line"><span class="comment"># 即使注释掉command，QACTPBEE还是会连接天神给定的simnow账号，原因不明。</span></span><br><span class="line">      <span class="built_in">command</span>: [<span class="string">&#x27;/root/wait_for_it.sh&#x27;</span>, <span class="string">&#x27;qaeventmq:15672&#x27;</span>, <span class="string">&#x27;--&#x27;</span> , <span class="string">&quot;QACTPBEE&quot;</span>, <span class="string">&quot;--userid&quot;</span>, <span class="string">&quot;133496&quot;</span>, <span class="string">&quot;--password&quot;</span>, <span class="string">&#x27;QCHL1234&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h3 id="2-启动"><a href="#2-启动" class="headerlink" title="2. 启动"></a>2. 启动</h3><p>如果是新添加的qactpbeebroker，那么可以直接通过下面的命令启动。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
-
-<p>如果之前已经跟其他模块一起启动的话，qactpbeebroker可能会启动失败，原因不明。<br>解决办法，手动重新启动下就好了。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker ps  <span class="comment"># 没有qactpbeebroker的话，说明已经停止运行了</span></span><br><span class="line">docker-compose start qactpbeebroker  <span class="comment"># 运行命令启动</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="3-检查"><a href="#3-检查" class="headerlink" title="3. 检查"></a>3. 检查</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker logs --tail 10000 -f qactpbeebroker</span><br></pre></td></tr></table></figure>
-
-<p>如果日志显示连接成功，或者有在打印合约代码，说明接入成功了。</p>
-<p>接入成功后，15672页面会增加名为CTPX的Exchange。但是由于Exchange失效后不会自动在15672页面消失，所以有CTPX不意味着连接成功，看日志更保险。</p>
-<p><img src="https://img-res.oss-cn-beijing.aliyuncs.com/img/QUANTAXIS_ctpbee%E5%90%AF%E5%8A%A8%E5%A2%9E%E5%8A%A0exchange.jpg"></p>
-<h2 id="订阅tick行情"><a href="#订阅tick行情" class="headerlink" title="订阅tick行情"></a>订阅tick行情</h2><p>订阅tick行情，大概每秒2条tick行情。如果是simnow行情，经常会中断，或延迟。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qaps_sub --exchange CTPX --model direct --routing_key rb2201</span><br></pre></td></tr></table></figure>
-
-<p>订阅成功后，命令行显示tick行情</p>
-<p><img src="https://img-res.oss-cn-beijing.aliyuncs.com/img/QUANTAXIS_ctpbee_%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85%E8%A1%8C%E6%83%85%E6%98%BE%E7%A4%BA.jpg"></p>
-<p>并且名为CTPX的Exchange增加</p>
-<p><img src="https://img-res.oss-cn-beijing.aliyuncs.com/img/QUANTAXIS_ctpbee%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%A2%E9%98%85.jpg"></p>
-<p>CTPBEE的任务是连接实盘tick行情，分钟行情则需要使用QARealtimeCollector二次采样分发。</p>
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>docker-compose up -d所有容器全部一起启动，qactpbeebroker会死掉，手动再启动就好了，不知道怎么回事</p>
-<p>10:15~10:30 rb2201数据停了，是因为这15分钟不是交易时间</p>
-<h2 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h2><p><a href="https://github.com/ctpbee/ctpbee">https://github.com/ctpbee/ctpbee</a><br><a href="https://github.com/yutiansut/QACTPBeeBroker">https://github.com/yutiansut/QACTPBeeBroker</a></p>
 ]]></content>
       <categories>
         <category>QUANTAXIS</category>
